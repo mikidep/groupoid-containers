@@ -1,0 +1,4 @@
+name: groupoid-containers
+include: .
+depend: cubical-0.9
+flags: --cubical --no-import-sorts -WnoUnsupportedIndexedMatch --guardedness
