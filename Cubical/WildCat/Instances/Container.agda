@@ -61,7 +61,7 @@ module Extent where
   Extent .F-hom = Ext-hom
   Extent .F-id = makeNatTransPath refl (λ f → refl)
   Extent .F-seq {x = (S ⊲ P)} {y = (S′ ⊲ P′)} {z = (S″ ⊲ P″)} α β = 
-    makeNatTransPath refl (λ {y = Y} f → lUnit refl)
+    makeNatTransPath refl (λ _ → lUnit refl)
     where
     open import Cubical.Foundations.GroupoidLaws
     -- Second goal was:
