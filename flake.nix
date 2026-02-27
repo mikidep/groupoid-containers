@@ -2,6 +2,10 @@
   description = "Agda library on containers";
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
+    agda-index = {
+      url = "github:phijor/agda-index?ref=418fb0";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Flake outputs
@@ -31,30 +35,29 @@
       cubical = pkgs.agdaPackages.cubical;
       deps = [cubical];
 
-      agdaDocsGen = agdalib: rootModule:
-        pkgs.agdaPackages.mkDerivation {
-          pname = agdalib.pname + "-docs";
-          inherit (agdalib) version src;
-          buildInputs = [agdalib] ++ agdalib.buildInputs;
-          buildPhase = ''
-            runHook preBuild
-            mkdir docshim
-            mv *.agda-lib docshim/
-            mkdir -p docshim/$(dirname ${rootModule})
-            mv ${rootModule} docshim/${rootModule}
-            cd docshim
-            cat ${rootModule}
-            sed -i 's/^name:.*$/name: docshim/g' *.agda-lib
-            sed -i 's/^depend:.*$/depend: ${agdalib.pname}/g' *.agda-lib
-            sed -i 's/^src:.*$/src: ./g' *.agda-lib
-            mkdir $out
-            agda --html --html-dir=$out ${rootModule}
-            runHook postBuild
-          '';
-          meta = {};
-        };
+      cubicalEverything =
+        pkgs.runCommand "cubical-everything" {
+          inherit (cubical) src version;
+        } ''
+          mkdir $out
+          cd $src
+          sh generate-everything.sh > $out/Everything.agda
+          sed -i 's/module Cubical\./module /' $out/Everything.agda
+        '';
+      cubicalDocs =
+        pkgs.runCommand "cubical-docs" {
+          inherit (cubical) version;
+          src = cubicalEverything;
+          buildInputs = [(pkgs.agda.withPackages [cubical])];
+        } ''
+          mkdir $out
+          cp $src/Everything.agda .
+          agda -i . Everything.agda -l cubical \
+            --safe --guardedness --cubical \
+            --html --html-dir $out
+        '';
     in rec {
-      devshell = pkgs.agda.withPackages deps;
+      devshell = pkgs.symlinkJoin [(pkgs.agda.withPackages deps) agda-search];
       groupoid-containers = pkgs.agdaPackages.mkDerivation {
         pname = "groupoid-containers";
         version = "0.1";
@@ -66,22 +69,15 @@
       };
       # docs are broken
       # docs = agdaDocsGen groupoid-containers "Everything.agda";
-      # cubical-docs = (agdaDocsGen cubical "Cubical/Everything.agda").overrideAttrs (_: prev: {
-      #   buildPhase =
-      #     ''
-      #       sh generate-everything.sh > Everything.agda
-      #       mv Everything.agda Cubical/
-      #     ''
-      #     + prev.buildPhase;
-      # });
+      cubical-docs = cubicalDocs;
       default = groupoid-containers;
-      # agda-search = pkgs.writeShellApplication {
-      #   name = "agda-search";
-      #   runtimeInputs = with pkgs; [fzf firefox (agda-index.packages.${system}.default)];
-      #   text = ''
-      #     agda-index ${docs}/ | fzf -d' ' --with-nth='2' | cut -d' ' -f1 | xargs -I % firefox --new-window %
-      #   '';
-      # };
+      agda-search = pkgs.writeShellApplication {
+        name = "agda-search";
+        runtimeInputs = with pkgs; [fzf firefox (inputs.agda-index.packages.${system}.default)];
+        text = ''
+          agda-index ${cubical-docs}/*.html | fzf -d' ' --with-nth='2' | cut -d' ' -f1 | xargs -I % firefox --new-window %
+        '';
+      };
     });
   };
 }

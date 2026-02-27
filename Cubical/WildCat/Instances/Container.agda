@@ -70,5 +70,59 @@ module Extent where
     --     -- (cong (_» (Ext-hom β .N-ob Y)) (Ext-hom α .N-hom f)) ∙ refl
     --     -- God knows why the left path is refl
     --     refl ∙ refl
-    --     ) 
+    --     )
+    
+    
+  module _ {F G : Container} (α : F ⇒ G) where
+    open Container F
+    open Container G renaming 
+      (
+        S to S′
+      ; P to P′
+      )
+
+    open import Cubical.Foundations.Equiv
+    open isEquiv
+
+    Ext-hom-equiv : isEquiv (Ext-hom {F} {G})
+    Ext-hom-equiv = {! !}
+
+    open import Cubical.Foundations.Isomorphism
+    open Iso
+    
+    Ext-hom-inv : 
+      WildNatTrans _ _ (Ext-ob F) (Ext-ob G)
+      → F ⇒ G
+    Ext-hom-inv α = CMor σ π
+      where
+      ⟦G⟧ : Type → Type
+      ⟦G⟧ = Ext-ob G .F-ob
+      米→ :
+        (A : Type)
+        → (∀ (X : Type) → (A → X) → ⟦G⟧ X)
+        → ⟦G⟧ A
+      米→ A nat = nat A (idfun _)
+      goal : ∀ (s : S) → Σ S′ (λ σs → P′ σs → P s)
+      goal s = 
+        米→
+          (P s)
+          λ X FP→X → α .N-ob X (s , FP→X)
+      σ = goal » fst
+      π = goal » snd
+
+    open import Cubical.Functions.FunExtEquiv
+    open import Cubical.Data.Sigma
+    open import Cubical.Foundations.Path
+    Ext-hom-is-iso : isIso (Ext-hom {F} {G})
+    Ext-hom-is-iso .fst = Ext-hom-inv
+    Ext-hom-is-iso .snd .fst α = 
+      makeNatTransPath 
+        (funExt₂ λ {
+          X (s , v) →
+            let α□v = α .N-hom v
+            in
+              sym (funExt⁻ α□v (s , idfun _))
+         }) 
+        λ {X} {Y} f → {!  !}
+    Ext-hom-is-iso .snd .snd (CMor σ π) = refl
 
