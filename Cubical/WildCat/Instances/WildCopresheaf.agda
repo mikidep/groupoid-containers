@@ -30,7 +30,6 @@ module _ (ℓ : Level) where
       (F G H : WildFunctor C TYPE) where
       open import Prelude
     
-      -- Not sure how worth this is
       compWildNatTransTypes : WildNatTrans _ _ F G → WildNatTrans _ _ G H → WildNatTrans _ _ F H
       N-ob (compWildNatTransTypes η γ) X = N-ob η X » N-ob γ X
       N-hom (compWildNatTransTypes η γ) {x = x} {y = y} f = 

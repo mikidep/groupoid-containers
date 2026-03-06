@@ -57,7 +57,10 @@
             --html --html-dir $out
         '';
     in rec {
-      devshell = pkgs.symlinkJoin [(pkgs.agda.withPackages deps) agda-search];
+      devshell = pkgs.symlinkJoin {
+        name = "devshell";
+        paths = [(pkgs.agda.withPackages deps) agda-search];
+      };
       groupoid-containers = pkgs.agdaPackages.mkDerivation {
         pname = "groupoid-containers";
         version = "0.1";

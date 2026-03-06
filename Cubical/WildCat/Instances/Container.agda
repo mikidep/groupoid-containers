@@ -123,6 +123,30 @@ module Extent where
             in
               sym (funExt⁻ α□v (s , idfun _))
          }) 
-        λ {X} {Y} f → {!  !}
+        λ {X} {Y} f → 
+          funExtSquare λ {
+            (s , v) → ΣSquareP 
+              ( idfun
+                  ( Square 
+                    (funExt⁻ (cong (_» fst) (refl {x = α .N-ob (P s)})       ) (s , idfun _))
+                    (funExt⁻ (cong (_» fst) (cong (Fmap v »_) (α .N-hom f))  ) (s , idfun _))
+                    (funExt⁻ (cong (_» fst) (sym (α .N-hom (v » f)))         ) (s , idfun _))
+                    (funExt⁻ (cong (_» fst) (sym (α .N-hom v))               ) (s , idfun _))
+                )
+                ?
+                , {! !}
+              )
+          }
+          where
+          Fmap = Ext-ob F .F-hom
+          -- idfun
+          --   ( SquareP _ 
+          --       (refl {x = α .N-ob ()}) 
+          --       -- (refl {x = λ { (s , v) → α .N-ob (P s) (s , idfun _) .fst , (α .N-ob (P s) (s , idfun _)) .snd » v » f }}) 
+          --       (α .N-hom f) 
+          --       {! !} 
+          --       {! !}
+          --   ) {!  !}
+          -- λ { i j (s , v) → fst (α .N-hom {! !} {! !} {! !}) , {! !} }
     Ext-hom-is-iso .snd .snd (CMor σ π) = refl
 

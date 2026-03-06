@@ -22,3 +22,4 @@ module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
       → α ≡ β
     makeNatTransPath p q i .N-ob = p i
     makeNatTransPath p q i .N-hom f = q f i
+
