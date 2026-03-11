@@ -24,6 +24,9 @@ module _ (F G : Container) where
       σ : S → S′
       π : (s : S) → P′ (σ s) → P s
 
+  CMor′ : (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) → _⇒_
+  CMor′ σπ = CMor (σπ » fst) (σπ » snd)
+
   is-Cartesian : _⇒_ → Type
   is-Cartesian (CMor σ π) = ∀ (s : S) → isEquiv (π s)
     where

@@ -85,7 +85,7 @@ module Extent where
     open isEquiv
 
     Ext-hom-equiv : isEquiv (Ext-hom {F} {G})
-    Ext-hom-equiv = {! !}
+    Ext-hom-equiv = {! _$_ !}
 
     open import Cubical.Foundations.Isomorphism
     open Iso
@@ -119,34 +119,25 @@ module Extent where
       makeNatTransPath 
         (funExt₂ λ {
           X (s , v) →
-            let α□v = α .N-hom v
-            in
-              sym (funExt⁻ α□v (s , idfun _))
-         }) 
+            sym (funExt⁻ (α□ v) (s , idfun _))
+        }) 
         λ {X} {Y} f → 
           funExtSquare λ {
-            (s , v) → ΣSquareP 
-              ( idfun
-                  ( Square 
-                    (funExt⁻ (cong (_» fst) (refl {x = α .N-ob (P s)})       ) (s , idfun _))
-                    (funExt⁻ (cong (_» fst) (cong (Fmap v »_) (α .N-hom f))  ) (s , idfun _))
-                    (funExt⁻ (cong (_» fst) (sym (α .N-hom (v » f)))         ) (s , idfun _))
-                    (funExt⁻ (cong (_» fst) (sym (α .N-hom v))               ) (s , idfun _))
+            (s , v) → compPath→Square (
+              idfun ( 
+                (sym (α□ (v » f))               ≡$ (s , idfun (P s))) 
+                ∙ (cong (F$ v »_) (α□ f)        ≡$ (s , idfun (P s))) 
+                ≡ refl 
+                ∙ (sym (cong (_» G$ f) (α□ v))  ≡$ (s , idfun (P s)))
                 )
-                ?
-                , {! !}
+                {! !}
               )
           }
           where
-          Fmap = Ext-ob F .F-hom
-          -- idfun
-          --   ( SquareP _ 
-          --       (refl {x = α .N-ob ()}) 
-          --       -- (refl {x = λ { (s , v) → α .N-ob (P s) (s , idfun _) .fst , (α .N-ob (P s) (s , idfun _)) .snd » v » f }}) 
-          --       (α .N-hom f) 
-          --       {! !} 
-          --       {! !}
-          --   ) {!  !}
-          -- λ { i j (s , v) → fst (α .N-hom {! !} {! !} {! !}) , {! !} }
+          open import Cubical.Foundations.Transport
+          F$ = Ext-ob F .F-hom
+          G$ = Ext-ob G .F-hom
+          α₀ = α .N-ob
+          α□ = α .N-hom
     Ext-hom-is-iso .snd .snd (CMor σ π) = refl
 
