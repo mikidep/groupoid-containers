@@ -51,16 +51,20 @@ module Extent where
     Ext-hom .N-ob X (s , px) = σ s , π s » px
     Ext-hom .N-hom f = refl
     
-    module _ (X : Type) (s : S) (px : P s → X) where
+    module _ where
+      private
+        G$ = Ext-ob G .F-hom
       -- what′s going on here?
-      _ : Ext-hom .N-ob X (s , px) ≡ Ext-ob G .F-hom px (σ s , π s)
+      -- (S ⊲ P) ⇒ G ≃ Π(s : S) . ⟦G⟧ (P s)
+      _ : Ext-hom .N-ob  ≡ λ where
+        X (s , px) → G$ px (σ s , π s)
       _ = refl
 
   Extent : WildFunctor ContainerWildCat TypeEndoCat
   Extent .F-ob = Ext-ob
   Extent .F-hom = Ext-hom
-  Extent .F-id = makeNatTransPath refl (λ f → refl)
-  Extent .F-seq {x = (S ⊲ P)} {y = (S′ ⊲ P′)} {z = (S″ ⊲ P″)} α β = 
+  Extent .F-id = makeNatTransPath refl (λ _ → refl)
+  Extent .F-seq α β = 
     makeNatTransPath refl (λ _ → lUnit refl)
     where
     open import Cubical.Foundations.GroupoidLaws
@@ -85,7 +89,7 @@ module Extent where
     open isEquiv
 
     Ext-hom-equiv : isEquiv (Ext-hom {F} {G})
-    Ext-hom-equiv = {! _$_ !}
+    Ext-hom-equiv = {!  !}
 
     open import Cubical.Foundations.Isomorphism
     open Iso
