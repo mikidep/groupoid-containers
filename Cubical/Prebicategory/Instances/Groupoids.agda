@@ -4,6 +4,7 @@ module Cubical.Prebicategory.Instances.Groupoids (ℓ : Level) where
 
 open import Cubical.Prebicategory.Base
 open import Cubical.WildCat.Base
+open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Instances.Types
 open import Cubical.WildCat.WithPred
 
@@ -25,6 +26,14 @@ module _ where
   GpdWildCat .⋆IdL _ = refl
   GpdWildCat .⋆IdR _ = refl
   GpdWildCat .⋆Assoc _ _ _ = refl
+  
+  open WildFunctor
+
+  ForgetGpd : WildFunctor GpdWildCat (TypeCat ℓ)
+  ForgetGpd .F-ob = ⟨_⟩
+  ForgetGpd .F-hom = idfun _
+  ForgetGpd .F-id = refl
+  ForgetGpd .F-seq _ _ = refl
 
 isPrebicategory-Gpd : is-Prebicategory GpdWildCat
 isPrebicategory-Gpd .triangle f g = sym (lUnit _)
