@@ -18,6 +18,11 @@ private
     ℓC ℓC′ : Level
 
 GPD = GpdPrebicat ℓ
+-- In GPD, whiskering
+-- commutes with composition
+-- definitionally, i.e.
+-- f ⋆ g ◃ p ≡def f ◃ g ◃ p
+-- and viceversa 
 
 module _ (C : Prebicategory ℓC ℓC′) where
   open Prebicategory C using () 
@@ -51,21 +56,21 @@ module _ (C : Prebicategory ℓC ℓC′) where
     field
       F-IdL : ∀ {x y} {f : C[ x , y ]} 
         → F-seq idᶜ f
-          ∙ (F-id ▹ F₁ f)
+          ∙ F-id ▹ F₁ f
           ≡ cong F₁ (C-⋆IdL f)
       F-IdR : ∀ {x y} {f : C[ x , y ]} 
         → F-seq f idᶜ 
-          ∙ (F₁ f ◃ F-id)
+          ∙ F₁ f ◃ F-id
           ≡ cong F₁ (C-⋆IdR f)
       F-Assoc : ∀ {x y z w} 
         {f : C[ x , y ]} 
         {g : C[ y , z ]} 
         {h : C[ z , w ]} 
         → F-seq (f ⋆ᶜ g) h
-          ∙ (F-seq f g ▹ F₁ h)
+          ∙ F-seq f g ▹ F₁ h
           ≡ cong F₁ (C-⋆Assoc f g h)
           ∙ F-seq f (g ⋆ᶜ h)
-          ∙ (F₁ f ◃ F-seq g h)
+          ∙ F₁ f ◃ F-seq g h
 
   record Copresheaf 
     : Type (ℓ-max (ℓ-max ℓC ℓC′) (ℓ-suc ℓ)) where
@@ -98,6 +103,15 @@ module _ {C : Prebicategory ℓC ℓC′} where
       renaming (F-hom to F₁)
     open Copresheaf G using ()
       renaming (F-hom to G₁; F-id to G-id; F-seq to G-seq)
+    private
+      F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → F₁ f ≡ F₁ g
+      F₂ = cong F₁
+      G₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → G₁ f ≡ G₁ g
+      G₂ = cong G₁
 
     record is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC′) (ℓ-suc ℓ)) where
       field
@@ -105,24 +119,28 @@ module _ {C : Prebicategory ℓC ℓC′} where
           ∀ {X} {Y} 
             (f g : C[ X , Y ])
             (f≡g : f ≡ g)
-          →   α□ f ∙ (α₀ X ◃ cong G₁ f≡g)
-            ≡ (cong F₁ f≡g ▹ α₀ Y) ∙ α□ g
+          →   α□ f ∙ α₀ X ◃ G₂ f≡g
+            ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
         N-hom-id :
           ∀ {X} 
           →   α□ (idᶜ {X})
-              ∙ (α₀ X ◃ G-id)
-            ≡ (F-id ▹ α₀ X) 
+              ∙ α₀ X ◃ G-id
+            ≡ F-id ▹ α₀ X 
         N-hom-seq : 
           ∀ {X} {Y} {Z} (f : C[ X , Y ]) (g : C[ Y , Z ])
           →   α□ (f ⋆ᶜ g) 
-              ∙ (α₀ X ◃ G-seq f g) 
-            ≡ (F-seq f g ▹ α₀ Z)
-              ∙ (F₁ f ◃ α□ g)
-              ∙ (α□ f ▹ G₁ g)
+              ∙ α₀ X ◃ G-seq f g 
+            ≡ F-seq f g ▹ α₀ Z
+              ∙ F₁ f ◃ α□ g
+              ∙ α□ f ▹ G₁ g
 
     open import Cubical.Foundations.HLevels
     open is2NatTrans
     isProp-is2NatTrans : isProp is2NatTrans
+    isProp-is2NatTrans αis βis i .N-hom-nat f g f≡g = aux i
+      where
+      aux : αis .N-hom-nat f g f≡g ≡ βis .N-hom-nat f g f≡g
+      aux = isGpdHomGPD _ _ _ _ (αis .N-hom-nat f g f≡g) (βis .N-hom-nat f g f≡g)
     isProp-is2NatTrans αis βis i .N-hom-id {X} = aux i
       where
       aux : αis .N-hom-id {X} ≡ βis .N-hom-id 
@@ -145,7 +163,21 @@ module _ {C : Prebicategory ℓC ℓC′} where
       where open import Cubical.Data.Sigma.Properties
 
   module _ (F : Copresheaf C) where
-    open Prebicategory
+    open Prebicategory C using ()
+      renaming (
+        Hom[_,_] to C[_,_]
+      )
+    open Prebicategory GPD using (_◃_; _▹_) 
+      renaming (
+        id to idᵈ
+      )
+    open Copresheaf F using (F-seq)
+      renaming (F-hom to F₁)
+    private
+      F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → F₁ f ≡ F₁ g
+      F₂ = cong F₁
     open WildNatTrans
 
     wid = WC.idWildNatTransTypes
@@ -157,13 +189,12 @@ module _ {C : Prebicategory ℓC ℓC′} where
     id2NatTrans : 2NatTrans F F
     id2NatTrans .fst .N-ob X = idfun _
     id2NatTrans .fst .N-hom _ = refl
+    id2NatTrans .snd .N-hom-nat f g f≡g = sym (lUnit _) ∙ rUnit _
     id2NatTrans .snd .N-hom-id = sym (lUnit _) 
     id2NatTrans .snd .N-hom-seq f g = 
       sym (lUnit _) 
       ∙ rUnit _ 
       ∙ cong (F-seq f g ∙_) (rUnit _)
-      where
-      open Copresheaf F using (F-seq)
 
   module _ {F G H : Copresheaf C}
     (α : 2NatTrans F G)
@@ -177,23 +208,64 @@ module _ {C : Prebicategory ℓC ℓC′} where
     open is2NatTrans
     open Prebicategory GPD renaming (_⋆_ to _»_)
 
+    open Prebicategory C using ()
+      renaming (Hom[_,_] to C[_,_]; id to idᶜ)
+    open Copresheaf F using (F-id)
+      renaming (F-hom to F₁)
+    open Copresheaf G using ()
+      renaming (F-hom to G₁)
+    open Copresheaf H using ()
+      renaming (F-hom to H₁; F-id to H-id)
+    private
+      F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → F₁ f ≡ F₁ g
+      F₂ = cong F₁
+      G₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → G₁ f ≡ G₁ g
+      G₂ = cong G₁
+      H₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+        (f≡g : f ≡ g)
+        → H₁ f ≡ H₁ g
+      H₂ = cong H₁
+
     comp2NatTrans : 2NatTrans F H
     comp2NatTrans .fst .N-ob X = α₀ X » β₀ X
     comp2NatTrans .fst .N-hom {X} {Y} f = 
-      (α□ f ▹ β₀ Y) ∙ (α₀ X ◃ β□ f)
+      α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f
+    comp2NatTrans .snd .N-hom-nat {X} {Y} f g f≡g =
+        (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ∙ α₀ X ◃ β₀ X ◃ H₂ f≡g
+      ≡⟨ sym (assoc _ _ _) ⟩ 
+        α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f ∙ α₀ X ◃ β₀ X ◃ H₂ f≡g
+      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ x) (sym (◃-∙ {C = GPD} _ (β□ f) (β₀ X ◃ H₂ f≡g))) ⟩ 
+        α□ f ▹ β₀ Y ∙ α₀ X ◃ (β□ f ∙ β₀ X ◃ H₂ f≡g)
+      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ α₀ X ◃ x) (β .snd .N-hom-nat _ _ _) ⟩ 
+        α□ f ▹ β₀ Y ∙ α₀ X ◃ (G₂ f≡g ▹ β₀ Y ∙ β□ g)
+      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ x) (◃-∙ {C = GPD} _ (G₂ f≡g ▹ β₀ Y) (β□ g)) ⟩ 
+        α□ f ▹ β₀ Y ∙ α₀ X ◃ G₂ f≡g ▹ β₀ Y ∙ α₀ X ◃ β□ g
+      ≡⟨ {! !} ⟩ 
+        (α□ f ∙ α₀ X ◃ G₂ f≡g) ▹ β₀ Y ∙ α₀ X ◃ β□ g
+      ≡⟨ {! !} ⟩ 
+        (F₂ f≡g ▹ α₀ Y ∙ α□ g) ▹ β₀ Y ∙ α₀ X ◃ β□ g
+      ≡⟨ {! !} ⟩ 
+        (F₂ f≡g ▹ α₀ Y ▹ β₀ Y ∙ α□ g ▹ β₀ Y) ∙ α₀ X ◃ β□ g 
+      ≡⟨ {! !} ⟩ 
+        F₂ f≡g ▹ α₀ Y ▹ β₀ Y ∙ α□ g ▹ β₀ Y ∙ α₀ X ◃ β□ g 
+      ∎
+      where
+        open import Prelude using (idfun)
+        open import Cubical.Foundations.GroupoidLaws
     comp2NatTrans .snd .N-hom-id {X} = 
         idfun
         (
-          ((α□ idᶜ ▹ β₀ X) ∙ (α₀ X ◃ β□ idᶜ)) ∙ (comp₀ X ◃ H-id)
-          ≡ (F-id ▹ α₀ X) ▹ β₀ X
+          (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
+          ≡ F-id ▹ α₀ X ▹ β₀ X
         )
-        {!   !} 
+        {!  !} 
       where 
-        open Prebicategory C using ()
-          renaming (id to idᶜ)
-        open Copresheaf F using (F-id)
-        open Copresheaf H using ()
-          renaming (F-id to H-id)
+        open Prebicategory GPD using ()
+          renaming (_⋆_ to _⋆ᵈ_)
         open import Prelude using (idfun)
         open WildNatTrans (comp2NatTrans .fst)
           renaming (N-ob to comp₀; N-hom to comp□)

@@ -34,6 +34,8 @@ module _ (ℓC ℓC′ : Level) where
       is-prebicat : is-Prebicategory str
     open WildCat str public
     open is-Prebicategory is-prebicat public
+    infixr 41 _◃_
+    infixl 40 _▹_ 
     _◃_ : ∀ {a b c : ob}
       (f : Hom[ a , b ])
       {g h : Hom[ b , c ]}
@@ -47,3 +49,29 @@ module _ (ℓC ℓC′ : Level) where
       → (h : Hom[ b , c ])
       → f ⋆ h ≡ g ⋆ h
     f≡g ▹ h = cong (_⋆ h) f≡g
+
+module _ {ℓC ℓC′ : Level} {C : Prebicategory ℓC ℓC′} where
+  open Prebicategory C
+  
+  ◃-∙ : ∀ {a b c : ob}
+    (f : Hom[ a , b ])
+    {g h k : Hom[ b , c ]}
+    (p : g ≡ h)
+    (q : h ≡ k)
+    → f ◃ (p ∙ q)
+      ≡ f ◃ p ∙ f ◃ q
+  ◃-∙ f p q = congFunct (f ⋆_) p q
+    where
+    open import Cubical.Foundations.GroupoidLaws
+  
+
+  ▹-∙ : ∀ {a b c : ob}
+    {f g h : Hom[ a , b ]}
+    {k : Hom[ b , c ]}
+    {p : f ≡ g}
+    {q : g ≡ h}
+    → (p ∙ q) ▹ k
+      ≡ p ▹ k ∙ q ▹ k
+  ▹-∙ {k = k} {p = p} {q = q} = congFunct (_⋆ k) p q
+    where
+    open import Cubical.Foundations.GroupoidLaws
