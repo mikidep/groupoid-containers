@@ -106,6 +106,7 @@ module _ {C : Prebicategory ℓC ℓC'} {D : Prebicategory ℓD ℓD'}
 
     record is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
       field
+        -- A piece is missing, see Copresheaf.agda
         N-hom-id :
           ∀ {X} 
           →   α□ (idᶜ {X})

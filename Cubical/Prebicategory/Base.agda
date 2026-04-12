@@ -1,3 +1,7 @@
+-- For some reason the flag in the lib file
+-- is not applied
+{-# OPTIONS --hidden-argument-puns #-}
+
 -- Adapted from:
 -- E. Finster, S. Mimram, M. Lucas, and T. Seiller, 
 -- “A Cartesian Bicategory of Polynomial Functors in Homotopy Type Theory,” 
@@ -54,13 +58,13 @@ module _ {ℓC ℓC′ : Level} {C : Prebicategory ℓC ℓC′} where
   open Prebicategory C
   
   ◃-∙ : ∀ {a b c : ob}
-    (f : Hom[ a , b ])
+    {f : Hom[ a , b ]}
     {g h k : Hom[ b , c ]}
     (p : g ≡ h)
     (q : h ≡ k)
     → f ◃ (p ∙ q)
       ≡ f ◃ p ∙ f ◃ q
-  ◃-∙ f p q = congFunct (f ⋆_) p q
+  ◃-∙ {f} p q = congFunct (f ⋆_) p q
     where
     open import Cubical.Foundations.GroupoidLaws
   
@@ -68,10 +72,10 @@ module _ {ℓC ℓC′ : Level} {C : Prebicategory ℓC ℓC′} where
   ▹-∙ : ∀ {a b c : ob}
     {f g h : Hom[ a , b ]}
     {k : Hom[ b , c ]}
-    {p : f ≡ g}
-    {q : g ≡ h}
+    (p : f ≡ g)
+    (q : g ≡ h)
     → (p ∙ q) ▹ k
       ≡ p ▹ k ∙ q ▹ k
-  ▹-∙ {k = k} {p = p} {q = q} = congFunct (_⋆ k) p q
+  ▹-∙ {k} p q = congFunct (_⋆ k) p q
     where
     open import Cubical.Foundations.GroupoidLaws
