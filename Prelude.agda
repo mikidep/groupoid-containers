@@ -119,3 +119,5 @@ module _
   unquoteDef funExtSquareEquiv = defStrictEquiv funExtSquareEquiv funExtSquare funExtSquare⁻
 
 open import Prelude.Square public
+open import Prelude.ExtraGpdLaws public
+

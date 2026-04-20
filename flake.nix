@@ -4,7 +4,6 @@
     nixpkgs.url = "nixpkgs/nixos-unstable";
     agda-index = {
       url = "github:phijor/agda-index?ref=418fb0";
-      # inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -76,7 +75,7 @@
       default = groupoid-containers;
       agda-search = pkgs.writeShellApplication {
         name = "agda-search";
-        runtimeInputs = with pkgs; [fzf firefox (inputs.agda-index.packages.${system}.default)];
+        runtimeInputs = with pkgs; [fzf (inputs.agda-index.packages.${system}.default)];
         text = ''
           agda-index ${cubical-docs}/*.html | fzf -d' ' --with-nth='2' | cut -d' ' -f1 | xargs -I % firefox --new-window %
         '';

@@ -8,7 +8,7 @@ open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Instances.Types
 open import Cubical.WildCat.WithPred
 
-open is-Prebicategory
+open IsPrebicategory
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.HLevels
 
@@ -35,12 +35,14 @@ module _ where
   ForgetGpd .F-id = refl
   ForgetGpd .F-seq _ _ = refl
 
-isPrebicategory-Gpd : is-Prebicategory GpdWildCat
+isPrebicategory-Gpd : IsPrebicategory GpdWildCat
 isPrebicategory-Gpd .triangle f g = sym (lUnit _)
 isPrebicategory-Gpd .pentagon f g h k = cong (refl ∙_) (sym (lUnit _))
 isPrebicategory-Gpd .isGpdHom {b = b} = isGroupoidΠ λ _ → snd b
 
-open Prebicategory
-GpdPrebicat : Prebicategory (ℓ-suc ℓ) ℓ
-GpdPrebicat .str = GpdWildCat
-GpdPrebicat .is-prebicat = isPrebicategory-Gpd
+module _ where
+  open Prebicategory
+  GpdPrebicat : Prebicategory (ℓ-suc ℓ) ℓ
+  GpdPrebicat .str = GpdWildCat
+  GpdPrebicat .isPrebicat = isPrebicategory-Gpd
+

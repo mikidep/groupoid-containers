@@ -82,6 +82,7 @@ module _ {C : Prebicategory ℓC ℓC'} {D : Prebicategory ℓD ℓD'}
     WildNatTransU : Type _
     WildNatTransU = WildNatTrans _ _ (F .str) (G .str)
       where open Functor
+    {-# INLINE WildNatTransU #-} 
 
   module _ {F G : Functor C D}
     (α : WildNatTransU F G) where
@@ -104,7 +105,7 @@ module _ {C : Prebicategory ℓC ℓC'} {D : Prebicategory ℓD ℓD'}
     open Functor G using ()
       renaming (F-hom to G₁; F-id to G-id; F-seq to G-seq)
 
-    record is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
+    record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
       field
         -- A piece is missing, see Copresheaf.agda
         N-hom-id :
@@ -126,4 +127,4 @@ module _ {C : Prebicategory ℓC ℓC'} {D : Prebicategory ℓD ℓD'}
               ∙ D-⋆Assoc (α₀ X) (G₁ f) (G₁ g)
 
   module _ (F G : Functor C D) where
-    2NatTrans = Σ (WildNatTransU F G) is2NatTrans 
+    2NatTrans = Σ (WildNatTransU F G) (Is2NatTrans {F} {G}) 
