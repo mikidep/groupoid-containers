@@ -137,7 +137,7 @@ module _ {C : Prebicategory ℓC ℓC′} where
         N-hom-seq : 
           ∀ {X} {Y} {Z} (f : C[ X , Y ]) (g : C[ Y , Z ])
           →   α□ (f ⋆ᶜ g) 
-              ∙ α₀ X ◃ G-seq f g 
+              ∙ α₀ X ◃ G-seq f g
             ≡ F-seq f g ▹ α₀ Z
               ∙ F₁ f ◃ α□ g
               ∙ α□ f ▹ G₁ g
@@ -214,6 +214,8 @@ module _ {C : Prebicategory ℓC ℓC′} where
     open Copresheaf H using ()
       renaming (F₀ to H₀; F₁ to H₁; F₂ to H₂; F-id to H-id; F-seq to H-seq)
 
+    open import Cubical.Foundations.GroupoidLaws
+
     comp2NatTrans : 2NatTrans F H
     comp2NatTrans .fst .N-ob X = α₀ X ⋆ᵈ β₀ X
     comp2NatTrans .fst .N-hom {x = X} {y = Y} f = 
@@ -239,8 +241,6 @@ module _ {C : Prebicategory ℓC ℓC′} where
       ≡⟨ sym (assoc _ _ _) ⟩ 
         F₂ f≡g ▹ α₀ Y ▹ β₀ Y ∙ α□ g ▹ β₀ Y ∙ α₀ X ◃ β□ g 
       ∎
-      where
-        open import Cubical.Foundations.GroupoidLaws
     comp2NatTrans .snd .N-hom-id {X} = 
         (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
       ≡⟨ sym (assoc _ _ _) ⟩ 
@@ -254,46 +254,122 @@ module _ {C : Prebicategory ℓC ℓC′} where
       ≡⟨ cong (_▹ β₀ X) (α .snd .N-hom-id) ⟩ 
         F-id ▹ α₀ X ▹ β₀ X
       ∎
-      where 
-        open import Cubical.Foundations.GroupoidLaws
     comp2NatTrans .snd .N-hom-seq {X} {Y} {Z} f g = 
         (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ᶜ g)) 
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
-      ≡⟨ {! !} ⟩ 
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
-        ∙ {! !} 
+      ≡⟨ sym (assoc _ _ _) ⟩
+        α□ (f ⋆ᶜ g) ▹ β₀ Z 
+        ∙ α₀ X ◃ β□ (f ⋆ᶜ g) 
+        ∙ α₀ X ◃ β₀ X ◃ H-seq f g
+      ≡⟨ cong (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙_) 
+          (sym (◃-∙ (β□ (f ⋆ᶜ g)) (β₀ X ◃ H-seq f g))) ⟩
+        α□ (f ⋆ᶜ g) ▹ β₀ Z 
+        ∙ α₀ X ◃ (β□ (f ⋆ᶜ g) ∙ β₀ X ◃ H-seq f g)
+      ≡⟨ cong (λ x → α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ x) 
+          (β .snd .N-hom-seq f g) ⟩
+        α□ (f ⋆ᶜ g) ▹ β₀ Z 
+        ∙ α₀ X ◃ (G-seq f g ▹ β₀ Z
+          ∙ G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
+      ≡⟨ cong (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙_) 
+          (◃-∙ (G-seq f g ▹ β₀ Z) (G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)) ⟩
+        α□ (f ⋆ᶜ g) ▹ β₀ Z 
+        ∙ α₀ X ◃ G-seq f g ▹ β₀ Z
+        ∙ α₀ X ◃ (G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
+      ≡⟨ cong (λ x → α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ G-seq f g ▹ β₀ Z ∙ x)
+          (◃-∙ (G₁ f ◃ β□ g ) (β□ f ▹ H₁ g)) ⟩
+        α□ (f ⋆ᶜ g) ▹ β₀ Z 
+        ∙ α₀ X ◃ G-seq f g ▹ β₀ Z
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ cong (λ x → (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
+      ≡⟨ assoc _ _ _ ⟩
+        (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ G-seq f g ▹ β₀ Z)
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
+          (sym (▹-∙ (α□ (f ⋆ᶜ g)) (α₀ X ◃ G-seq f g))) ⟩
+        (α□ (f ⋆ᶜ g) ∙ α₀ X ◃ G-seq f g) ▹ β₀ Z
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (λ x → x ▹ β₀ Z 
+            ∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
+          (α .snd .N-hom-seq f g) ⟩
+        (F-seq f g ▹ α₀ Z ∙ F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
+          (▹-∙ (F-seq f g ▹ α₀ Z) (F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g)) ⟩
+        (F-seq f g ▹ α₀ Z ▹ β₀ Z 
+          ∙ (F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z)
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (λ x → (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ x)
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g)
+          (▹-∙ (F₁ f ◃ α□ g) (α□ f ▹ G₁ g)) ⟩
+        (F-seq f g ▹ α₀ Z ▹ β₀ Z 
+          ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+          ∙ α□ f ▹ G₁ g ▹ β₀ Z)
+        ∙ α₀ X ◃ G₁ f ◃ β□ g
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g) 
+          (assoc _ _ _) ⟩
+        ((F-seq f g ▹ α₀ Z ▹ β₀ Z 
+            ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
+          ∙ α□ f ▹ G₁ g ▹ β₀ Z)
+        ∙ α₀ X ◃ G₁ f ◃ β□ g
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ sym (assoc _ _ _) ⟩ 
+        (F-seq f g ▹ α₀ Z ▹ β₀ Z 
+          ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
+        ∙ α□ f ▹ G₁ g ▹ β₀ Z
+        ∙ α₀ X ◃ G₁ f ◃ β□ g
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ sym (assoc _ _ _) ⟩
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+        ∙ α□ f ▹ G₁ g ▹ β₀ Z 
+        ∙ α₀ X ◃ G₁ f ◃ β□ g 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
+            ∙ F₁ f ◃ α□ g ▹ β₀ Z ∙ x)
+          (assoc _ _ _) ⟩
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+        ∙ (α□ f ▹ G₁ g ▹ β₀ Z ∙ α₀ X ◃ G₁ f ◃ β□ g) 
+        ∙ α₀ X ◃ β□ f ▹ H₁ g
+      ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
+            ∙ F₁ f ◃ α□ g ▹ β₀ Z 
             ∙ x ∙ α₀ X ◃ β□ f ▹ H₁ g) 
           (sym (whisk-interchange (α□ f) (β□ g))) ⟩ 
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
-        ∙ (F₁ f ◃ α₀ Y ◃ β□ g ∙ α□ f ▹ β₀ Y ▹ H₁ g) 
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+        ∙ (F₁ f ◃ α₀ Y ◃ β□ g 
+          ∙ α□ f ▹ β₀ Y ▹ H₁ g) 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ {! !} ⟩ -- assoc
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
-        ∙ F₁ f ◃ α₀ Y ◃ β□ g
+      ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
+            ∙ F₁ f ◃ α□ g ▹ β₀ Z ∙ x)
+          (sym (assoc _ _ _)) ⟩
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+        ∙ F₁ f ◃ α₀ Y ◃ β□ g 
         ∙ α□ f ▹ β₀ Y ▹ H₁ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ {! !} ⟩ -- assoc
-        ((F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
-          ∙ F₁ f ◃ α₀ Y ◃ β□ g)
-        ∙ α□ f ▹ β₀ Y ▹ H₁ g 
-        ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ {! !} ⟩ -- assoc
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z 
-          ∙ F₁ f ◃ α□ g ▹ β₀ Z 
+      ≡⟨ cong (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙_) (assoc _ _ _) ⟩
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ (F₁ f ◃ α□ g ▹ β₀ Z 
           ∙ F₁ f ◃ α₀ Y ◃ β□ g) 
         ∙ α□ f ▹ β₀ Y ▹ H₁ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ {! !} ⟩ -- ▹-∙
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z 
-          ∙ F₁ f ◃ α□ g ▹ β₀ Z 
-          ∙ F₁ f ◃ α₀ Y ◃ β□ g) 
+      ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
+          ∙ (F₁ f ◃ α□ g ▹ β₀ Z ∙ F₁ f ◃ α₀ Y ◃ β□ g) ∙ x)
+          (sym (▹-∙ (α□ f ▹ β₀ Y) (α₀ X ◃ β□ f))) ⟩ 
+        F-seq f g ▹ α₀ Z ▹ β₀ Z 
+        ∙ (F₁ f ◃ α□ g ▹ β₀ Z ∙ F₁ f ◃ α₀ Y ◃ β□ g) 
         ∙ (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ▹ H₁ g
-      ≡⟨ {! !} ⟩ -- ▹-∙
+      ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
+            ∙ x ∙ (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ▹ H₁ g) 
+          (◃-∙ (α□ g ▹ β₀ Z) (α₀ Y ◃ β□ g)) ⟩
         F-seq f g ▹ α₀ Z ▹ β₀ Z 
           ∙ F₁ f ◃ (α□ g ▹ β₀ Z ∙ α₀ Y ◃ β□ g) 
           ∙ (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ▹ H₁ g
       ∎
-      where 
-        open import Cubical.Foundations.GroupoidLaws
