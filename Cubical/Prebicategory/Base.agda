@@ -74,6 +74,25 @@ module _ {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
   open WildCat WC
   open Whiskering WC
 
+  record IsPrebicategory' : Type (ℓ-max ℓC ℓC′) where
+    field
+      triangle  : {a b c : ob}
+                  (f : Hom[ a , b ]) (g : Hom[ b , c ])
+                  → Square (⋆Assoc f id g) (⋆IdR f ▹ g) refl (f ◃ ⋆IdL g)
+      pentagon-α : {a b c d e : ob}
+                  (f : Hom[ a , b ]) (g : Hom[ b , c ])
+                  (h : Hom[ c , d ]) (i : Hom[ d , e ])
+                  → ((f ⋆ g) ⋆ h) ⋆ i ≡ f ⋆ (g ⋆ (h ⋆ i))
+      pentagon₁  : {a b c d e : ob}
+                  (f : Hom[ a , b ]) (g : Hom[ b , c ])
+                  (h : Hom[ c , d ]) (i : Hom[ d , e ])
+                  → Square (⋆Assoc f (g ⋆ h) i) (pentagon-α f g h i) (sym $ ⋆Assoc f g h ▹ i) (f ◃ ⋆Assoc g h i)
+      pentagon₂  : {a b c d e : ob}
+                  (f : Hom[ a , b ]) (g : Hom[ b , c ])
+                  (h : Hom[ c , d ]) (i : Hom[ d , e ])
+                  → Square (⋆Assoc (f ⋆ g) h i) (pentagon-α f g h i) refl (⋆Assoc f g (h ⋆ i))
+      isGpdHom : ∀ {a b} → isGroupoid (Hom[ a , b ])
+
   record IsPrebicategory : Type (ℓ-max ℓC ℓC′) where
     field
       triangle  : {a b c : ob} 

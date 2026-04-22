@@ -1,6 +1,7 @@
 module Cubical.WildCat.NaturalTransformation.Base where
 
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.HLevels
 
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
@@ -22,6 +23,45 @@ module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
       → α ≡ β
     makeNatTransPath p q i .N-ob = p i
     makeNatTransPath p q i .N-hom f = q f i
+
+  module _ {F G : WildFunctor C D} {α β γ δ : WildNatTrans _ _ F G} where
+    open WildCat
+    open WildFunctor
+    open WildNatTrans
+
+    makeNatTransSquare :
+      ∀ {p : α ≡ β}
+      → {q : γ ≡ δ}
+      → {r : α ≡ γ}
+      → {s : β ≡ δ}
+      → (ob-□ : Square (cong N-ob p) (cong N-ob q) (cong N-ob r) (cong N-ob s))
+      → (hom-□ : SquareP
+          (λ i j → ∀ {x y} (f : C [ x , y ])
+            → (F .F-hom {x} {y} f) ⋆⟨ D ⟩ ob-□ i j y ≡ ob-□ i j x ⋆⟨ D ⟩ (G .F-hom f)
+          )
+          (cong N-hom p)
+          (cong N-hom q)
+          (cong N-hom r)
+          (cong N-hom s)
+        )
+      → Square p q r s
+    makeNatTransSquare ob-□ hom-□ i j .N-ob = ob-□ i j
+    makeNatTransSquare ob-□ hom-□ i j .N-hom = hom-□ i j
+
+    makeNatTransSquare' :
+      ∀ {p : α ≡ β}
+      → {q : γ ≡ δ}
+      → {r : α ≡ γ}
+      → {s : β ≡ δ}
+      → (is-groupoid-hom : ∀ {x y} → isGroupoid (D [ x , y ]))
+      → (ob-□ : Square (cong N-ob p) (cong N-ob q) (cong N-ob r) (cong N-ob s))
+      → Square p q r s
+    makeNatTransSquare' {p} {q} {r} {s} is-groupoid-hom ob-□ = makeNatTransSquare
+      ob-□
+      (isSet→SquareP
+        (λ i j → isSetImplicitΠ2 λ x y → isSetΠ λ (f : C [ x , y ]) → is-groupoid-hom ((D ⋆ F-hom F f) (ob-□ i j y)) ((D ⋆ ob-□ i j x) (F-hom G f)))
+        (cong N-hom p) (cong N-hom q) (cong N-hom r) (cong N-hom s)
+      )
 
 module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} {E : WildCat ℓE ℓE′} where
   module _ {F G : WildFunctor C D} (α : WildNatTrans _ _ F G) (H : WildFunctor D E) where

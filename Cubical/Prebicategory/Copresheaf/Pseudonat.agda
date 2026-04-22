@@ -3,11 +3,15 @@ open import Cubical.Foundations.Prelude
 
 module Cubical.Prebicategory.Copresheaf.Pseudonat (ℓ : Level) where
 
+open import Prelude
+open import Prelude.Square using (ΣSquareProp)
+
 open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Instances.WildCopresheaf as WC
 
 open import Cubical.Prebicategory.Base
 open import Cubical.Prebicategory.Copresheaf.Base ℓ
+open import Cubical.WildCat.NaturalTransformation.Base using (makeNatTransSquare')
 
 private
   variable
@@ -118,10 +122,30 @@ module _ {C : Prebicategory ℓC ℓC′} where
     2NatTransPath≡Equiv = invEquiv 
       (congEquiv (invEquiv 2NatTrans≡Equiv))
 
+    2NatTransPath≡' :
+      {p q : α ≡ β}
+        → cong fst p ≡ cong fst q → p ≡ q
+    2NatTransPath≡' = equivFun 2NatTransPath≡Equiv
+
     2NatTransPath≡ :
       {p q : α ≡ β}
         → cong fst p ≡ cong fst q → p ≡ q
-    2NatTransPath≡ = equivFun 2NatTransPath≡Equiv
+    2NatTransPath≡ = ΣSquareProp isPropIs2NatTrans
+
+  module _ {F G : Copresheaf C}
+    {α β γ δ : 2NatTrans F G} where
+    2NatTransSquare :
+      ∀ {p : α ≡ β}
+      → {q : γ ≡ δ}
+      → {r : α ≡ γ}
+      → {s : β ≡ δ}
+      → (ob-□ : Square (cong (fst » WildNatTrans.N-ob) p) (cong (fst » WildNatTrans.N-ob) q) (cong (fst » WildNatTrans.N-ob) r) (cong (fst » WildNatTrans.N-ob) s))
+        → Square p q r s
+    2NatTransSquare ob-□ = ΣSquareProp isPropIs2NatTrans (makeNatTransSquare' isGpdHomGPD ob-□)
+
+    -- test : {p q : α ≡ β} → (h : cong fst p ≡ cong fst q)
+    --   → 2NatTransPath≡ h ≡ 2NatTransPath≡' h
+    -- test h = refl
 
   module _ (F : Copresheaf C) where
     open Copresheaf F using (F₁; F₂; F-seq)
