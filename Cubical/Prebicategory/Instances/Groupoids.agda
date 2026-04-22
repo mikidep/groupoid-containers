@@ -27,22 +27,13 @@ module _ where
   GpdWildCat .⋆IdR _ = refl
   GpdWildCat .⋆Assoc _ _ _ = refl
   
-  open WildFunctor
-
-  ForgetGpd : WildFunctor GpdWildCat (TypeCat ℓ)
-  ForgetGpd .F-ob = ⟨_⟩
-  ForgetGpd .F-hom = idfun _
-  ForgetGpd .F-id = refl
-  ForgetGpd .F-seq _ _ = refl
-
 isPrebicategory-Gpd : IsPrebicategory GpdWildCat
 isPrebicategory-Gpd .triangle f g = sym (lUnit _)
 isPrebicategory-Gpd .pentagon f g h k = cong (refl ∙_) (sym (lUnit _))
-isPrebicategory-Gpd .isGpdHom {b = b} = isGroupoidΠ λ _ → snd b
+isPrebicategory-Gpd .isGpdHom {b = b} = isGroupoidΠ λ _ → b .snd
 
 module _ where
   open Prebicategory
   GpdPrebicat : Prebicategory (ℓ-suc ℓ) ℓ
   GpdPrebicat .str = GpdWildCat
   GpdPrebicat .isPrebicat = isPrebicategory-Gpd
-
