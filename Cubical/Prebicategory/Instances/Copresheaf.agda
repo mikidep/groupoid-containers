@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cubical.Foundations.Prelude
 
 module Cubical.Prebicategory.Instances.Copresheaf (ℓ : Level) where
@@ -24,7 +25,7 @@ module _ (C : Prebicategory ℓC ℓC′) where
   CopshWildCat .ob = Copresheaf C
   CopshWildCat .Hom[_,_] F G = 2NatTrans F G
   CopshWildCat .id = id2NatTrans _
-  CopshWildCat ._⋆_ = comp2NatTrans
+  CopshWildCat ._⋆_ α@(⟨α⟩ , _) β@(⟨β⟩ , _) = comp2NatTrans α β
   CopshWildCat .⋆IdL (α , _) = 2NatTrans≡ 
     (WNatTrans≡
       refl 
@@ -42,42 +43,7 @@ module _ (C : Prebicategory ℓC ℓC′) where
     )
     where open import Prelude
 
-module _ (C : Prebicategory ℓC ℓC′) where
-  open import Cubical.WildCat.Base
-  open import Cubical.WildCat.Functor
-  open import Cubical.WildCat.NaturalTransformation.Base
-    using () renaming (makeNatTransPath to WNatTrans≡ ; makeNatTransSquare' to WNatTransSquare)
-  open IsPrebicategory
-
-  private 
-    CopshC = CopshWildCat C
-    module GPD = Prebicategory GPD
-
-  open WildCat CopshC
-  open Whiskering CopshC
-  open import Cubical.Foundations.Equiv
-
-  isPrebicatCopsh' : IsPrebicategory' CopshC
-  isPrebicatCopsh' .IsPrebicategory'.triangle  {a = F} {b = G} {c = H} α β = goal where
-    open WildNatTrans
-    open import Prelude
-    goal : Square (⋆Assoc {u = F} {v = G} {w = G} {x = H} α id β) (⋆IdR α ▹ β) refl (α ◃ ⋆IdL β)
-    goal = 2NatTransSquare (funExtSquare λ x → funExtSquare λ _ → idfun (Square refl refl refl refl) λ i j → {!β .fst .N-ob (α .fst .N-ob x H)!})
-  isPrebicatCopsh' .IsPrebicategory'.pentagon-α α β γ δ = 2NatTrans≡ {! !}
-  isPrebicatCopsh' .IsPrebicategory'.pentagon₁ α β γ δ = 2NatTransSquare {! !}
-  isPrebicatCopsh' .IsPrebicategory'.pentagon₂ α β γ δ = 2NatTransSquare {! !}
-  isPrebicatCopsh' .IsPrebicategory'.isGpdHom = {! !}
-
-  isPrebicatCopsh : IsPrebicategory CopshC
-  isPrebicatCopsh .triangle {a = F} {b = G} {c = H} α*@(α , _) β*@(β , _) = goal where
-    goal : ⋆Assoc α* id β* ∙ (α* ◃ ⋆IdL β*) ≡ ⋆IdR α* ▹ β*
-    goal = 2NatTransPath≡ (WNatTransSquare GPD.isGpdHom {! !})
-
-    -- 2NatTransPath≡ (congFunct fst _ _ ∙ eq)
-    -- where
-    -- eq : WNatTrans≡ {! !} {! !}
-    --     ∙ cong fst {! !}
-    --     ≡ {! !}
-    -- eq = {! !}
-  isPrebicatCopsh .pentagon = {! !}
-  isPrebicatCopsh .isGpdHom = {! !}
+  open Prebicategory
+  CopshPrebicat : Prebicategory _ _
+  CopshPrebicat .str = CopshWildCat
+  CopshPrebicat .isPrebicat = {! !}

@@ -31,6 +31,11 @@
       pkgs,
       system,
     }: let
+      agdaWithPackages = ps:
+        pkgs.agda.withPackages {
+          pkgs = ps;
+          ghc = null;
+        };
       cubical = pkgs.agdaPackages.cubical;
       deps = [cubical];
 
@@ -47,7 +52,7 @@
         pkgs.runCommand "cubical-docs" {
           inherit (cubical) version;
           src = cubicalEverything;
-          buildInputs = [(pkgs.agda.withPackages [cubical])];
+          buildInputs = [(agdaWithPackages [cubical])];
         } ''
           mkdir $out
           cp $src/Everything.agda .
@@ -58,7 +63,7 @@
     in rec {
       devshell = pkgs.symlinkJoin {
         name = "devshell";
-        paths = [(pkgs.agda.withPackages deps) agda-search];
+        paths = [(agdaWithPackages deps) agda-search];
       };
       groupoid-containers = pkgs.agdaPackages.mkDerivation {
         pname = "groupoid-containers";

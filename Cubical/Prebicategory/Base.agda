@@ -30,7 +30,6 @@ module Whiskering {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
     → f ⋆ h ≡ g ⋆ h
   f≡g ▹ h = cong (_⋆ h) f≡g
 
-
 module 2CellLaws {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
   open WildCat WC
   open import Cubical.Foundations.GroupoidLaws

@@ -68,59 +68,79 @@ open import Cubical.Foundations.GroupoidLaws
 isPrebicatGpdCont : IsPrebicategory GpdContWildCat
 isPrebicatGpdCont .triangle _ _ = sym (lUnit _)
 isPrebicatGpdCont .pentagon _ _ _ _ = cong (refl ∙_) (sym (lUnit _))
-isPrebicatGpdCont .isGpdHom {F} {G} = isGroupoidGpdContHom {F} {G}
+isPrebicatGpdCont .isGpdHom {a = F} {b = G} = isGroupoidGpdContHom {F} {G}
 
 ContainerPrebicat : Prebicategory _ _
 ContainerPrebicat .str = GpdContWildCat
 ContainerPrebicat .isPrebicat = isPrebicatGpdCont
 
 module Extent where
-  open import Cubical.Prebicategory.Copresheaf
+  open import Cubical.Prebicategory.Copresheaf ℓ-zero
+  open import Cubical.Prebicategory.Instances.Copresheaf ℓ-zero
 
   GpdEndoCat : Prebicategory _ _
-  GpdEndoCat = 
---   open import Cubical.WildCat.Functor
---   -- open import Cubical.WildCat.Instances.WildFunctor
---   open import Cubical.WildCat.NaturalTransformation.Base
---   open import Cubical.WildCat.Instances.WildCopresheaf
---   open import Cubical.WildCat.Instances.Types
---
---   open WildFunctor
---   open WildNatTrans
---
---   TypeEndoCat : WildCat _ _
---   TypeEndoCat = WildCopshCat ℓ-zero (TypeCat ℓ-zero)
---
---   module _ (F : Container) where
---     open Container F
---     Ext-ob : WildFunctor (TypeCat ℓ-zero) (TypeCat ℓ-zero)
---     Ext-ob .F-ob X = Σ S (λ s → P s → X)
---     Ext-ob .F-hom f (s , px) = s , px » f
---     Ext-ob .F-id = refl
---     Ext-ob .F-seq α β = refl
---
---   module _ {F G : Container} (α : F ⇒ G) where
---     open Container F
---     open Container G renaming 
---       (
---         S to S′
---       ; P to P′
---       )
---     open _⇒_ α
---
---     Ext-hom : WildNatTrans _ _ (Ext-ob F) (Ext-ob G)
---     Ext-hom .N-ob X (s , px) = σ s , π s » px
---     Ext-hom .N-hom f = refl
---
---     module _ where
---       private
---         G$ = Ext-ob G .F-hom
---       -- what′s going on here?
---       -- (S ⊲ P) ⇒ G ≃ Π(s : S) . ⟦G⟧ (P s)
---       _ : Ext-hom .N-ob  ≡ λ where
---         X (s , px) → G$ px (σ s , π s)
---       _ = refl
---
+  GpdEndoCat = CopshPrebicat GPD
+
+  module _ (F : GpdContainer) where
+    open GpdContainer F
+
+    open import Cubical.WildCat.Functor
+    open import Cubical.Foundations.HLevels
+
+    open WildFunctor
+    open Is2Copresheaf
+    open Copresheaf using (str; is2Copresheaf)
+
+    Ext-ob : Copresheaf GPD
+    Ext-ob .str .F-ob (X , isGpdX) = Σ S (λ s → P s → X) 
+      , isGroupoidΣ isGpdS λ _ → isGroupoidΠ λ _ → isGpdX
+    Ext-ob .str .F-hom f (s , px) = s , px » f
+    Ext-ob .str .F-id = refl
+    Ext-ob .str .F-seq _ _ = refl
+    Ext-ob .is2Copresheaf .F-IdL = sym (lUnit _)
+    Ext-ob .is2Copresheaf .F-IdR = sym (rUnit _)
+    Ext-ob .is2Copresheaf .F-Assoc = cong (refl ∙_) (lUnit _)
+
+  open Prebicategory ContainerPrebicat using ()
+    renaming (Hom[_,_] to GC[_,_])
+  module _ {F G : GpdContainer} (α : GC[ F , G ]) where
+    open GpdContainer F
+    open GpdContainer G renaming 
+      (
+        S to S′
+      ; P to P′
+      )
+    open _⇒_ α
+
+    open import Cubical.WildCat.Functor
+
+    open WildNatTrans
+    open Is2NatTrans
+    Ext-hom : 2NatTrans (Ext-ob F) (Ext-ob G)
+    Ext-hom .fst .N-ob (X , _) (s , px) = σ s , π s » px
+    Ext-hom .fst .N-hom f = refl
+    Ext-hom .snd .N-hom-nat f g f≡g = sym (lUnit _) ∙ rUnit _
+    Ext-hom .snd .N-hom-id = sym (lUnit _)
+    Ext-hom .snd .N-hom-seq f g = cong (refl ∙_) (lUnit _)
+
+  open import Cubical.Prebicategory.Functor
+  open Functor using (str; is2Functor)
+  open import Cubical.WildCat.Functor using (WildFunctor)
+  open import Cubical.WildCat.NaturalTransformation.Base
+    using () renaming (makeNatTransPath to WNatTrans≡)
+  open WildFunctor
+  open Is2Functor
+  open import Cubical.Foundations.Path
+
+  Extent : Functor ContainerPrebicat GpdEndoCat
+  Extent .str .F-ob = Ext-ob
+  Extent .str .F-hom = Ext-hom
+  Extent .str .F-id = 2NatTrans≡ (WNatTrans≡ refl (λ _ → refl))
+  Extent .str .F-seq _ _ = 2NatTrans≡ (WNatTrans≡ refl (λ _ → lUnit refl))
+  Extent .is2Functor .F-IdL = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
+  Extent .is2Functor .F-IdR = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
+  Extent .is2Functor .F-Assoc = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → {! !}))
+
 --   Extent : WildFunctor ContainerWildCat TypeEndoCat
 --   Extent .F-ob = Ext-ob
 --   Extent .F-hom = Ext-hom
