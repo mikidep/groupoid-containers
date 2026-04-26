@@ -139,25 +139,8 @@ module Extent where
   Extent .str .F-seq _ _ = 2NatTrans≡ (WNatTrans≡ refl (λ _ → lUnit refl))
   Extent .is2Functor .F-IdL = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
   Extent .is2Functor .F-IdR = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
-  Extent .is2Functor .F-Assoc = PathP→compPathL (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → {! !}))
+  Extent .is2Functor .F-Assoc = 2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)
 
---   Extent : WildFunctor ContainerWildCat TypeEndoCat
---   Extent .F-ob = Ext-ob
---   Extent .F-hom = Ext-hom
---   Extent .F-id = makeNatTransPath refl (λ _ → refl)
---   Extent .F-seq α β = 
---     makeNatTransPath refl (λ _ → lUnit refl)
---     where
---     open import Cubical.Foundations.GroupoidLaws
---     -- Second goal was:
---     -- idfun 
---     --   (refl ≡ 
---     --     -- (cong (_» (Ext-hom β .N-ob Y)) (Ext-hom α .N-hom f)) ∙ refl
---     --     -- God knows why the left path is refl
---     --     refl ∙ refl
---     --     )
---
---
 --   module _ {F G : Container} (α : F ⇒ G) where
 --     open Container F
 --     open Container G renaming 

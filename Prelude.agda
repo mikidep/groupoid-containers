@@ -88,36 +88,6 @@ module _ {ℓ} {A : Type ℓ} {B : A → Type ℓ} where
   isGroupoidImplicitΠ : ((x : A) → isGroupoid (B x)) → isGroupoid ({x : A} → B x)
   isGroupoidImplicitΠ H = isOfHLevelRespectEquiv 3 (invEquiv implicit≃Explicit) (isGroupoidΠ H)
 
-module _
-  {ℓA ℓB} {A : Type ℓA} {B : A → (i j : I) → Type ℓB}
-  {f₀₀ : ∀ a → B a i0 i0}
-  {f₀₁ : ∀ a → B a i0 i1}
-  {f₀₋ : PathP (λ j → ∀ a → B a i0 j) f₀₀ f₀₁}
-  {f₁₀ : ∀ a → B a i1 i0}
-  {f₁₁ : ∀ a → B a i1 i1}
-  {f₁₋ : PathP (λ j → ∀ a → B a i1 j) f₁₀ f₁₁}
-  {f₋₀ : PathP (λ i → ∀ a → B a i i0) f₀₀ f₁₀}
-  {f₋₁ : PathP (λ i → ∀ a → B a i i1) f₀₁ f₁₁} where
-
-  open import Cubical.Foundations.Equiv
-  open import Cubical.Reflection.StrictEquiv
-
-  funExtSquare :
-      (f : (a : A) → SquareP (B a) (λ j → f₀₋ j a) (λ j → f₁₋ j a) (λ i → f₋₀ i a) (λ i → f₋₁ i a))
-    → SquareP (λ i j → (a : A) → B a i j) f₀₋ f₁₋ f₋₀ f₋₁
-  funExtSquare f i j a = f a i j
-
-  funExtSquare⁻ :
-      (sq : SquareP (λ i j → (a : A) → B a i j) f₀₋ f₁₋ f₋₀ f₋₁)
-    → ((a : A) → SquareP (B a) (λ j → f₀₋ j a) (λ j → f₁₋ j a) (λ i → f₋₀ i a) (λ i → f₋₁ i a))
-  funExtSquare⁻ sq a i j = sq i j a
-
-  funExtSquareEquiv :
-    ((a : A) → SquareP (B a) (λ j → f₀₋ j a) (λ j → f₁₋ j a) (λ i → f₋₀ i a) (λ i → f₋₁ i a))
-      ≃
-    (SquareP (λ i j → (a : A) → B a i j) f₀₋ f₁₋ f₋₀ f₋₁)
-  unquoteDef funExtSquareEquiv = defStrictEquiv funExtSquareEquiv funExtSquare funExtSquare⁻
-
 open import Prelude.Square public
 open import Prelude.ExtraGpdLaws public
 

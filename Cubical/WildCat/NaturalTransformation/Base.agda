@@ -11,6 +11,39 @@ private
     ℓC ℓC′ ℓD ℓD′ ℓE ℓE′ : Level
 
 module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
+  module _ {F G : WildFunctor C D} where
+
+    open WildCat
+    open WildFunctor
+    open WildNatTrans
+    open import Cubical.Foundations.Isomorphism
+    
+    WNTΣ : Type (ℓ-max (ℓ-max ℓC ℓC′) ℓD′)
+    WNTΣ = Σ ((x : C .ob) → D [ F .F-ob x , G .F-ob x ]) 
+      (λ N-ob' 
+        → {x y : C .ob} (f : C [ x , y ]) 
+        → (F .F-hom f) ⋆⟨ D ⟩ (N-ob' y) 
+          ≡ (N-ob' x) ⋆⟨ D ⟩ (G .F-hom f))
+
+    WildNatTrans→Σ : WildNatTrans _ _ F G → WNTΣ
+    WildNatTrans→Σ α .fst = α .N-ob
+    WildNatTrans→Σ α .snd = α .N-hom
+
+    Σ→WildNatTrans : WNTΣ → WildNatTrans _ _ F G
+    Σ→WildNatTrans α .N-ob  = α .fst
+    Σ→WildNatTrans α .N-hom = α .snd
+
+    open import Cubical.Foundations.Isomorphism
+    open Iso
+    WildNatTransIsoΣ : Iso (WildNatTrans _ _ F G) WNTΣ
+    WildNatTransIsoΣ .fun = WildNatTrans→Σ
+    WildNatTransIsoΣ .inv = Σ→WildNatTrans
+    WildNatTransIsoΣ .rightInv x = refl
+    WildNatTransIsoΣ .leftInv x i .N-ob = x .N-ob
+    WildNatTransIsoΣ .leftInv x i .N-hom = x .N-hom
+
+    WildNatTransEquivΣ = isoToEquiv WildNatTransIsoΣ
+
   module _ {F G : WildFunctor C D} {α β : WildNatTrans _ _ F G} where
     open WildCat
     open WildFunctor
@@ -47,21 +80,6 @@ module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
       → Square p q r s
     makeNatTransSquare ob-□ hom-□ i j .N-ob = ob-□ i j
     makeNatTransSquare ob-□ hom-□ i j .N-hom = hom-□ i j
-
-    makeNatTransSquare' :
-      ∀ {p : α ≡ β}
-      → {q : γ ≡ δ}
-      → {r : α ≡ γ}
-      → {s : β ≡ δ}
-      → (is-groupoid-hom : ∀ {x y} → isGroupoid (D [ x , y ]))
-      → (ob-□ : Square (cong N-ob p) (cong N-ob q) (cong N-ob r) (cong N-ob s))
-      → Square p q r s
-    makeNatTransSquare' {p} {q} {r} {s} is-groupoid-hom ob-□ = makeNatTransSquare
-      ob-□
-      (isSet→SquareP
-        (λ i j → isSetImplicitΠ2 λ x y → isSetΠ λ (f : C [ x , y ]) → is-groupoid-hom ((D ⋆ F-hom F f) (ob-□ i j y)) ((D ⋆ ob-□ i j x) (F-hom G f)))
-        (cong N-hom p) (cong N-hom q) (cong N-hom r) (cong N-hom s)
-      )
 
 module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} {E : WildCat ℓE ℓE′} where
   module _ {F G : WildFunctor C D} (α : WildNatTrans _ _ F G) (H : WildFunctor D E) where

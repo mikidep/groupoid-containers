@@ -95,16 +95,21 @@ module _ {C : Prebicategory ℓC ℓC′} where
       aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
       aux = isGpdHomGPD _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
 
+
+
   module _ (F G : Copresheaf C) where
     open Copresheaf using () renaming (str to ⟨_⟩)
     2NatTrans = Σ (WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) (Is2NatTrans {F} {G})
 
   module _ {F G : Copresheaf C}
     {α β : 2NatTrans F G} where
+    open Copresheaf F using (F₁)
+    open Copresheaf G using ()
+      renaming (F₁ to G₁)
 
+    open import Cubical.Foundations.HLevels
     open import Cubical.Data.Sigma.Properties
     open import Cubical.Foundations.Equiv
-    open import Cubical.Foundations.Equiv.Properties
 
     2NatTrans≡Equiv :
       (α .fst ≡ β .fst) ≃ (α ≡ β)
@@ -114,30 +119,34 @@ module _ {C : Prebicategory ℓC ℓC′} where
       α .fst ≡ β .fst → α ≡ β
     2NatTrans≡ = equivFun 2NatTrans≡Equiv
 
-    -- Ugly
-    2NatTransPath≡Equiv :
-      {p q : α ≡ β}
-        → (cong fst p ≡ cong fst q) ≃ (p ≡ q)
-    2NatTransPath≡Equiv = invEquiv 
-      (congEquiv (invEquiv 2NatTrans≡Equiv))
-
-    2NatTransPath≡' :
-      {p q : α ≡ β}
-        → cong fst p ≡ cong fst q → p ≡ q
-    2NatTransPath≡' = equivFun 2NatTransPath≡Equiv
+    private
+      open WildNatTrans
+      open import Prelude
+      N₀ : 2NatTrans F G → _
+      N₀ = fst » N-ob
+      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ]) 
+        → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
+      N₁ ξ f = ξ .fst .N-hom f
 
     2NatTransPath≡ :
-      {p q : α ≡ β}
-        → cong fst p ≡ cong fst q → p ≡ q
-    2NatTransPath≡ = ΣSquareProp isPropIs2NatTrans
+      ∀ {p q : α ≡ β}
+      → cong N₀ p ≡ cong N₀ q
+      → p ≡ q
+    2NatTransPath≡ {p} {q} N₀≡ = ΣSquareProp isPropIs2NatTrans aux
+      where
+      aux : cong fst p ≡ cong fst q
+      aux = makeNatTransSquare N₀≡ 
+        (isSet→SquareP 
+          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ 
+            λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ N₀≡ i j y) (N₀≡ i j x ⋆ᵈ G₁ f))
+          (cong N₁ p) (cong N₁ q) refl refl
+        )
 
   module _ {F G : Copresheaf C}
     {α β γ δ : 2NatTrans F G} where
     open Copresheaf F using (F₁)
     open Copresheaf G using ()
-      renaming (
-        F₁ to G₁
-      )
+      renaming (F₁ to G₁)
 
     private
       open WildNatTrans
@@ -168,3 +177,28 @@ module _ {C : Prebicategory ℓC ℓC′} where
             λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ ob-□ i j y) (ob-□ i j x ⋆ᵈ G₁ f))
           (cong N₁ p) (cong N₁ q) (cong N₁ r) (cong N₁ s)
         )
+
+  module _ {F G : Copresheaf C} where
+    open Copresheaf F using ()
+      renaming (str to ⟨F⟩)
+    open Copresheaf G using ()
+      renaming (str to ⟨G⟩)
+
+    open import Cubical.Foundations.HLevels
+
+    isGroupoidWildNatTrans : isGroupoid (WildNatTrans _ _ ⟨F⟩ ⟨G⟩) 
+    isGroupoidWildNatTrans = isOfHLevelRespectEquiv 3 (invEquiv WildNatTransEquivΣ) 
+      (isGroupoidΣ (isGroupoidΠ λ _ → isGpdHomGPD)
+        λ x → isSet→isGroupoid (isSetImplicitΠ2 
+          λ _ _ → isSetΠ λ f → isGpdHomGPD _ _
+        )
+      )
+      where
+      open import Cubical.Foundations.Equiv
+      open import Cubical.WildCat.NaturalTransformation.Base
+
+    isGroupoid2NatTrans : isGroupoid (2NatTrans F G)
+    isGroupoid2NatTrans = isGroupoidΣ 
+      isGroupoidWildNatTrans 
+      λ _ → isProp→isOfHLevelSuc 2 (isPropIs2NatTrans _)
+
