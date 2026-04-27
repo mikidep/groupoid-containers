@@ -19,7 +19,7 @@ module _ where
   open import Cubical.Foundations.Structure
 
   GpdWildCat : WildCat (ℓ-suc ℓ) ℓ
-  GpdWildCat .ob = TypeWithStr ℓ isGroupoid
+  GpdWildCat .ob = hGroupoid ℓ
   GpdWildCat .Hom[_,_] X Y = ⟨ X ⟩ → ⟨ Y ⟩
   GpdWildCat .id = idfun _
   GpdWildCat ._⋆_ f g = f » g
