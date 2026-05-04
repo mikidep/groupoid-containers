@@ -35,19 +35,3 @@ module _ (F G : Container) where
   -- Type of Cartesian morphisms
   _⇒ᶜ_ : Type
   _⇒ᶜ_ = Σ _⇒_ is-Cartesian
-
-module _ where
-  open import Cubical.Data.Unit
-  open Container
-
-  Id : Container
-  Id .S = Unit
-  Id .P _ = Unit
-
-module _ (F G : Container) where
-  open Container F
-  open Container G renaming 
-    (
-      S to S′
-    ; P to P′
-    )

@@ -12,11 +12,11 @@ open WildCat
 
 private
   variable
-    ℓC ℓC′ : Level
+    ℓC ℓC' : Level
 
 TYPE = TypeCat ℓ
 
-module _ (C : WildCat ℓC ℓC′) where
+module _ (C : WildCat ℓC ℓC') where
   open WildNatTrans
 
   idWildNatTransTypes : {F : WildFunctor C TYPE} → WildNatTrans _ _ F F

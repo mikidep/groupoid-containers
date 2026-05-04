@@ -8,9 +8,9 @@ open import Cubical.Foundations.GroupoidLaws
 
 private
   variable
-    ℓC ℓC′ : Level
+    ℓC ℓC' : Level
 
-module _ (C : Prebicategory ℓC ℓC′) where
+module _ (C : Prebicategory ℓC ℓC') where
   open import Cubical.WildCat.Base
   open import Cubical.WildCat.NaturalTransformation.Base
     using () renaming (makeNatTransPath to WNatTrans≡)

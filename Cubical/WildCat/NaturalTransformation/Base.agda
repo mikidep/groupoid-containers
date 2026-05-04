@@ -8,9 +8,9 @@ open import Cubical.WildCat.Functor
 
 private
   variable
-    ℓC ℓC′ ℓD ℓD′ ℓE ℓE′ : Level
+    ℓC ℓC' ℓD ℓD' ℓE ℓE' : Level
 
-module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
+module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
   module _ {F G : WildFunctor C D} where
 
     open WildCat
@@ -18,7 +18,7 @@ module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
     open WildNatTrans
     open import Cubical.Foundations.Isomorphism
     
-    WNTΣ : Type (ℓ-max (ℓ-max ℓC ℓC′) ℓD′)
+    WNTΣ : Type (ℓ-max (ℓ-max ℓC ℓC') ℓD')
     WNTΣ = Σ ((x : C .ob) → D [ F .F-ob x , G .F-ob x ]) 
       (λ N-ob' 
         → {x y : C .ob} (f : C [ x , y ]) 
@@ -81,7 +81,7 @@ module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} where
     makeNatTransSquare ob-□ hom-□ i j .N-ob = ob-□ i j
     makeNatTransSquare ob-□ hom-□ i j .N-hom = hom-□ i j
 
-module _ {C : WildCat ℓC ℓC′} {D : WildCat ℓD ℓD′} {E : WildCat ℓE ℓE′} where
+module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓE'} where
   module _ {F G : WildFunctor C D} (α : WildNatTrans _ _ F G) (H : WildFunctor D E) where
     open WildNatTrans
     open WildNatTrans α using () renaming (N-ob to α₀)

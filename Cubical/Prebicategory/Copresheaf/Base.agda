@@ -4,13 +4,16 @@ module Cubical.Prebicategory.Copresheaf.Base (ℓ : Level) where
 
 open import Cubical.Prebicategory.Base
 open import Cubical.Prebicategory.Instances.Groupoids
+import Cubical.Prebicategory.Functor
+
+module 2FunctNotation = Cubical.Prebicategory.Functor.2FunctNotation
 
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
 
 private
   variable
-    ℓC ℓC′ : Level
+    ℓC ℓC' : Level
 
 GPD = GpdPrebicat ℓ
 -- In GPD, whiskering
@@ -33,23 +36,7 @@ open Prebicategory GPD using ()
 open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
-module 2FunctNotation {C : WildCat ℓC ℓC′}
-  (F : WildFunctor C ⟨GPD⟩) where
-  open WildCat C using () 
-    renaming (Hom[_,_] to C[_,_])
-
-  open WildFunctor F using (
-      F-id;
-      F-seq
-    ) renaming (
-      F-ob to F₀; F-hom to F₁
-    ) public
-  F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
-    (f≡g : f ≡ g)
-    → F₁ f ≡ F₁ g
-  F₂ = cong F₁
-
-module _ (C : Prebicategory ℓC ℓC′) where
+module _ (C : Prebicategory ℓC ℓC') where
   open Prebicategory C using () 
     renaming (
       str to ⟨C⟩;
@@ -63,14 +50,13 @@ module _ (C : Prebicategory ℓC ℓC′) where
   
   record Is2Copresheaf 
     (F : WildFunctor ⟨C⟩ ⟨GPD⟩)
-    : Type (ℓ-max (ℓ-max ℓC ℓC′) (ℓ-suc ℓ)) where
+    : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     open 2FunctNotation F
     field
       F-IdL : ∀ {x y} {f : C[ x , y ]} 
         → F-seq idᶜ f
-          -- ∙ F-id ▹ F₁ f
           ∙ F-id ▹ F₁ f
-          ≡ cong F₁ (C-⋆IdL f)
+          ≡ F₂ (C-⋆IdL f)
       F-IdR : ∀ {x y} {f : C[ x , y ]} 
         → F-seq f idᶜ 
           ∙ F₁ f ◃ F-id
@@ -86,11 +72,10 @@ module _ (C : Prebicategory ℓC ℓC′) where
           ∙ F₁ f ◃ F-seq g h
 
   record Copresheaf 
-    : Type (ℓ-max (ℓ-max ℓC ℓC′) (ℓ-suc ℓ)) where
+    : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     field
       str : WildFunctor ⟨C⟩ ⟨GPD⟩
       is2Copresheaf : Is2Copresheaf str
     open 2FunctNotation str public
     open Is2Copresheaf is2Copresheaf public
-
 

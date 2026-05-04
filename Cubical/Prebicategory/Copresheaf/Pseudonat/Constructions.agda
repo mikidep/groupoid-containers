@@ -25,9 +25,9 @@ open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 private
   variable
-    ℓC ℓC′ : Level
+    ℓC ℓC' : Level
 
-module _ {C : Prebicategory ℓC ℓC′} where
+module _ {C : Prebicategory ℓC ℓC'} where
   open Prebicategory C using () 
     renaming (
       str to ⟨C⟩;

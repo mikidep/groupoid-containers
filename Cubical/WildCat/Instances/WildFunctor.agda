@@ -11,9 +11,9 @@ open WildCat
 
 private
   variable
-    ℓC ℓC′ ℓD ℓD′ : Level
+    ℓC ℓC' ℓD ℓD' : Level
 
-module _ (C : WildCat ℓC ℓC′) (D : WildCat ℓD ℓD′) where
+module _ (C : WildCat ℓC ℓC') (D : WildCat ℓD ℓD') where
   open WildNatTrans
 
   WildFunctorCat : WildCat _ _

@@ -1,5 +1,8 @@
 open import Cubical.Foundations.Prelude
 
+-- TODO: Prove these notions are equivalent
+-- to those in Cubical.Prebicategory.Functor
+
 module Cubical.Prebicategory.Copresheaf.Pseudonat.Base (ℓ : Level) where
 
 open import Prelude.Square using (ΣSquareProp)
@@ -14,7 +17,7 @@ open import Cubical.WildCat.NaturalTransformation.Base
 
 private
   variable
-    ℓC ℓC′ : Level
+    ℓC ℓC' : Level
 
 open Prebicategory GPD using () 
   renaming (
@@ -30,7 +33,7 @@ open Prebicategory GPD using ()
 open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
-module _ {C : Prebicategory ℓC ℓC′} where
+module _ {C : Prebicategory ℓC ℓC'} where
   open Prebicategory C using () 
     renaming (
       str to ⟨C⟩;
@@ -58,7 +61,7 @@ module _ {C : Prebicategory ℓC ℓC′} where
         F₂ to G₂
       )
 
-    record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC′) (ℓ-suc ℓ)) where
+    record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
       field
         N-hom-nat : 
           ∀ {X} {Y} 
@@ -94,8 +97,6 @@ module _ {C : Prebicategory ℓC ℓC′} where
       where
       aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
       aux = isGpdHomGPD _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
-
-
 
   module _ (F G : Copresheaf C) where
     open Copresheaf using () renaming (str to ⟨_⟩)

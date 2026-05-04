@@ -3,14 +3,16 @@
 -- “A Cartesian Bicategory of Polynomial Functors in Homotopy Type Theory,” 
 -- EPTCS 351, 2021, pp. 67-83, vol. 351, pp. 67–83, Dec. 2021, doi: 10.4204/eptcs.351.5.
 
--- Shouldn′t these be called Pre-2,1-categories?
+-- Shouldn't these be called Pre-2,1-categories?
 
 open import Prelude
 open import Cubical.WildCat.Base
 
 module Cubical.Prebicategory.Base where
 
-module Whiskering {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
+open import Cubical.Foundations.GroupoidLaws
+
+module Whiskering {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
 
   infixr 41 _◃_
@@ -30,9 +32,8 @@ module Whiskering {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
     → f ⋆ h ≡ g ⋆ h
   f≡g ▹ h = cong (_⋆ h) f≡g
 
-module 2CellLaws {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
+module 2CellLaws {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
-  open import Cubical.Foundations.GroupoidLaws
   open Whiskering WC
 
   ◃-∙ : ∀ {a b c : ob}
@@ -65,15 +66,15 @@ module 2CellLaws {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
     open import Prelude.ExtraGpdLaws
     open import Cubical.Foundations.Function using (flip)
     aux₁ : cong (f ⋆_) q ∙ cong (_⋆ k) p ≡ cong₂ _⋆_ p q
-    aux₁ = sym (cong₂Funct′ (flip _⋆_) q p)
+    aux₁ = sym (cong₂Funct' (flip _⋆_) q p)
     aux₂ : cong₂ _⋆_ p q ≡ cong (_⋆ h) p ∙ cong (g ⋆_) q
-    aux₂ = cong₂Funct′ _⋆_ p q
+    aux₂ = cong₂Funct' _⋆_ p q
 
-module _ {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
+module _ {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
   open Whiskering WC
 
-  record IsPrebicategory : Type (ℓ-max ℓC ℓC′) where
+  record IsPrebicategory : Type (ℓ-max ℓC ℓC') where
     field
       triangle  : {a b c : ob} 
                   (f : Hom[ a , b ]) (g : Hom[ b , c ])
@@ -87,10 +88,17 @@ module _ {ℓC ℓC′} (WC : WildCat ℓC ℓC′) where
                     ≡ ⋆Assoc (f ⋆ g) h i ∙ ⋆Assoc f g (h ⋆ i)  
       isGpdHom : ∀ {a b} → isGroupoid (Hom[ a , b ])
 
-module _ (ℓC ℓC′ : Level) where
-  record Prebicategory : Type (ℓ-suc (ℓ-max ℓC ℓC′)) where
+  open IsPrebicategory
+  open import Cubical.Foundations.HLevels
+  isPropIsPrebicategory : isProp IsPrebicategory
+  isPropIsPrebicategory x y i .triangle f g = x .isGpdHom _ _ _ _ (x .triangle f g) (y .triangle f g) i
+  isPropIsPrebicategory x y i .pentagon f g h k = x .isGpdHom _ _ _ _ (x .pentagon f g h k) (y .pentagon f g h k) i
+  isPropIsPrebicategory x y i .isGpdHom = isPropIsGroupoid (x .isGpdHom) (y .isGpdHom) i 
+
+module _ (ℓC ℓC' : Level) where
+  record Prebicategory : Type (ℓ-suc (ℓ-max ℓC ℓC')) where
     field
-      str : WildCat ℓC ℓC′
+      str : WildCat ℓC ℓC'
       isPrebicat : IsPrebicategory str
     open WildCat str public
     open Whiskering str public

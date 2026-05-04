@@ -206,7 +206,7 @@ module Extent where
       CPsh.2NatTrans≡ (WNatTrans≡ 
         (funExt₂ λ {
           X (s , v) →
-            sym (funExt⁻ (α□ v) (s , idfun _))
+            sym (α□ v ≡$ (s , idfun _))
         }) 
         λ {X} {Y} f → 
           funExtSquare λ {
@@ -254,7 +254,6 @@ module Extent where
     isIso-Ext-hom .snd .snd (CMor σ π) = refl
 
     open import Cubical.Foundations.Equiv
-    open isEquiv
 
     Ext-hom-equiv : isEquiv (Ext-hom {F} {G})
     Ext-hom-equiv = isIsoToIsEquiv isIso-Ext-hom
