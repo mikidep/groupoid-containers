@@ -45,6 +45,7 @@ module _ (F G : GpdEndo) where
       F-id to  G-id;
       F-seq to G-seq;
       F-IdL to G-IdL;
+      F-IdR to G-IdR;
       F-seq-nat to G-seq-nat;
       F₂-funct to G₂-funct
     )
@@ -86,9 +87,9 @@ module _ (F G : GpdEndo) where
       ∙ G₂ (F.F-seq f′ g′) 
       ∙ G-seq (F₁ f′) (F₁ g′)
     ∎
-  compEndo₀ .is2Copresheaf .F-IdL {x} {y} f = 
+  compEndo₀ .is2Copresheaf .F-IdL f = 
       (G₂ (F.F-seq id f) ∙ G-seq (F₁ id) (F₁ f)) 
-        ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (F₁ f)
+      ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (F₁ f)
     ≡⟨ sym (assoc _ _ _) ⟩
       G₂ (F.F-seq id f) 
       ∙ G-seq (F₁ id) (F₁ f) 
@@ -130,11 +131,52 @@ module _ (F G : GpdEndo) where
       refl 
       ∙ G-seq id (F₁ f)
       ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ cong (refl ∙_) (G-IdL (F₁ f)) ⟩
-      refl ∙ refl
     ≡⟨ sym (lUnit _) ⟩
+      G-seq id (F₁ f) ∙ G-id ▹ G₁ (F₁ f)
+    ≡⟨ G-IdL (F₁ f) ⟩
       refl
     ∎
-  compEndo₀ .is2Copresheaf .F-IdR = {! !}
+  compEndo₀ .is2Copresheaf .F-IdR f =
+      (G₂ (F.F-seq f id) ∙ G-seq (F₁ f) (F₁ id)) 
+      ∙ G₁ (F₁ f) ◃ (G₂ F.F-id ∙ G-id)
+    ≡⟨ cong ((G₂ (F.F-seq f id) ∙ G-seq (F₁ f) (F₁ id)) ∙_) 
+        (◃-∙ _ _) ⟩
+      (G₂ (F.F-seq f id) ∙ G-seq (F₁ f) (F₁ id)) 
+      ∙ G₁ (F₁ f) ◃ G₂ F.F-id 
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ assoc _ _ _ ⟩
+      ((G₂ (F.F-seq f id) ∙ G-seq (F₁ f) (F₁ id)) 
+        ∙ G₁ (F₁ f) ◃ G₂ F.F-id) 
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ cong (_∙ G₁ (F₁ f) ◃ G-id) (sym (assoc _ _ _)) ⟩
+      (G₂ (F.F-seq f id) 
+        ∙ G-seq (F₁ f) (F₁ id) 
+        ∙ G₁ (F₁ f) ◃ G₂ F.F-id) 
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ cong (λ x → (G₂ (F.F-seq f id) ∙ x) ∙ G₁ (F₁ f) ◃ G-id) 
+        (G-seq-nat refl F.F-id) ⟩
+      (G₂ (F.F-seq f id) 
+        ∙ G₂ (F₁ f ◃ F.F-id) 
+        ∙ G-seq (F₁ f) id)
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ cong (_∙ G₁ (F₁ f) ◃ G-id) (assoc _ _ _) ⟩
+      ((G₂ (F.F-seq f id) ∙ G₂ (F₁ f ◃ F.F-id)) 
+        ∙ G-seq (F₁ f) id)
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ cong (λ x → (x ∙ G-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G-id) 
+        (sym (G₂-funct _ _)) ⟩
+      ((G₂ (F.F-seq f id ∙ F₁ f ◃ F.F-id)) 
+        ∙ G-seq (F₁ f) id)
+      ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ cong (λ x → (G₂ x ∙ G-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G-id) 
+        (F.F-IdR f) ⟩
+      (refl ∙ G-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ sym (assoc _ _ _) ⟩
+      refl ∙ G-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ sym (lUnit _) ⟩
+      G-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G-id
+    ≡⟨ G-IdR (F₁ f) ⟩
+      refl
+    ∎
   compEndo₀ .is2Copresheaf .F-Assoc = {! !}
 
