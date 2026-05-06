@@ -1,19 +1,19 @@
 open import Cubical.Foundations.Prelude
-open import Cubical.Prebicategory.Base
-open import Cubical.Prebicategory.Functor
+open import Cubical.Bicategory.Base
+open import Cubical.Bicategory.Functor
 
-module Cubical.Prebicategory.Copresheaf.Yoneda (ℓ : Level) 
+module Cubical.Bicategory.Copresheaf.Yoneda (ℓ : Level) 
   -- {ℓC ℓC' : Level}
-  (C : Prebicategory ℓ ℓ)
+  (C : Bicategory ℓ ℓ)
   where
 
-open import Cubical.Prebicategory.Copresheaf ℓ
-open import Cubical.Prebicategory.Instances.Copresheaf ℓ
+open import Cubical.Bicategory.Copresheaf ℓ
+open import Cubical.Bicategory.Instances.Copresheaf ℓ
 
-CopshC : Prebicategory _ _
-CopshC = CopshPrebicat C 
+CopshC : Bicategory _ _
+CopshC = CopshBicat C 
 
-module C = Prebicategory C
+module C = Bicategory C
 
 module _ (c : C.ob) where
   open import Cubical.WildCat.Functor
@@ -21,7 +21,7 @@ module _ (c : C.ob) where
   open Copresheaf
   open WildFunctor
   open Is2Copresheaf
-  open Prebicategory GPD
+  open Bicategory GPD
     using (_◃_; _▹_)
   open import Cubical.Foundations.Path
   open import Cubical.Foundations.GroupoidLaws
@@ -32,7 +32,8 @@ module _ (c : C.ob) where
   C[c,-] .str .F-hom f h = h C.⋆ f
   C[c,-] .str .F-id = funExt C.⋆IdR
   C[c,-] .str .F-seq f g = funExt λ h → sym (C.⋆Assoc h f g)
-  C[c,-] .is2Copresheaf .F-IdL {f} = funExtSquare λ h →
+  -- missing F-seq-nat
+  C[c,-] .is2Copresheaf .F-IdL f = funExtSquare λ h →
         sym (C.⋆Assoc h C.id f) ∙ C.⋆IdR h C.▹ f
       ≡⟨ {! !} ⟩
         h C.◃ C.⋆IdL f
@@ -56,7 +57,7 @@ module _ (c : C.ob) where
     --     )
     -- ))
     where open import Prelude
-  C[c,-] .is2Copresheaf .F-IdR {f} = funExtSquare λ h → 
+  C[c,-] .is2Copresheaf .F-IdR f = funExtSquare λ h → 
       sym (C.⋆Assoc h f C.id) ∙ C.⋆IdR (h C.⋆ f)
     ≡⟨ {! C.triangle !} ⟩
       h C.◃ C.⋆IdR f

@@ -1,12 +1,12 @@
 open import Cubical.Foundations.Prelude
 
-module Cubical.Prebicategory.Copresheaf.Base (ℓ : Level) where
+module Cubical.Bicategory.Copresheaf.Base (ℓ : Level) where
 
-open import Cubical.Prebicategory.Base
-open import Cubical.Prebicategory.Instances.Groupoids
-import Cubical.Prebicategory.Functor
+open import Cubical.Bicategory.Base
+open import Cubical.Bicategory.Instances.Groupoids
+import Cubical.Bicategory.Functor
 
-module 2FunctNotation = Cubical.Prebicategory.Functor.2FunctNotation
+module 2FunctNotation = Cubical.Bicategory.Functor.2FunctNotation
 
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
@@ -15,18 +15,19 @@ private
   variable
     ℓC ℓC' : Level
 
-GPD = GpdPrebicat ℓ
+GPD = GpdBicat ℓ
 -- In GPD, whiskering
 -- commutes with composition
 -- definitionally, i.e.
 -- f ⋆ g ◃ p ≡def f ◃ g ◃ p
 -- and viceversa 
 
-open Prebicategory GPD using () 
+open Bicategory GPD using () 
   renaming (
     str to ⟨GPD⟩;
     Hom[_,_] to D[_,_];
     _⋆_ to _⋆ᵈ_; 
+    _⋆₂_ to _⋆₂ᵈ_; 
     id to idᵈ;
     isGpdHom to isGpdHomGPD;
     ⋆IdL to D-⋆IdL;
@@ -36,13 +37,14 @@ open Prebicategory GPD using ()
 open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
-module _ (C : Prebicategory ℓC ℓC') where
-  open Prebicategory C using () 
+module _ (C : Bicategory ℓC ℓC') where
+  open Bicategory C using () 
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_]; 
       id to idᶜ; 
       _⋆_ to _⋆ᶜ_;
+      _⋆₂_ to _⋆₂ᶜ_;
       ⋆IdL to C-⋆IdL;
       ⋆IdR to C-⋆IdR;
       ⋆Assoc to C-⋆Assoc
@@ -53,18 +55,27 @@ module _ (C : Prebicategory ℓC ℓC') where
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     open 2FunctNotation F
     field
-      F-IdL : ∀ {x y} {f : C[ x , y ]} 
+      F-seq-nat : ∀ {x y z} 
+          {f f′ : C[ x , y ]}
+          {g g′ : C[ y , z ]}
+          (α : f ≡ f′)
+          (β : g ≡ g′)
+        → F-seq f g 
+          ∙ F₂ α ⋆₂ᵈ F₂ β
+          ≡ F₂ (α ⋆₂ᶜ β) 
+          ∙ F-seq f′ g′
+      F-IdL : ∀ {x y} (f : C[ x , y ]) 
         → F-seq idᶜ f
           ∙ F-id ▹ F₁ f
           ≡ F₂ (C-⋆IdL f)
-      F-IdR : ∀ {x y} {f : C[ x , y ]} 
+      F-IdR : ∀ {x y} (f : C[ x , y ]) 
         → F-seq f idᶜ 
           ∙ F₁ f ◃ F-id
           ≡ F₂ (C-⋆IdR f)
       F-Assoc : ∀ {x y z w} 
-        {f : C[ x , y ]} 
-        {g : C[ y , z ]} 
-        {h : C[ z , w ]} 
+        (f : C[ x , y ]) 
+        (g : C[ y , z ]) 
+        (h : C[ z , w ]) 
         → F-seq (f ⋆ᶜ g) h
           ∙ F-seq f g ▹ F₁ h
           ≡ F₂ (C-⋆Assoc f g h)

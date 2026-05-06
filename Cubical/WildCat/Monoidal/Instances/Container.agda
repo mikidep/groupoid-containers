@@ -71,7 +71,6 @@ module _ where
   iMC-⊗ .F-seq _ _ = refl
 
 module _ where
-  open isMonoidalWildCat
   open WildNatTrans
   open WildNatIso
   open wildIsIso
@@ -109,6 +108,8 @@ module _ where
     π (s″ , op) ((p″ , p′) , p) = p″ , (p′ , p)
   iMC-⊗assoc .isIs _ .sect = refl
   iMC-⊗assoc .isIs _ .retr = refl
+
+  open isMonoidalWildCat
 
   isMonoidalContainer : isMonoidalWildCat ContainerWildCat
   isMonoidalContainer ._⊗_ = iMC-⊗

@@ -1,9 +1,9 @@
 open import Prelude
 open import Cubical.Container.Base as WC using (CMor)
 open import Cubical.WildCat.Base
-open import Cubical.Prebicategory.Base
+open import Cubical.Bicategory.Base
 
-module Cubical.Prebicategory.Instances.Container where
+module Cubical.Bicategory.Instances.Container where
 
 open import Cubical.Foundations.GroupoidLaws
 
@@ -72,25 +72,25 @@ module _ {F G : Container} where
     ContHomEquivΣ = isoToEquiv (ContHomIsoΣ {⟨F⟩} {⟨G⟩})
 
 module _ where
-  open Prebicategory
-  open IsPrebicategory
+  open Bicategory
+  open IsBicategory
 
-  isPrebicatGpdCont : IsPrebicategory GpdContWildCat
-  isPrebicatGpdCont .triangle _ _ = sym (lUnit _)
-  isPrebicatGpdCont .pentagon _ _ _ _ = cong (refl ∙_) (sym (lUnit _))
-  isPrebicatGpdCont .isGpdHom {a = F} {b = G} = isGroupoidGpdContHom {F} {G}
+  isBicatGpdCont : IsBicategory GpdContWildCat
+  isBicatGpdCont .triangle _ _ = sym (lUnit _)
+  isBicatGpdCont .pentagon _ _ _ _ = cong (refl ∙_) (sym (lUnit _))
+  isBicatGpdCont .isGpdHom {a = F} {b = G} = isGroupoidGpdContHom {F} {G}
 
-  ContainerPrebicat : Prebicategory _ _
-  ContainerPrebicat .str = GpdContWildCat
-  ContainerPrebicat .isPrebicat = isPrebicatGpdCont
+  ContainerBicat : Bicategory _ _
+  ContainerBicat .str = GpdContWildCat
+  ContainerBicat .isBicat = isBicatGpdCont
 
 module Extent where
-  open import Cubical.Prebicategory.Copresheaf ℓ-zero as CPsh
+  open import Cubical.Bicategory.Copresheaf ℓ-zero as CPsh
     using (Copresheaf; GPD; Is2Copresheaf)
-  open import Cubical.Prebicategory.Instances.Copresheaf ℓ-zero
+  open import Cubical.Bicategory.Instances.Copresheaf ℓ-zero
 
-  GpdEndoCat : Prebicategory _ _
-  GpdEndoCat = CopshPrebicat GPD
+  GpdEndoCat : Bicategory _ _
+  GpdEndoCat = CopshBicat GPD
 
   module _ (F : Container) where
     open Container F
@@ -108,9 +108,10 @@ module Extent where
     Ext-ob .str .F-hom f (s , px) = s , px » f
     Ext-ob .str .F-id = refl
     Ext-ob .str .F-seq _ _ = refl
-    Ext-ob .is2Copresheaf .F-IdL = sym (lUnit _)
-    Ext-ob .is2Copresheaf .F-IdR = sym (rUnit _)
-    Ext-ob .is2Copresheaf .F-Assoc = cong (refl ∙_) (lUnit _)
+    Ext-ob .is2Copresheaf .F-seq-nat _ _ = sym (lUnit _) ∙ rUnit _
+    Ext-ob .is2Copresheaf .F-IdL _ = sym (lUnit _)
+    Ext-ob .is2Copresheaf .F-IdR _ = sym (rUnit _)
+    Ext-ob .is2Copresheaf .F-Assoc _ _ _ = cong (refl ∙_) (lUnit _)
 
   module _ {F G : Container} (α : F ⇒ G) where
     open Container F using (isGpdP)
@@ -132,7 +133,7 @@ module Extent where
     Ext-hom .snd .N-hom-id = sym (lUnit _)
     Ext-hom .snd .N-hom-seq f g = cong (refl ∙_) (lUnit _)
 
-  open import Cubical.Prebicategory.Functor
+  open import Cubical.Bicategory.Functor
   open Functor using (str; is2Functor)
   open import Cubical.WildCat.Functor using (WildFunctor)
   open import Cubical.WildCat.NaturalTransformation.Base
@@ -141,7 +142,7 @@ module Extent where
   open Is2Functor
   open import Cubical.Foundations.Path
 
-  Extent : Functor ContainerPrebicat GpdEndoCat
+  Extent : Functor ContainerBicat GpdEndoCat
   Extent .str .F-ob = Ext-ob
   Extent .str .F-hom = Ext-hom
   Extent .str .F-id = CPsh.2NatTrans≡ (WNatTrans≡ refl (λ _ → refl))
@@ -183,7 +184,7 @@ module Extent where
       → F ⇒ G
     Ext-hom-inv α = CMor σ π
       where
-      module GPD = Prebicategory GPD
+      module GPD = Bicategory GPD
       米→ :
         (A : GPD.ob)
         → (∀ (X : GPD.ob) → (GPD.Hom[ A , X ]) → ⟨ ⟦G⟧ X ⟩)
@@ -246,7 +247,7 @@ module Extent where
         )
       where
       open import Cubical.Foundations.Path
-      open Prebicategory GPD
+      open Bicategory GPD
         using (_◃_; _▹_)
       open CPsh.Is2NatTrans
       α₀ = α .fst .N-ob

@@ -1,15 +1,15 @@
 open import Cubical.Foundations.Prelude
 
-module Cubical.Prebicategory.Copresheaf.Pseudonat.Constructions 
+module Cubical.Bicategory.Copresheaf.Pseudonat.Constructions 
   (ℓ : Level) where
 
 open import Cubical.WildCat.Functor using (WildNatTrans)
 
-open import Cubical.Prebicategory.Base
-open import Cubical.Prebicategory.Copresheaf.Base ℓ
-open import Cubical.Prebicategory.Copresheaf.Pseudonat.Base ℓ
+open import Cubical.Bicategory.Base
+open import Cubical.Bicategory.Copresheaf.Base ℓ
+open import Cubical.Bicategory.Copresheaf.Pseudonat.Base ℓ
 
-open Prebicategory GPD using () 
+open Bicategory GPD using () 
   renaming (
     str to ⟨GPD⟩;
     Hom[_,_] to D[_,_];
@@ -27,8 +27,8 @@ private
   variable
     ℓC ℓC' : Level
 
-module _ {C : Prebicategory ℓC ℓC'} where
-  open Prebicategory C using () 
+module _ {C : Bicategory ℓC ℓC'} where
+  open Bicategory C using () 
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_]; 

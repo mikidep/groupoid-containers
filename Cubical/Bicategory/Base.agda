@@ -8,7 +8,7 @@
 open import Prelude
 open import Cubical.WildCat.Base
 
-module Cubical.Prebicategory.Base where
+module Cubical.Bicategory.Base where
 
 open import Cubical.Foundations.GroupoidLaws
 
@@ -17,6 +17,15 @@ module Whiskering {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
 
   infixr 41 _◃_
   infixl 40 _▹_ 
+  infixr 42 _⋆₂_
+
+  _⋆₂_ : ∀ {a b c : ob}
+    {f f′ : Hom[ a , b ]}
+    {g g′ : Hom[ b , c ]}
+    → f ≡ f′
+    → g ≡ g′
+    → f ⋆ g ≡ f′ ⋆ g′
+  _⋆₂_ p q = cong₂ _⋆_ p q
 
   _◃_ : ∀ {a b c : ob}
     (f : Hom[ a , b ])
@@ -74,7 +83,7 @@ module _ {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
   open Whiskering WC
 
-  record IsPrebicategory : Type (ℓ-max ℓC ℓC') where
+  record IsBicategory : Type (ℓ-max ℓC ℓC') where
     field
       triangle  : {a b c : ob} 
                   (f : Hom[ a , b ]) (g : Hom[ b , c ])
@@ -88,19 +97,19 @@ module _ {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
                     ≡ ⋆Assoc (f ⋆ g) h i ∙ ⋆Assoc f g (h ⋆ i)  
       isGpdHom : ∀ {a b} → isGroupoid (Hom[ a , b ])
 
-  open IsPrebicategory
+  open IsBicategory
   open import Cubical.Foundations.HLevels
-  isPropIsPrebicategory : isProp IsPrebicategory
-  isPropIsPrebicategory x y i .triangle f g = x .isGpdHom _ _ _ _ (x .triangle f g) (y .triangle f g) i
-  isPropIsPrebicategory x y i .pentagon f g h k = x .isGpdHom _ _ _ _ (x .pentagon f g h k) (y .pentagon f g h k) i
-  isPropIsPrebicategory x y i .isGpdHom = isPropIsGroupoid (x .isGpdHom) (y .isGpdHom) i 
+  isPropIsBicategory : isProp IsBicategory
+  isPropIsBicategory x y i .triangle f g = x .isGpdHom _ _ _ _ (x .triangle f g) (y .triangle f g) i
+  isPropIsBicategory x y i .pentagon f g h k = x .isGpdHom _ _ _ _ (x .pentagon f g h k) (y .pentagon f g h k) i
+  isPropIsBicategory x y i .isGpdHom = isPropIsGroupoid (x .isGpdHom) (y .isGpdHom) i 
 
 module _ (ℓC ℓC' : Level) where
-  record Prebicategory : Type (ℓ-suc (ℓ-max ℓC ℓC')) where
+  record Bicategory : Type (ℓ-suc (ℓ-max ℓC ℓC')) where
     field
       str : WildCat ℓC ℓC'
-      isPrebicat : IsPrebicategory str
+      isBicat : IsBicategory str
     open WildCat str public
     open Whiskering str public
-    open IsPrebicategory isPrebicat public
+    open IsBicategory isBicat public
 

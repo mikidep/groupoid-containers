@@ -1,17 +1,17 @@
 open import Cubical.Foundations.Prelude
 
 -- TODO: Prove these notions are equivalent
--- to those in Cubical.Prebicategory.Functor
+-- to those in Cubical.Bicategory.Functor
 
-module Cubical.Prebicategory.Copresheaf.Pseudonat.Base (ℓ : Level) where
+module Cubical.Bicategory.Copresheaf.Pseudonat.Base (ℓ : Level) where
 
 open import Prelude.Square using (ΣSquareProp)
 
 open import Cubical.WildCat.Functor using (WildNatTrans)
 open import Cubical.WildCat.Instances.WildCopresheaf as WC
 
-open import Cubical.Prebicategory.Base
-open import Cubical.Prebicategory.Copresheaf.Base ℓ
+open import Cubical.Bicategory.Base
+open import Cubical.Bicategory.Copresheaf.Base ℓ
 open import Cubical.WildCat.NaturalTransformation.Base 
   using (makeNatTransSquare)
 
@@ -19,7 +19,7 @@ private
   variable
     ℓC ℓC' : Level
 
-open Prebicategory GPD using () 
+open Bicategory GPD using () 
   renaming (
     str to ⟨GPD⟩;
     Hom[_,_] to D[_,_];
@@ -33,8 +33,8 @@ open Prebicategory GPD using ()
 open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
-module _ {C : Prebicategory ℓC ℓC'} where
-  open Prebicategory C using () 
+module _ {C : Bicategory ℓC ℓC'} where
+  open Bicategory C using () 
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_]; 

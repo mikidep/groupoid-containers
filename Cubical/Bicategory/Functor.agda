@@ -2,9 +2,9 @@ open import Prelude
 
 -- Pseudofunctor?
 
-module Cubical.Prebicategory.Functor where
+module Cubical.Bicategory.Functor where
 
-open import Cubical.Prebicategory.Base
+open import Cubical.Bicategory.Base
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
 
@@ -24,15 +24,24 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     ) renaming (
       F-ob to F₀; F-hom to F₁
     ) public
+
   F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
     (f≡g : f ≡ g)
     → F₁ f ≡ F₁ g
   F₂ = cong F₁
 
-module _ (C : Prebicategory ℓC ℓC') 
-  (D : Prebicategory ℓD ℓD') where
+  F₂-funct : ∀ {x y} 
+    {f g h : C[ x , y ]}
+    (α : f ≡ g)
+    (β : g ≡ h)
+    → F₂ (α ∙ β) ≡ F₂ α ∙ F₂ β
+  F₂-funct = congFunct F₁
+    where open import Cubical.Foundations.GroupoidLaws
 
-  open Prebicategory C using () 
+module _ (C : Bicategory ℓC ℓC') 
+  (D : Bicategory ℓD ℓD') where
+
+  open Bicategory C using () 
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_]; 
@@ -42,7 +51,7 @@ module _ (C : Prebicategory ℓC ℓC')
       ⋆IdR to C-⋆IdR;
       ⋆Assoc to C-⋆Assoc
     )
-  open Prebicategory D using (_◃_; _▹_) 
+  open Bicategory D using (_◃_; _▹_) 
     renaming (
       str to ⟨D⟩;
       _⋆_ to _⋆ᵈ_; 
@@ -58,6 +67,7 @@ module _ (C : Prebicategory ℓC ℓC')
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
     open 2FunctNotation F
     field
+      -- missing F-seq-nat
       F-IdL : ∀ {x y} {f : C[ x , y ]} 
         → F-seq idᶜ f
           ∙ F-id ▹ F₁ f
@@ -87,12 +97,12 @@ module _ (C : Prebicategory ℓC ℓC')
     open 2FunctNotation str public
     open Is2Functor is2Functor public
 
-module _ {C : Prebicategory ℓC ℓC'} {D : Prebicategory ℓD ℓD'}
+module _ {C : Bicategory ℓC ℓC'} {D : Bicategory ℓD ℓD'}
   where
 
-  open Prebicategory C using () 
+  open Bicategory C using () 
     renaming (Hom[_,_] to C[_,_]; id to idᶜ; _⋆_ to _⋆ᶜ_)
-  open Prebicategory D using (_◃_; _▹_) 
+  open Bicategory D using (_◃_; _▹_) 
     renaming (
       str to ⟨D⟩;
       _⋆_ to _⋆ᵈ_; 

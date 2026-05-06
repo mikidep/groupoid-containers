@@ -1,16 +1,16 @@
 open import Cubical.Foundations.Prelude
 
-module Cubical.Prebicategory.Instances.Copresheaf (ℓ : Level) where
+module Cubical.Bicategory.Instances.Copresheaf (ℓ : Level) where
 
-open import Cubical.Prebicategory.Base
-open import Cubical.Prebicategory.Copresheaf ℓ
+open import Cubical.Bicategory.Base
+open import Cubical.Bicategory.Copresheaf ℓ
 open import Cubical.Foundations.GroupoidLaws
 
 private
   variable
     ℓC ℓC' : Level
 
-module _ (C : Prebicategory ℓC ℓC') where
+module _ (C : Bicategory ℓC ℓC') where
   open import Cubical.WildCat.Base
   open import Cubical.WildCat.NaturalTransformation.Base
     using () renaming (makeNatTransPath to WNatTrans≡)
@@ -45,7 +45,7 @@ module _ (C : Prebicategory ℓC ℓC') where
       where open import Prelude
 
   module _ where
-    open IsPrebicategory
+    open IsBicategory
 
     open WildCat CopshWildCat
     open Whiskering CopshWildCat
@@ -53,10 +53,10 @@ module _ (C : Prebicategory ℓC ℓC') where
     open import Cubical.Foundations.Path
     open import Prelude.Square
 
-    isPrebicatCopsh : IsPrebicategory CopshWildCat
-    isPrebicatCopsh .triangle α β = sym (PathP→compPathR∙∙ 
+    isBicatCopsh : IsBicategory CopshWildCat
+    isBicatCopsh .triangle α β = sym (PathP→compPathR∙∙ 
         (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)) )
-    isPrebicatCopsh .pentagon α β γ δ = 2NatTrans□ goal
+    isBicatCopsh .pentagon α β γ δ = 2NatTrans□ goal
       where
       open WildNatTrans
       open import Prelude
@@ -77,9 +77,9 @@ module _ (C : Prebicategory ℓC ℓC') where
         ≡⟨ sym (congFunct N₀ (⋆Assoc (α ⋆ β) γ δ) _) ⟩
           cong N₀ (⋆Assoc (α ⋆ β) γ δ ∙ ⋆Assoc α β (γ ⋆ δ))
         ∎
-    isPrebicatCopsh .isGpdHom = isGroupoid2NatTrans
+    isBicatCopsh .isGpdHom = isGroupoid2NatTrans
 
-  open Prebicategory
-  CopshPrebicat : Prebicategory _ _
-  CopshPrebicat .str = CopshWildCat
-  CopshPrebicat .isPrebicat = isPrebicatCopsh
+  open Bicategory
+  CopshBicat : Bicategory _ _
+  CopshBicat .str = CopshWildCat
+  CopshBicat .isBicat = isBicatCopsh
