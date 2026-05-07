@@ -46,6 +46,7 @@ module _ (F G : GpdEndo) where
       F-seq to G-seq;
       F-IdL to G-IdL;
       F-IdR to G-IdR;
+      F-Assoc to G-Assoc;
       F-seq-nat to G-seq-nat;
       F₂-funct to G₂-funct
     )
@@ -178,5 +179,134 @@ module _ (F G : GpdEndo) where
     ≡⟨ G-IdR (F₁ f) ⟩
       refl
     ∎
-  compEndo₀ .is2Copresheaf .F-Assoc = {! !}
+  compEndo₀ .is2Copresheaf .F-Assoc f g h = 
+      (G₂ (F.F-seq (f ⋆ g) h) 
+        ∙ G-seq (F₁ (f ⋆ g)) (F₁ h))
+      ∙ (G₂ (F.F-seq f g) 
+        ∙ G-seq (F₁ f) (F₁ g)) ▹ G₁ (F₁ h)
+    ≡⟨ cong ((G₂ (F.F-seq (f ⋆ g) h) ∙ G-seq (F₁ (f ⋆ g)) (F₁ h)) ∙_)
+        (▹-∙ _ _) ⟩
+      (G₂ (F.F-seq (f ⋆ g) h) 
+        ∙ G-seq (F₁ (f ⋆ g)) (F₁ h))
+      ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ sym (assoc _ _ _) ⟩
+      G₂ (F.F-seq (f ⋆ g) h) 
+      ∙ G-seq (F₁ (f ⋆ g)) (F₁ h)
+      ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (G₂ (F.F-seq (f ⋆ g) h) ∙_) (assoc _ _ _) ⟩
+      G₂ (F.F-seq (f ⋆ g) h) 
+      ∙ (G-seq (F₁ (f ⋆ g)) (F₁ h)
+        ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h))
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (λ x → G₂ (F.F-seq (f ⋆ g) h) ∙ x
+          ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h))
+        (G-seq-nat _ refl) ⟩
+      G₂ (F.F-seq (f ⋆ g) h) 
+      ∙ (G₂ (F.F-seq f g ▹ F₁ h) 
+        ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h))
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (G₂ (F.F-seq (f ⋆ g) h) ∙_) (sym (assoc _ _ _)) ⟩
+      G₂ (F.F-seq (f ⋆ g) h) 
+      ∙ G₂ (F.F-seq f g ▹ F₁ h) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ assoc _ _ _ ⟩
+      (G₂ (F.F-seq (f ⋆ g) h) 
+        ∙ G₂ (F.F-seq f g ▹ F₁ h)) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (_∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+          ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)) 
+        (sym (G₂-funct _ _)) ⟩
+      G₂ (F.F-seq (f ⋆ g) h 
+        ∙ F.F-seq f g ▹ F₁ h) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (λ x → G₂ x ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+          ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)) 
+        (F.F-Assoc _ _ _) ⟩
+      G₂ (refl ∙ F.F-seq f (g ⋆ h)
+          ∙ F₁ f ◃ F.F-seq g h) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (_∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+          ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)) 
+        (G₂-funct _ _) ⟩
+      (refl ∙ G₂ (F.F-seq f (g ⋆ h)
+          ∙ F₁ f ◃ F.F-seq g h)) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ sym (assoc _ _ _) ⟩
+      refl ∙ (G₂ (F.F-seq f (g ⋆ h)
+        ∙ F₁ f ◃ F.F-seq g h)) 
+      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ (G₂ (F.F-seq f (g ⋆ h)
+          ∙ F₁ f ◃ F.F-seq g h)) ∙ x) 
+        (G-Assoc _ _ _) ⟩
+      refl ∙ (G₂ (F.F-seq f (g ⋆ h)
+        ∙ F₁ f ◃ F.F-seq g h)) 
+      ∙ refl
+      ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ (G₂ (F.F-seq f (g ⋆ h)
+          ∙ F₁ f ◃ F.F-seq g h)) ∙ x) 
+        (sym (lUnit _)) ⟩
+      refl ∙ (G₂ (F.F-seq f (g ⋆ h)
+        ∙ F₁ f ◃ F.F-seq g h)) 
+      ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ x 
+          ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
+          ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h))
+        (G₂-funct _ _) ⟩
+      refl ∙ (G₂ (F.F-seq f (g ⋆ h))
+        ∙ G₂ (F₁ f ◃ F.F-seq g h)) 
+      ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (refl ∙_) (sym (assoc _ _ _)) ⟩
+      refl 
+      ∙ G₂ (F.F-seq f (g ⋆ h))
+      ∙ G₂ (F₁ f ◃ F.F-seq g h) 
+      ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ G₂ (F.F-seq f (g ⋆ h)) ∙ x) 
+        (assoc _ _ _) ⟩
+      refl 
+      ∙ G₂ (F.F-seq f (g ⋆ h))
+      ∙ (G₂ (F₁ f ◃ F.F-seq g h) 
+        ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h))
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ G₂ (F.F-seq f (g ⋆ h)) 
+          ∙ x ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)) 
+        (sym (G-seq-nat refl (F.F-seq g h))) ⟩
+      refl 
+      ∙ G₂ (F.F-seq f (g ⋆ h))
+      ∙ (G-seq (F₁ f) (F₁ (g ⋆ h))
+        ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h))
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ G₂ (F.F-seq f (g ⋆ h)) ∙ x) 
+        (sym (assoc _ _ _)) ⟩
+      refl 
+      ∙ G₂ (F.F-seq f (g ⋆ h))
+      ∙ G-seq (F₁ f) (F₁ (g ⋆ h))
+      ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (refl ∙_) (assoc _ _ _) ⟩
+      refl 
+      ∙ (G₂ (F.F-seq f (g ⋆ h))
+        ∙ G-seq (F₁ f) (F₁ (g ⋆ h)))
+      ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h)
+      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
+    ≡⟨ cong (λ x → refl ∙ (G₂ (F.F-seq f (g ⋆ h))
+          ∙ G-seq (F₁ f) (F₁ (g ⋆ h))) ∙ x) 
+        (sym (◃-∙ _ _)) ⟩
+      refl 
+      ∙ (G₂ (F.F-seq f (g ⋆ h)) 
+        ∙ G-seq (F₁ f) (F₁ (g ⋆ h))) 
+      ∙ G₁ (F₁ f) ◃ (G₂ (F.F-seq g h) 
+        ∙ G-seq (F₁ g) (F₁ h))
+    ∎
 
