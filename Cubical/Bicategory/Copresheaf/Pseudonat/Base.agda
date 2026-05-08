@@ -50,6 +50,8 @@ module _ {C : Bicategory ℓC ℓC'} where
   module _ {F G : Copresheaf C}
     (α : WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) where
 
+    open import Cubical.Foundations.GroupoidLaws
+
     open WildNatTrans α using ()
       renaming (N-ob to α₀; N-hom to α□)
     open Copresheaf F using (F-id; F-seq; F₁; F₂)
@@ -61,14 +63,21 @@ module _ {C : Bicategory ℓC ℓC'} where
         F₂ to G₂
       )
 
+    N-hom-nat : 
+      ∀ {X} {Y} 
+        (f g : C[ X , Y ])
+        (f≡g : f ≡ g)
+      →   α□ f ∙ α₀ X ◃ G₂ f≡g
+        ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
+    N-hom-nat {X} {Y} f _ = J Q d
+      where
+      Q = λ f' f≡f' → 
+        α□ f ∙ α₀ X ◃ G₂ f≡f'
+        ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
+      d = sym (rUnit _) ∙ lUnit _
+
     record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
       field
-        N-hom-nat : 
-          ∀ {X} {Y} 
-            (f g : C[ X , Y ])
-            (f≡g : f ≡ g)
-          →   α□ f ∙ α₀ X ◃ G₂ f≡g
-            ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
         N-hom-id :
           ∀ {X} 
           →   α□ (idᶜ {X})
@@ -85,10 +94,6 @@ module _ {C : Bicategory ℓC ℓC'} where
     open import Cubical.Foundations.HLevels
     open Is2NatTrans
     isPropIs2NatTrans : isProp Is2NatTrans
-    isPropIs2NatTrans αis βis i .N-hom-nat f g f≡g = aux i
-      where
-      aux : αis .N-hom-nat f g f≡g ≡ βis .N-hom-nat f g f≡g
-      aux = isGpdHomGPD _ _ _ _ (αis .N-hom-nat f g f≡g) (βis .N-hom-nat f g f≡g)
     isPropIs2NatTrans αis βis i .N-hom-id {X} = aux i
       where
       aux : αis .N-hom-id {X} ≡ βis .N-hom-id 

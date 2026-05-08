@@ -55,7 +55,6 @@ module _ {C : Bicategory ℓC ℓC'} where
 
     id2NatTrans : 2NatTrans F F
     id2NatTrans .fst = idWildNatTrans
-    id2NatTrans .snd .N-hom-nat f g f≡g = sym (lUnit _) ∙ rUnit _
     id2NatTrans .snd .N-hom-id = sym (lUnit _) 
     id2NatTrans .snd .N-hom-seq f g = 
       sym (lUnit _) 
@@ -105,27 +104,6 @@ module _ {C : Bicategory ℓC ℓC'} where
 
     comp2NatTrans : 2NatTrans F H
     comp2NatTrans .fst = compWildNatTrans
-    comp2NatTrans .snd .N-hom-nat {X} {Y} f g f≡g =
-        (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ∙ α₀ X ◃ β₀ X ◃ H₂ f≡g
-      ≡⟨ sym (assoc _ _ _) ⟩ 
-        α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f ∙ α₀ X ◃ β₀ X ◃ H₂ f≡g
-      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ x) (sym (◃-∙ (β□ f) (β₀ X ◃ H₂ f≡g))) ⟩ 
-        α□ f ▹ β₀ Y ∙ α₀ X ◃ (β□ f ∙ β₀ X ◃ H₂ f≡g)
-      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ α₀ X ◃ x) (β .snd .N-hom-nat _ _ _) ⟩ 
-        α□ f ▹ β₀ Y ∙ α₀ X ◃ (G₂ f≡g ▹ β₀ Y ∙ β□ g)
-      ≡⟨ cong (λ x → α□ f ▹ β₀ Y ∙ x) (◃-∙ (G₂ f≡g ▹ β₀ Y) (β□ g)) ⟩ 
-        α□ f ▹ β₀ Y ∙ α₀ X ◃ G₂ f≡g ▹ β₀ Y ∙ α₀ X ◃ β□ g
-      ≡⟨ assoc _ _ _ ⟩ 
-        (α□ f ▹ β₀ Y ∙ α₀ X ◃ G₂ f≡g ▹ β₀ Y) ∙ α₀ X ◃ β□ g
-      ≡⟨ cong (_∙ α₀ X ◃ β□ g) (sym (▹-∙ (α□ f) (α₀ X ◃ G₂ f≡g))) ⟩ 
-        (α□ f ∙ α₀ X ◃ G₂ f≡g) ▹ β₀ Y ∙ α₀ X ◃ β□ g
-      ≡⟨ cong (λ x → x ▹ β₀ Y ∙ α₀ X ◃ β□ g) (α .snd .N-hom-nat _ _ _) ⟩ 
-        (F₂ f≡g ▹ α₀ Y ∙ α□ g) ▹ β₀ Y ∙ α₀ X ◃ β□ g
-      ≡⟨ cong (_∙ α₀ X ◃ β□ g) (▹-∙ (F₂ f≡g ▹ α₀ Y) (α□ g)) ⟩ 
-        (F₂ f≡g ▹ α₀ Y ▹ β₀ Y ∙ α□ g ▹ β₀ Y) ∙ α₀ X ◃ β□ g 
-      ≡⟨ sym (assoc _ _ _) ⟩ 
-        F₂ f≡g ▹ α₀ Y ▹ β₀ Y ∙ α□ g ▹ β₀ Y ∙ α₀ X ◃ β□ g 
-      ∎
     comp2NatTrans .snd .N-hom-id {X} = 
         (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
       ≡⟨ sym (assoc _ _ _) ⟩ 

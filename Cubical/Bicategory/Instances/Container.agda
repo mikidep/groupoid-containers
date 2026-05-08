@@ -129,7 +129,6 @@ module Extent where
     Ext-hom : CPsh.2NatTrans (Ext-ob F) (Ext-ob G)
     Ext-hom .fst .N-ob (X , _) (s , px) = σ s , π s » px
     Ext-hom .fst .N-hom f = refl
-    Ext-hom .snd .N-hom-nat f g f≡g = sym (lUnit _) ∙ rUnit _
     Ext-hom .snd .N-hom-id = sym (lUnit _)
     Ext-hom .snd .N-hom-seq f g = cong (refl ∙_) (lUnit _)
 

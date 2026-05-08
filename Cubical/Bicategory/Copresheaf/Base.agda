@@ -55,15 +55,6 @@ module _ (C : Bicategory ℓC ℓC') where
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     open 2FunctNotation F
     field
-      F-seq-nat : ∀ {x y z} 
-          {f f′ : C[ x , y ]}
-          {g g′ : C[ y , z ]}
-          (α : f ≡ f′)
-          (β : g ≡ g′)
-        → F-seq f g 
-          ∙ F₂ α ⋆₂ᵈ F₂ β
-          ≡ F₂ (α ⋆₂ᶜ β) 
-          ∙ F-seq f′ g′
       F-IdL : ∀ {x y} (f : C[ x , y ]) 
         → F-seq idᶜ f
           ∙ F-id ▹ F₁ f
