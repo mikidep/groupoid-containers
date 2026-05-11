@@ -24,11 +24,30 @@ module _ where
     p ∙ q ∙ r ≡ (p ∙ q) ∙ r
   assoc-inf {p} {q} {r} = assoc p q r
 
-  shuffleSym : {p : x ≡ y} {q : y ≡ z} {r : x ≡ z}
-    → p ∙ q ≡ r
-    → q ≡ sym p ∙ r
-  shuffleSym {p} {q} {r} ξ =
-    lUnit _ 
-    ∙ cong (_∙ q) (sym (lCancel _)) 
-    ∙ sym assoc-inf 
-    ∙ cong (sym p ∙_) ξ 
+  shuffleSymL : {p : x ≡ z} {q : x ≡ y} {r : y ≡ z}
+    → p ≡ q ∙ r
+    → sym q ∙ p ≡ r
+  shuffleSymL {p} {q} {r} ξ =
+   cong (sym q ∙_) ξ
+   ∙ assoc (sym q) q r
+   ∙ cong (_∙ r) (lCancel q)
+   ∙ sym (lUnit r)
+
+  shuffleSymR : {p : x ≡ y} {q : x ≡ z} {r : y ≡ z}
+    → p ∙ r ≡ q
+    → p ≡ q ∙ sym r
+  shuffleSymR {p} {q} {r} ξ =
+    rUnit p
+    ∙ cong (p ∙_) (sym (rCancel r))
+    ∙ assoc p r (sym r)
+    ∙ cong (_∙ sym r) ξ
+
+  invUniq : {p : x ≡ y} {q : y ≡ x}
+    → p ∙ q ≡ refl
+    → sym p ≡ q
+  invUniq {p} {q} ξ = 
+    rUnit (sym p)
+    ∙ cong (sym p ∙_) (sym ξ)
+    ∙ assoc (sym p) p q
+    ∙ cong (_∙ q) (lCancel p)
+    ∙ sym (lUnit q)

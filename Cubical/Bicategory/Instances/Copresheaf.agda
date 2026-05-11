@@ -5,6 +5,7 @@ module Cubical.Bicategory.Instances.Copresheaf (ℓ : Level) where
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Copresheaf ℓ
 open import Cubical.Foundations.GroupoidLaws
+open import Prelude.ExtraGpdLaws
 
 private
   variable
@@ -40,7 +41,7 @@ module _ (C : Bicategory ℓC ℓC') where
         refl
         λ f → 
           cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
-          ∙ sym (assoc _ _ _)
+          ∙ sym assoc-inf
       )
       where open import Prelude
 

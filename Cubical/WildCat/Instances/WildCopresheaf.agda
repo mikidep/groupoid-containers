@@ -34,6 +34,7 @@ module _ (C : WildCat ℓC ℓC') where
       ∙ cong (N-ob η x »_) (N-hom γ f)
 
   open import Cubical.Foundations.GroupoidLaws
+  open import Prelude.ExtraGpdLaws
 
   WildCopshCat : WildCat _ _
   ob WildCopshCat = WildFunctor C TYPE
@@ -53,7 +54,7 @@ module _ (C : WildCat ℓC ℓC') where
       refl
       λ f → 
         cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
-        ∙ sym (assoc _ _ _)
+        ∙ sym assoc-inf
         where open import Prelude
         --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f) ∙ cong (α .N-ob _ »_) (β .N-hom f))
         --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
@@ -63,7 +64,7 @@ module _ (C : WildCat ℓC ℓC') where
         --                   ∙ cong (_» γ .N-ob _) (cong (α .N-ob _ »_) (β .N-hom f))
         --                 )
         --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        -- ≡⟨ sym (assoc _ _ _) ⟩ 
+        -- ≡⟨ sym assoc-inf ⟩ 
         --
         --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f))
         --                 ∙ (

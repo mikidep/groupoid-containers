@@ -47,6 +47,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     open import Cubical.Foundations.Function
     open Is2NatTrans
     open import Cubical.Foundations.GroupoidLaws
+    open import Prelude.ExtraGpdLaws
 
     idWildNatTrans : WildNatTrans _ _ ⟨F⟩ ⟨F⟩ 
     idWildNatTrans .N-ob X = idfun _
@@ -94,6 +95,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       )
 
     open import Cubical.Foundations.GroupoidLaws
+    open import Prelude.ExtraGpdLaws
     open WildNatTrans
 
     compWildNatTrans : WildNatTrans _ _ ⟨F⟩ ⟨H⟩
@@ -106,7 +108,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     comp2NatTrans .fst = compWildNatTrans
     comp2NatTrans .snd .N-hom-id {X} = 
         (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
-      ≡⟨ sym (assoc _ _ _) ⟩ 
+      ≡⟨ sym assoc-inf ⟩ 
         α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ ∙ α₀ X ◃ β₀ X ◃ H-id
       ≡⟨ cong (α□ idᶜ ▹ β₀ X ∙_) (◃-∙ (β□ idᶜ) (β₀ X ◃ H-id)) ⟩ 
         α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ (β□ idᶜ ∙ β₀ X ◃ H-id)
@@ -120,7 +122,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     comp2NatTrans .snd .N-hom-seq {X} {Y} {Z} f g = 
         (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ᶜ g)) 
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
-      ≡⟨ sym (assoc _ _ _) ⟩
+      ≡⟨ sym assoc-inf ⟩
         α□ (f ⋆ᶜ g) ▹ β₀ Z 
         ∙ α₀ X ◃ β□ (f ⋆ᶜ g) 
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
@@ -144,7 +146,7 @@ module _ {C : Bicategory ℓC ℓC'} where
         ∙ α₀ X ◃ G-seq f g ▹ β₀ Z
         ∙ α₀ X ◃ G₁ f ◃ β□ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ assoc _ _ _ ⟩
+      ≡⟨ assoc-inf ⟩
         (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ G-seq f g ▹ β₀ Z)
         ∙ α₀ X ◃ G₁ f ◃ β□ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
@@ -175,19 +177,19 @@ module _ {C : Bicategory ℓC ℓC'} where
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g) 
-          (assoc _ _ _) ⟩
+          assoc-inf ⟩
         ((F-seq f g ▹ α₀ Z ▹ β₀ Z 
             ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
           ∙ α□ f ▹ G₁ g ▹ β₀ Z)
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ sym (assoc _ _ _) ⟩ 
+      ≡⟨ sym assoc-inf ⟩ 
         (F-seq f g ▹ α₀ Z ▹ β₀ Z 
           ∙ F₁ f ◃ α□ g ▹ β₀ Z) 
         ∙ α□ f ▹ G₁ g ▹ β₀ Z
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ sym (assoc _ _ _) ⟩
+      ≡⟨ sym assoc-inf ⟩
         F-seq f g ▹ α₀ Z ▹ β₀ Z 
         ∙ F₁ f ◃ α□ g ▹ β₀ Z 
         ∙ α□ f ▹ G₁ g ▹ β₀ Z 
@@ -195,7 +197,7 @@ module _ {C : Bicategory ℓC ℓC'} where
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
             ∙ F₁ f ◃ α□ g ▹ β₀ Z ∙ x)
-          (assoc _ _ _) ⟩
+          assoc-inf ⟩
         F-seq f g ▹ α₀ Z ▹ β₀ Z 
         ∙ F₁ f ◃ α□ g ▹ β₀ Z 
         ∙ (α□ f ▹ G₁ g ▹ β₀ Z ∙ α₀ X ◃ G₁ f ◃ β□ g) 
@@ -211,13 +213,13 @@ module _ {C : Bicategory ℓC ℓC'} where
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ cong (λ x → F-seq f g ▹ α₀ Z ▹ β₀ Z 
             ∙ F₁ f ◃ α□ g ▹ β₀ Z ∙ x)
-          (sym (assoc _ _ _)) ⟩
+          (sym assoc-inf) ⟩
         F-seq f g ▹ α₀ Z ▹ β₀ Z 
         ∙ F₁ f ◃ α□ g ▹ β₀ Z 
         ∙ F₁ f ◃ α₀ Y ◃ β□ g 
         ∙ α□ f ▹ β₀ Y ▹ H₁ g 
         ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ cong (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙_) (assoc _ _ _) ⟩
+      ≡⟨ cong (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙_) assoc-inf ⟩
         F-seq f g ▹ α₀ Z ▹ β₀ Z 
         ∙ (F₁ f ◃ α□ g ▹ β₀ Z 
           ∙ F₁ f ◃ α₀ Y ◃ β□ g) 

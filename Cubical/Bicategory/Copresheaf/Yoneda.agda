@@ -25,6 +25,7 @@ module _ (c : C.ob) where
     using (_◃_; _▹_)
   open import Cubical.Foundations.Path
   open import Cubical.Foundations.GroupoidLaws
+  open import Prelude.ExtraGpdLaws
   open import Prelude.Square
 
   C[c,-] : Copresheaf C  
@@ -47,7 +48,7 @@ module _ (c : C.ob) where
     --       ≡⟨ cong (_∙ h C.◃ C.⋆IdL f) (sym (lCancel _)) ⟩
     --         (sym (C.⋆Assoc h C.id f) ∙ C.⋆Assoc h C.id f)
     --           ∙ h C.◃ C.⋆IdL f
-    --       ≡⟨ sym (assoc _ _ _) ⟩
+    --       ≡⟨ sym assoc-inf ⟩
     --         sym (C.⋆Assoc h C.id f) 
     --           ∙ C.⋆Assoc h C.id f ∙ h C.◃ C.⋆IdL f
     --       ≡⟨ cong (sym (C.⋆Assoc h C.id f) ∙_) 
