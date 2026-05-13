@@ -51,3 +51,21 @@ module _ where
     ∙ assoc (sym p) p q
     ∙ cong (_∙ q) (lCancel p)
     ∙ sym (lUnit q)
+
+  -- Cover your eyes
+
+  cong∙l : {p : x ≡ y} {q r : y ≡ z} 
+    → q ≡ r
+    → p ∙ q ≡ p ∙ r
+  cong∙l {p} = cong (p ∙_)
+
+  cong∙r : {p q : x ≡ y} {r : y ≡ z} 
+    → p ≡ q
+    → p ∙ r ≡ q ∙ r
+  cong∙r {r} = cong (_∙ r)
+
+  ∙l_ = cong∙l
+  ∙r_ = cong∙r
+
+  infix 50 ∙l_
+  infix 50 ∙r_

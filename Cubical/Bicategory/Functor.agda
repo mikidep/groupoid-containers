@@ -16,14 +16,26 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} (F : WildFunctor C D) where
 
   open import Cubical.Foundations.GroupoidLaws
+  open import Prelude.ExtraGpdLaws
 
   open WildCat C using () 
-    renaming (Hom[_,_] to C[_,_]; id to idᶜ)
+    renaming (
+      Hom[_,_] to C[_,_]; 
+      _⋆_ to _⋆ᶜ_;
+      id to idᶜ
+    )
   open WildCat D using () 
-    renaming (⋆IdL to D-⋆IdL)
+    renaming (
+      _⋆_ to _⋆ᵈ_;
+      ⋆IdL to D-⋆IdL
+    )
 
   open Whiskering C using ()
-    renaming (_⋆₂_ to _⋆₂ᶜ_)
+    renaming (
+      _◃_ to _◃ᶜ_;
+      _▹_ to _▹ᶜ_;
+      _⋆₂_ to _⋆₂ᶜ_
+    )
   open Whiskering D using (_◃_; _▹_)
     renaming (_⋆₂_ to _⋆₂ᵈ_)
 
@@ -45,6 +57,18 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     (β : g ≡ h)
     → F₂ (α ∙ β) ≡ F₂ α ∙ F₂ β
   F₂-funct = congFunct F₁
+
+  F□ : ∀ {x y z w} 
+    {f : C[ x , y ]} 
+    {g : C[ y , z ]} 
+    {h : C[ x , w ]}
+    {k : C[ w , z ]}
+    → f ⋆ᶜ g ≡ h ⋆ᶜ k
+    → F₁ f ⋆ᵈ F₁ g ≡ F₁ h ⋆ᵈ F₁ k
+  F□ {f} {g} {h} {k} sq =
+    sym (F-seq f g)
+    ∙ F₂ sq
+    ∙ F-seq h k
 
   F-seq-nat : ∀ {x y z} 
       {f f′ : C[ x , y ]}
@@ -69,6 +93,49 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
       ≡ F₂ (p' ⋆₂ᶜ q') 
       ∙ F-seq f' g'
     r = sym (rUnit _) ∙ lUnit _
+
+  F□-◃ : ∀ {x y z} 
+    {f : C[ x , y ]} 
+    {g h : C[ y , z ]} 
+    (g≡h : g ≡ h)
+    → F□ (f ◃ᶜ g≡h)
+      ≡ F₁ f ◃ F₂ g≡h
+  F□-◃ g≡h = 
+    shuffleSymL (sym (F-seq-nat refl g≡h))
+  
+  F□-▹ : ∀ {x y z} 
+    {f g : C[ x , y ]} 
+    {h : C[ y , z ]} 
+    (f≡g : f ≡ g)
+    → F□ (f≡g ▹ᶜ h)
+      ≡ F₂ f≡g ▹ F₁ h
+  F□-▹ f≡g = 
+    shuffleSymL (sym (F-seq-nat f≡g refl))
+
+  -- In other words...
+  F₂-◃ : ∀ {x y z} 
+    {f : C[ x , y ]} 
+    {g h : C[ y , z ]} 
+    (g≡h : g ≡ h)
+    → F₂ (f ◃ᶜ g≡h)
+      ≡ F-seq f g
+      ∙ F₁ f ◃ F₂ g≡h
+      ∙ sym (F-seq f h)
+  F₂-◃ g≡h = 
+    shuffleSymR (sym (shuffleSymL (sym (F□-◃ g≡h))))
+    ∙ sym assoc-inf
+
+  F₂-▹ : ∀ {x y z} 
+    {f g : C[ x , y ]} 
+    {h : C[ y , z ]} 
+    (f≡g : f ≡ g)
+    → F₂ (f≡g ▹ᶜ h)
+      ≡ F-seq f h
+      ∙ F₂ f≡g ▹ F₁ h
+      ∙ sym (F-seq g h)
+  F₂-▹ f≡g = 
+    shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
+    ∙ sym assoc-inf
 
 module _ (C : Bicategory ℓC ℓC') 
   (D : Bicategory ℓD ℓD') where
