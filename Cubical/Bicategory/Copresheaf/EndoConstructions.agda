@@ -4,7 +4,7 @@ open import Cubical.Foundations.Function
 open import Cubical.Foundations.GroupoidLaws
 open import Prelude.ExtraGpdLaws
 
-open import Cubical.WildCat.Functor
+open import Cubical.WildCat.Functor hiding (_$_)
 open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 
 module Cubical.Bicategory.Copresheaf.EndoConstructions 
@@ -22,7 +22,7 @@ open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
 open Is2Copresheaf
 
-open Bicategory GPD renaming (str to ⟨GPD⟩)
+open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
 open 2CellLaws ⟨GPD⟩
 
 module _ where
@@ -379,6 +379,7 @@ module _ {F G H K : GpdEndo}
       ∙ shuffleSymL sq₄
   α▹G .snd .N-hom-seq {X} {Y} {Z} f g = goal
     where
+    open import Prelude.Reassoc
     sq₁ : G₂ (α□ (f » g) 
             ∙ α₀ X ◃ H-seq f g) 
           ≡ G₂ (F.F-seq f g ▹ α₀ Z 
@@ -414,64 +415,18 @@ module _ {F G H K : GpdEndo}
         (cong₂ _∙_
           (G.F₂-◃ (α□ g))
           (G.F₂-▹ (α□ f)))
-    sq₄ : (sym (G-seq (F₁ (f » g)) (α₀ Z))
-            ∙ G₂ (α□ (f » g)) 
-            ∙ G-seq (α₀ X) (H₁ (f » g)))
-          ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-          ∙ sym (G-seq (α₀ X) (H₁ f » H₁ g))
-          ≡ (G₂ (F.F-seq f g) ▹ G₁ (α₀ Z) 
-            ∙ sym (G-seq (F₁ f » F₁ g) (α₀ Z)))
-          ∙ (G-seq (F₁ f) (F₁ g » α₀ Z)
-            ∙ G₁ (F₁ f) ◃ G₂ (α□ g)
-            ∙ sym (G-seq (F₁ f) (α₀ Y » H₁ g)))
-          ∙ G-seq (F₁ f » α₀ Y) (H₁ g)
-          ∙ G₂ (α□ f) ▹ G₁ (H₁ g) 
-          ∙ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-    sq₄ = sym assoc-inf 
-      ∙ ∙l (sym assoc-inf) 
-      ∙ shuffleSymL (sq₃ ∙ sym assoc-inf) 
-    aux : sym (G-seq (α₀ X) (H₁ f » H₁ g))
-          ≡ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-          ∙ sym (G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
-          ∙ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-    aux = ?
-    aux₂ = 
-        (((sym (G-seq (F₁ (f » g)) (α₀ Z))
-              ∙ G₂ (α□ (f » g)) 
-              ∙ G-seq (α₀ X) (H₁ (f » g)))
-            ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-            ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g))
-          ∙ sym (G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)))
-        ∙ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-      ≡⟨ ∙r sym assoc-inf 
-          ∙ ∙r ∙l sym assoc-inf
-          ∙ sym assoc-inf
-          ∙ ∙l sym assoc-inf
-          ∙ ∙l ∙l sym assoc-inf ⟩
-        (sym (G-seq (F₁ (f » g)) (α₀ Z))
-          ∙ G₂ (α□ (f » g)) 
-          ∙ G-seq (α₀ X) (H₁ (f » g)))
-        ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-        ∙ sym (G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
-        ∙ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-      ≡⟨ ∙l ∙l sym aux ∙ sq₄ ⟩ _ ∎
-    sq₅ : (sym (G-seq (F₁ (f » g)) (α₀ Z))
-            ∙ G₂ (α□ (f » g)) 
-            ∙ G-seq (α₀ X) (H₁ (f » g)))
-          ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-          ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-          ≡ (G₂ (F.F-seq f g) ▹ G₁ (α₀ Z) 
-            ∙ sym (G-seq (F₁ f » F₁ g) (α₀ Z)))
-          ∙ (G-seq (F₁ f) (F₁ g » α₀ Z)
-            ∙ G₁ (F₁ f) ◃ G₂ (α□ g)
-            ∙ sym (G-seq (F₁ f) (α₀ Y » H₁ g)))
-          ∙ G-seq (F₁ f » α₀ Y) (H₁ g)
-          ∙ G₂ (α□ f) ▹ G₁ (H₁ g) 
-          ∙ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
-    sq₅ = ?
-      ∙ ?
-      ∙ ?
+    sq₄ = ∙l ∙l ∙l aux₁
+      ∙ sq₃
+      ∙ ∙r ∙l ∙l {! !}
+      ∙ ∙l ∙r ∙l ∙l {! !}
+      ∙ ∙l ∙l ∙l ∙l {! !}
+      ∙ {! !}
+      ∙ {! !}
+      where
+      aux₁₀ = sym $ cong sym $ shuffleSymR $ sym $ 
+        G.F-Assoc (α₀ X) (H₁ f) (H₁ g) ∙ sym (lUnit _)
+      aux₁ = ∙l sym (symDistr _ _) ∙ sym (symDistr _ _) ∙ aux₁₀
+      
     goal : (sym (G-seq (F₁ (f » g)) (α₀ Z)) 
              ∙ G₂ (α□ (f » g)) 
              ∙ G-seq (α₀ X) (H₁ (f » g)))
@@ -485,8 +440,7 @@ module _ {F G H K : GpdEndo}
            ∙ (sym (G-seq (F₁ f) (α₀ Y)) 
              ∙ G₂ (α□ f) 
              ∙ G-seq (α₀ X) (H₁ f)) ▹ G₁ (H₁ g)
-    goal = ∙l ∙l {! !}
-      ∙ ?
+    goal = {! !}
 
   H◃β : 2NatTrans (H ⊗₀ G) (H ⊗₀ K)
   H◃β = {! !}

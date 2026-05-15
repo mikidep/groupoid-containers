@@ -72,7 +72,7 @@ module _ (C : Bicategory ℓC ℓC') where
           ≡ F₂ (C-⋆Assoc f g h)
           ∙ F-seq f (g ⋆ᶜ h)
           ∙ F₁ f ◃ F-seq g h
-
+    
   record Copresheaf 
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     field
