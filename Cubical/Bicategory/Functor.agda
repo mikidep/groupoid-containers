@@ -137,6 +137,55 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
     ∙ sym assoc-inf
 
+module _ {C : WildCat ℓC ℓC'}
+  {D : WildCat ℓD ℓD'} {F G : WildFunctor C D} 
+  (α : WildNatTrans _ _ F G) where
+
+  open import Cubical.Foundations.GroupoidLaws
+
+  open WildCat C using () 
+    renaming (
+      Hom[_,_] to C[_,_]; 
+      _⋆_ to _⋆ᶜ_;
+      id to idᶜ
+    )
+  open WildCat D using () 
+    renaming (
+      _⋆_ to _⋆ᵈ_;
+      ⋆IdL to D-⋆IdL
+    )
+
+  open Whiskering C using ()
+    renaming (
+      _◃_ to _◃ᶜ_;
+      _▹_ to _▹ᶜ_;
+      _⋆₂_ to _⋆₂ᶜ_
+    )
+  open Whiskering D using (_◃_; _▹_)
+    renaming (_⋆₂_ to _⋆₂ᵈ_)
+
+  open WildNatTrans α using ()
+    renaming (N-ob to α₀; N-hom to α□)
+  open 2FunctNotation F using (F₁; F₂)
+  open 2FunctNotation G using ()
+    renaming (
+      F₁ to G₁;
+      F₂ to G₂
+    )
+
+  N-hom-nat : 
+    ∀ {X} {Y} 
+      {f g : C[ X , Y ]}
+      (f≡g : f ≡ g)
+    →   α□ f ∙ α₀ X ◃ G₂ f≡g
+      ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
+  N-hom-nat {X} {Y} {f} {g = _} = J Q d
+    where
+    Q = λ f' f≡f' → 
+      α□ f ∙ α₀ X ◃ G₂ f≡f'
+      ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
+    d = sym (rUnit _) ∙ lUnit _
+
 module _ (C : Bicategory ℓC ℓC') 
   (D : Bicategory ℓD ℓD') where
 
@@ -228,19 +277,6 @@ module _ {C : Bicategory ℓC ℓC'} {D : Bicategory ℓD ℓD'}
         F-seq to G-seq;
         F₂ to G₂
       )
-
-    N-hom-nat : 
-      ∀ {X} {Y} 
-        (f g : C[ X , Y ])
-        (f≡g : f ≡ g)
-      →   α□ f ∙ α₀ X ◃ G₂ f≡g
-        ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
-    N-hom-nat {X} {Y} f _ = J Q d
-      where
-      Q = λ f' f≡f' → 
-        α□ f ∙ α₀ X ◃ G₂ f≡f'
-        ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
-      d = sym (rUnit _) ∙ lUnit _
 
     record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
       field

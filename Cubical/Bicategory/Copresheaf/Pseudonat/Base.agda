@@ -63,19 +63,6 @@ module _ {C : Bicategory ℓC ℓC'} where
         F₂ to G₂
       )
 
-    N-hom-nat : 
-      ∀ {X} {Y} 
-        (f g : C[ X , Y ])
-        (f≡g : f ≡ g)
-      →   α□ f ∙ α₀ X ◃ G₂ f≡g
-        ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
-    N-hom-nat {X} {Y} f _ = J Q d
-      where
-      Q = λ f' f≡f' → 
-        α□ f ∙ α₀ X ◃ G₂ f≡f'
-        ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
-      d = sym (rUnit _) ∙ lUnit _
-
     record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
       field
         N-hom-id :
