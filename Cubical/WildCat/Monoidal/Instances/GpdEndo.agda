@@ -5,17 +5,16 @@ open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 
 open import Cubical.Bicategory.Copresheaf ℓ-zero using (GPD)
 open import Cubical.Bicategory.Instances.Copresheaf ℓ-zero
+open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ-zero
 
 module Cubical.WildCat.Monoidal.Instances.GpdEndo where
-
-GpdEndoWildCat = CopshWildCat GPD
 
 module _ where
   open isMonoidalWildCat
 
   isMonoidalGpdEndo : isMonoidalWildCat GpdEndoWildCat
-  isMonoidalGpdEndo ._⊗_ = {! !}
-  isMonoidalGpdEndo .𝟙 = {! !}
+  isMonoidalGpdEndo ._⊗_ = compEndo
+  isMonoidalGpdEndo .𝟙 = idEndo
   isMonoidalGpdEndo .⊗assoc = {! !}
   isMonoidalGpdEndo .⊗lUnit = {! !}
   isMonoidalGpdEndo .⊗rUnit = {! !}

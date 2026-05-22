@@ -63,7 +63,7 @@ module _ where
   open import Cubical.Foundations.Function
 
   iMC-⊗ : WildFunctor
-    (ProdCat ContainerWildCat ContainerWildCat) 
+    (ProdCat ContainerWildCat ContainerWildCat)
     ContainerWildCat
   iMC-⊗ .F-ob = uncurry iMC-⊗₀
   iMC-⊗ .F-hom = uncurry iMC-⊗₁

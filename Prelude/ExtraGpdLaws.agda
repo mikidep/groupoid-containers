@@ -61,7 +61,7 @@ module _ where
   invUniq : {p : x ≡ y} {q : y ≡ x}
     → p ∙ q ≡ refl
     → sym p ≡ q
-  invUniq {p} {q} ξ = 
+  invUniq {p} {q} ξ =
     rUnit (sym p)
     ∙ cong (sym p ∙_) (sym ξ)
     ∙ assoc (sym p) p q
@@ -95,12 +95,12 @@ module _ where
 
   -- Cover your eyes
 
-  cong∙l : {p : x ≡ y} {q r : y ≡ z} 
+  cong∙l : {p : x ≡ y} {q r : y ≡ z}
     → q ≡ r
     → p ∙ q ≡ p ∙ r
   cong∙l {p} = cong (p ∙_)
 
-  cong∙r : {p q : x ≡ y} {r : y ≡ z} 
+  cong∙r : {p q : x ≡ y} {r : y ≡ z}
     → p ≡ q
     → p ∙ r ≡ q ∙ r
   cong∙r {r} = cong (_∙ r)

@@ -11,13 +11,13 @@ record Container : Type₁ where
 -- Type of container morphisms
 module _ (F G : Container) where
   open Container F
-  open Container G renaming 
+  open Container G renaming
     (
       S to S′
     ; P to P′
     )
 
-  infixr 18 _⇒_ 
+  infixr 18 _⇒_
   record _⇒_ : Type where
     constructor CMor
     field

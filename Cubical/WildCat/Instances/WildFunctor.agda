@@ -21,7 +21,7 @@ module _ (C : WildCat ℓC ℓC') (D : WildCat ℓD ℓD') where
   Hom[_,_] WildFunctorCat A B = WildNatTrans _ _ A B
   WildCat.id WildFunctorCat = idWildNatTrans
   _⋆_ WildFunctorCat α β = compWildNatTrans _ _ _ α β
-  ⋆IdL WildFunctorCat α = 
+  ⋆IdL WildFunctorCat α =
     makeNatTransPath
       (funExt λ x → D .⋆IdL (α .N-ob x))
       {! !}

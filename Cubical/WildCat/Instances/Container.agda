@@ -39,7 +39,7 @@ module Extent where
 
   module _ {F G : Container} (α : F ⇒ G) where
     open Container F
-    open Container G renaming 
+    open Container G renaming
       (
         S to S′
       ; P to P′
@@ -49,7 +49,7 @@ module Extent where
     Ext-hom : WildNatTrans _ _ (Ext-ob F) (Ext-ob G)
     Ext-hom .N-ob X (s , px) = σ s , π s » px
     Ext-hom .N-hom f = refl
-    
+
     module _ where
       private
         G$ = Ext-ob G .F-hom
@@ -63,13 +63,13 @@ module Extent where
   Extent .F-ob = Ext-ob
   Extent .F-hom = Ext-hom
   Extent .F-id = makeNatTransPath refl (λ _ → refl)
-  Extent .F-seq α β = 
+  Extent .F-seq α β =
     makeNatTransPath refl (λ _ → lUnit refl)
     where
     open import Cubical.Foundations.GroupoidLaws
     -- Second goal was:
-    -- idfun 
-    --   (refl ≡ 
+    -- idfun
+    --   (refl ≡
     --     -- (cong (_» (Ext-hom β .N-ob Y)) (Ext-hom α .N-hom f)) ∙ refl
     --     -- God knows why the left path is refl
     --     refl ∙ refl

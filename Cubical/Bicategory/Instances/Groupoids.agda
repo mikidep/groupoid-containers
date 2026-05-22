@@ -26,7 +26,7 @@ module _ where
   GpdWildCat .⋆IdL _ = refl
   GpdWildCat .⋆IdR _ = refl
   GpdWildCat .⋆Assoc _ _ _ = refl
-  
+
 isBicategory-Gpd : IsBicategory GpdWildCat
 isBicategory-Gpd .triangle f g = sym (lUnit _)
 isBicategory-Gpd .pentagon f g h k = cong (refl ∙_) (sym (lUnit _))

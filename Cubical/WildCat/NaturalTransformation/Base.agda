@@ -17,12 +17,12 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
     open WildFunctor
     open WildNatTrans
     open import Cubical.Foundations.Isomorphism
-    
+
     WNTΣ : Type (ℓ-max (ℓ-max ℓC ℓC') ℓD')
-    WNTΣ = Σ ((x : C .ob) → D [ F .F-ob x , G .F-ob x ]) 
-      (λ N-ob' 
-        → {x y : C .ob} (f : C [ x , y ]) 
-        → (F .F-hom f) ⋆⟨ D ⟩ (N-ob' y) 
+    WNTΣ = Σ ((x : C .ob) → D [ F .F-ob x , G .F-ob x ])
+      (λ N-ob'
+        → {x y : C .ob} (f : C [ x , y ])
+        → (F .F-hom f) ⋆⟨ D ⟩ (N-ob' y)
           ≡ (N-ob' x) ⋆⟨ D ⟩ (G .F-hom f))
 
     WildNatTrans→Σ : WildNatTrans _ _ F G → WNTΣ
@@ -49,7 +49,7 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
     open WildFunctor
     open WildNatTrans
 
-    makeNatTransPath : 
+    makeNatTransPath :
       (p : α .N-ob ≡ β .N-ob)
       → (∀ {x y} f → PathP (λ i → (F .F-hom {x} {y} f) ⋆⟨ D ⟩ (p i _) ≡ (p i _) ⋆⟨ D ⟩ (G .F-hom f))
           (α .N-hom f) (β .N-hom f))
@@ -85,7 +85,7 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓ
   module _ {F G : WildFunctor C D} (α : WildNatTrans _ _ F G) (H : WildFunctor D E) where
     open WildNatTrans
     open WildNatTrans α using () renaming (N-ob to α₀)
-    open WildFunctor 
+    open WildFunctor
     open WildFunctor F using () renaming (F-hom to F₁)
     open WildFunctor G using () renaming (F-hom to G₁)
     open WildFunctor H using () renaming (F-hom to H₁)
@@ -97,15 +97,15 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓ
 
     whiskerR-natTrans : WildNatTrans _ _ (F ⋆F H) (G ⋆F H)
     whiskerR-natTrans .N-ob X = H .F-hom (α .N-ob X)
-    whiskerR-natTrans .N-hom f = 
-      sym (H .F-seq _ _) 
-      ∙ cong H₁ (α .N-hom f) 
-      ∙ H .F-seq _ _ 
-      --   H₁ (F₁ f) ⋆ H₁ (α₀ Y) 
-      -- ≡⟨ sym (H .F-seq _ _) ⟩ 
-      --   H₁ (F₁ f ⋆ᵈ α₀ Y) 
-      -- ≡⟨ cong H₁ (α .N-hom f)⟩ 
-      --   H₁ (α₀ X ⋆ᵈ G₁ f) 
-      -- ≡⟨ H .F-seq _ _ ⟩ 
+    whiskerR-natTrans .N-hom f =
+      sym (H .F-seq _ _)
+      ∙ cong H₁ (α .N-hom f)
+      ∙ H .F-seq _ _
+      --   H₁ (F₁ f) ⋆ H₁ (α₀ Y)
+      -- ≡⟨ sym (H .F-seq _ _) ⟩
+      --   H₁ (F₁ f ⋆ᵈ α₀ Y)
+      -- ≡⟨ cong H₁ (α .N-hom f)⟩
+      --   H₁ (α₀ X ⋆ᵈ G₁ f)
+      -- ≡⟨ H .F-seq _ _ ⟩
       --   H₁ (α₀ X) ⋆ H₁ (G₁ f)
       -- ∎

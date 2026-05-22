@@ -2,7 +2,7 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Functor
 
-module Cubical.Bicategory.Copresheaf.Yoneda (ℓ : Level) 
+module Cubical.Bicategory.Copresheaf.Yoneda (ℓ : Level)
   -- {ℓC ℓC' : Level}
   (C : Bicategory ℓ ℓ)
   where
@@ -11,7 +11,7 @@ open import Cubical.Bicategory.Copresheaf ℓ
 open import Cubical.Bicategory.Instances.Copresheaf ℓ
 
 CopshC : Bicategory _ _
-CopshC = CopshBicat C 
+CopshC = CopshBicat C
 
 module C = Bicategory C
 
@@ -28,7 +28,7 @@ module _ (c : C.ob) where
   open import Prelude.ExtraGpdLaws
   open import Prelude.Square
 
-  C[c,-] : Copresheaf C  
+  C[c,-] : Copresheaf C
   C[c,-] .str .F-ob x = C.Hom[ c , x ] , C.isGpdHom
   C[c,-] .str .F-hom f h = h C.⋆ f
   C[c,-] .str .F-id = funExt C.⋆IdR
@@ -49,16 +49,16 @@ module _ (c : C.ob) where
     --         (sym (C.⋆Assoc h C.id f) ∙ C.⋆Assoc h C.id f)
     --           ∙ h C.◃ C.⋆IdL f
     --       ≡⟨ sym assoc-inf ⟩
-    --         sym (C.⋆Assoc h C.id f) 
+    --         sym (C.⋆Assoc h C.id f)
     --           ∙ C.⋆Assoc h C.id f ∙ h C.◃ C.⋆IdL f
-    --       ≡⟨ cong (sym (C.⋆Assoc h C.id f) ∙_) 
+    --       ≡⟨ cong (sym (C.⋆Assoc h C.id f) ∙_)
     --           (C.triangle h f) ⟩
     --         sym (C.⋆Assoc h C.id f) ∙ C.⋆IdR h C.▹ f
     --       ∎
     --     )
     -- ))
     where open import Prelude
-  C[c,-] .is2Copresheaf .F-IdR f = funExtSquare λ h → 
+  C[c,-] .is2Copresheaf .F-IdR f = funExtSquare λ h →
       sym (C.⋆Assoc h f C.id) ∙ C.⋆IdR (h C.⋆ f)
     ≡⟨ {! C.triangle !} ⟩
       h C.◃ C.⋆IdR f

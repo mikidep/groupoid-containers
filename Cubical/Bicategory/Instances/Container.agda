@@ -33,7 +33,7 @@ module _ (F G : Container) where
   open Container G using ()
     renaming (str to ⟨G⟩)
 
-  infixr 18 _⇒_ 
+  infixr 18 _⇒_
   _⇒_ : Type
   _⇒_ = ⟨F⟩ WC.⇒ ⟨G⟩
 
@@ -41,14 +41,14 @@ module _ where
   open import Cubical.WildCat.Instances.Container
   open WildCat
   module W = WildCat ContainerWildCat
-  
+
   GpdContWildCat : WildCat _ _
   GpdContWildCat .ob = Container
-  GpdContWildCat .Hom[_,_] = _⇒_ 
+  GpdContWildCat .Hom[_,_] = _⇒_
   GpdContWildCat .id     = W.id
   GpdContWildCat ._⋆_    = W._⋆_
-  GpdContWildCat .⋆IdL   = W.⋆IdL  
-  GpdContWildCat .⋆IdR   = W.⋆IdR  
+  GpdContWildCat .⋆IdL   = W.⋆IdL
+  GpdContWildCat .⋆IdR   = W.⋆IdR
   GpdContWildCat .⋆Assoc = W.⋆Assoc
 
 module _ {F G : Container} where
@@ -62,9 +62,9 @@ module _ {F G : Container} where
   open import Cubical.Foundations.HLevels
 
   isGroupoidGpdContHom : isGroupoid (F ⇒ G)
-  isGroupoidGpdContHom = isOfHLevelRespectEquiv 3 
-    (invEquiv ContHomEquivΣ) 
-    (isGroupoidΣ (isGroupoidΠ λ _ → isGpdS′) 
+  isGroupoidGpdContHom = isOfHLevelRespectEquiv 3
+    (invEquiv ContHomEquivΣ)
+    (isGroupoidΣ (isGroupoidΠ λ _ → isGpdS′)
       λ _ → isGroupoidΠ2 λ s _ → isGpdP {s}
     )
     where
@@ -103,7 +103,7 @@ module Extent where
     open Copresheaf using (str; is2Copresheaf)
 
     Ext-ob : Copresheaf GPD
-    Ext-ob .str .F-ob (X , isGpdX) = Σ S (λ s → P s → X) 
+    Ext-ob .str .F-ob (X , isGpdX) = Σ S (λ s → P s → X)
       , isGroupoidΣ isGpdS λ _ → isGroupoidΠ λ _ → isGpdX
     Ext-ob .str .F-hom f (s , px) = s , px » f
     Ext-ob .str .F-id = refl
@@ -115,7 +115,7 @@ module Extent where
 
   module _ {F G : Container} (α : F ⇒ G) where
     open Container F using (isGpdP)
-    open Container G using () 
+    open Container G using ()
       renaming (
         S to S′
       ; P to P′
@@ -178,7 +178,7 @@ module Extent where
         F₁ to ⟦G⟧₁
       )
 
-    Ext-hom-inv : 
+    Ext-hom-inv :
       CPsh.2NatTrans (Ext-ob F) (Ext-ob G)
       → F ⇒ G
     Ext-hom-inv α = CMor σ π
@@ -190,7 +190,7 @@ module Extent where
         → ⟨ ⟦G⟧ A ⟩
       米→ A nat = nat A (idfun _)
       goal : ∀ (s : S) → Σ S′ (λ σs → P′ σs → P s)
-      goal s = 
+      goal s =
         米→
           (P s , isGpdP)
           λ X FP→X → α .fst .N-ob X (s , FP→X)
@@ -202,23 +202,23 @@ module Extent where
     open import Cubical.Foundations.Path
     isIso-Ext-hom : isIso (Ext-hom {F} {G})
     isIso-Ext-hom .fst = Ext-hom-inv
-    isIso-Ext-hom .snd .fst α = 
-      CPsh.2NatTrans≡ (WNatTrans≡ 
+    isIso-Ext-hom .snd .fst α =
+      CPsh.2NatTrans≡ (WNatTrans≡
         (funExt₂ λ {
           X (s , v) →
             sym (α□ v ≡$ (s , idfun _))
-        }) 
-        λ {X} {Y} f → 
+        })
+        λ {X} {Y} f →
           funExtSquare λ {
-            (s , v) → 
+            (s , v) →
               let
                 Ps : hGroupoid _
                 Ps = P s , isGpdP
                 F₁v = ⟦F⟧₁ {x = Ps} {y = X} v
-                goal : α□ (v » f) ≡ 
+                goal : α□ (v » f) ≡
                   F₁v ◃ α□ f ∙ α□ v ▹ ⟦G⟧₁ f
-                goal = 
-                    α□ (v » f) 
+                goal =
+                    α□ (v » f)
                   ≡⟨ rUnit _ ⟩
                     α□ (v » f) ∙ refl
                   ≡⟨ α .snd .N-hom-seq v f ⟩
@@ -229,7 +229,7 @@ module Extent where
               in flipSquare (compPathR→PathP∙∙ (
                 sym (α□ (v » f)) ≡$ (s , idfun (P s))
               ≡⟨ cong (λ p → sym p ≡$ (s , idfun (P s))) goal ⟩
-                sym (F₁v ◃ α□ f ∙ α□ v ▹ ⟦G⟧₁ f) 
+                sym (F₁v ◃ α□ f ∙ α□ v ▹ ⟦G⟧₁ f)
                   ≡$ (s , idfun (P s))
               ≡⟨ cong sym (congFunct (λ f → f (s , idfun (P s)))
                   (F₁v ◃ α□ f) (α□ v ▹ ⟦G⟧₁ f)) ⟩
@@ -238,7 +238,7 @@ module Extent where
                   ∙ (α□ v ▹ ⟦G⟧₁ f ≡$ (s , idfun (P s)))
                 )
               ≡⟨ symDistr _ _ ⟩
-                sym (α□ v ▹ ⟦G⟧₁ f ≡$ (s , idfun (P s))) 
+                sym (α□ v ▹ ⟦G⟧₁ f ≡$ (s , idfun (P s)))
                 ∙ sym (F₁v ◃ α□ f ≡$ (s , idfun (P s)))
               ∎
             ))

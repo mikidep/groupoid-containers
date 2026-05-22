@@ -26,10 +26,10 @@ module _ (C : WildCat ℓC ℓC') where
   module _
     (F G H : WildFunctor C TYPE) where
     open import Prelude
-  
+
     compWildNatTransTypes : WildNatTrans _ _ F G → WildNatTrans _ _ G H → WildNatTrans _ _ F H
     N-ob (compWildNatTransTypes η γ) X = N-ob η X » N-ob γ X
-    N-hom (compWildNatTransTypes η γ) {x = x} {y = y} f = 
+    N-hom (compWildNatTransTypes η γ) {x = x} {y = y} f =
       cong (_» (N-ob γ y)) (N-hom η f)
       ∙ cong (N-ob η x »_) (N-hom γ f)
 
@@ -41,7 +41,7 @@ module _ (C : WildCat ℓC ℓC') where
   Hom[_,_] WildCopshCat A B = WildNatTrans _ _ A B
   WildCat.id WildCopshCat = idWildNatTransTypes
   _⋆_ WildCopshCat α β = compWildNatTransTypes _ _ _ α β
-  ⋆IdL WildCopshCat α = 
+  ⋆IdL WildCopshCat α =
     makeNatTransPath
       refl
       λ f → sym (lUnit (α .N-hom f))
@@ -52,38 +52,38 @@ module _ (C : WildCat ℓC ℓC') where
   ⋆Assoc WildCopshCat α β γ =
     makeNatTransPath
       refl
-      λ f → 
+      λ f →
         cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
         ∙ sym assoc-inf
         where open import Prelude
         --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f) ∙ cong (α .N-ob _ »_) (β .N-hom f))
         --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        -- ≡⟨ cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _) ⟩ 
+        -- ≡⟨ cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _) ⟩
         --                 (
         --                   cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f))
         --                   ∙ cong (_» γ .N-ob _) (cong (α .N-ob _ »_) (β .N-hom f))
         --                 )
         --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        -- ≡⟨ sym assoc-inf ⟩ 
+        -- ≡⟨ sym assoc-inf ⟩
         --
         --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f))
         --                 ∙ (
         --                   cong (_» γ .N-ob _) (cong (α .N-ob _ »_) (β .N-hom f))
         --                   ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
         --                 )
-        -- ≡⟨ refl ??? ⟩ 
-        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f) 
+        -- ≡⟨ refl ??? ⟩
+        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f)
         --                 ∙ (
-        --                   cong (α .N-ob _ »_) (cong (_» γ .N-ob _) (β .N-hom f)) 
+        --                   cong (α .N-ob _ »_) (cong (_» γ .N-ob _) (β .N-hom f))
         --                   ∙ cong (α .N-ob _ »_) (cong (β .N-ob _ »_) (γ .N-hom f))
         --                 )
         -- ≡⟨
         --   -- cong (cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f) ∙_) (sym (cong-∙ (α .N-ob _ »_) (cong (_» γ .N-ob _) (β .N-hom f)) (cong (β .N-ob _ »_) (γ .N-hom f))))
         --   refl ???
-        -- ⟩ 
-        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f) 
+        -- ⟩
+        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f)
         --                 ∙ cong (α .N-ob _ »_) (
-        --                   cong (_» γ .N-ob _) (β .N-hom f) 
+        --                   cong (_» γ .N-ob _) (β .N-hom f)
         --                   ∙ cong (β .N-ob _ »_) (γ .N-hom f)
         --                 )
         -- ∎

@@ -11,7 +11,7 @@ module Cubical.Bicategory.Copresheaf.EndoConstructions.Base
   (ℓ : Level) where
 
 open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Copresheaf ℓ 
+open import Cubical.Bicategory.Copresheaf ℓ
   using (Copresheaf; GPD; Is2Copresheaf; 2NatTrans; Is2NatTrans)
 open import Cubical.Bicategory.Instances.Copresheaf ℓ
 

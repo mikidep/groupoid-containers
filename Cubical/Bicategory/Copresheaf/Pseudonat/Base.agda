@@ -12,18 +12,18 @@ open import Cubical.WildCat.Instances.WildCopresheaf as WC
 
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Copresheaf.Base ℓ
-open import Cubical.WildCat.NaturalTransformation.Base 
+open import Cubical.WildCat.NaturalTransformation.Base
   using (makeNatTransSquare)
 
 private
   variable
     ℓC ℓC' : Level
 
-open Bicategory GPD using () 
+open Bicategory GPD using ()
   renaming (
     str to ⟨GPD⟩;
     Hom[_,_] to D[_,_];
-    _⋆_ to _⋆ᵈ_; 
+    _⋆_ to _⋆ᵈ_;
     id to idᵈ;
     isGpdHom to isGpdHomGPD;
     ⋆IdL to D-⋆IdL;
@@ -34,11 +34,11 @@ open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
 module _ {C : Bicategory ℓC ℓC'} where
-  open Bicategory C using () 
+  open Bicategory C using ()
     renaming (
       str to ⟨C⟩;
-      Hom[_,_] to C[_,_]; 
-      id to idᶜ; 
+      Hom[_,_] to C[_,_];
+      id to idᶜ;
       _⋆_ to _⋆ᶜ_;
       ⋆IdL to C-⋆IdL;
       ⋆IdR to C-⋆IdR;
@@ -66,13 +66,13 @@ module _ {C : Bicategory ℓC ℓC'} where
     record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
       field
         N-hom-id :
-          ∀ {X} 
+          ∀ {X}
           →   α□ (idᶜ {X})
               ∙ α₀ X ◃ G-id
-            ≡ F-id ▹ α₀ X 
-        N-hom-seq : 
+            ≡ F-id ▹ α₀ X
+        N-hom-seq :
           ∀ {X} {Y} {Z} (f : C[ X , Y ]) (g : C[ Y , Z ])
-          →   α□ (f ⋆ᶜ g) 
+          →   α□ (f ⋆ᶜ g)
               ∙ α₀ X ◃ G-seq f g
             ≡ F-seq f g ▹ α₀ Z
               ∙ F₁ f ◃ α□ g
@@ -83,7 +83,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     isPropIs2NatTrans : isProp Is2NatTrans
     isPropIs2NatTrans αis βis i .N-hom-id {X} = aux i
       where
-      aux : αis .N-hom-id {X} ≡ βis .N-hom-id 
+      aux : αis .N-hom-id {X} ≡ βis .N-hom-id
       aux = isGpdHomGPD _ _ _ _ (αis .N-hom-id) (βis .N-hom-id)
     isPropIs2NatTrans αis βis i .N-hom-seq f g = aux i
       where
@@ -106,7 +106,7 @@ module _ {C : Bicategory ℓC ℓC'} where
 
     2NatTrans≡Equiv :
       (α .fst ≡ β .fst) ≃ (α ≡ β)
-    2NatTrans≡Equiv = Σ≡PropEquiv isPropIs2NatTrans 
+    2NatTrans≡Equiv = Σ≡PropEquiv isPropIs2NatTrans
 
     2NatTrans≡ :
       α .fst ≡ β .fst → α ≡ β
@@ -117,7 +117,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Prelude
       N₀ : 2NatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ]) 
+      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ])
         → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
@@ -128,9 +128,9 @@ module _ {C : Bicategory ℓC ℓC'} where
     2NatTransPath≡ {p} {q} N₀≡ = ΣSquareProp isPropIs2NatTrans aux
       where
       aux : cong fst p ≡ cong fst q
-      aux = makeNatTransSquare N₀≡ 
-        (isSet→SquareP 
-          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ 
+      aux = makeNatTransSquare N₀≡
+        (isSet→SquareP
+          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ
             λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ N₀≡ i j y) (N₀≡ i j x ⋆ᵈ G₁ f))
           (cong N₁ p) (cong N₁ q) refl refl
         )
@@ -146,7 +146,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Prelude
       N₀ : 2NatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ]) 
+      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ])
         → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
@@ -166,7 +166,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       snd□ = makeNatTransSquare
         ob-□
         (isSet→SquareP
-          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ 
+          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ
             λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ ob-□ i j y) (ob-□ i j x ⋆ᵈ G₁ f))
           (cong N₁ p) (cong N₁ q) (cong N₁ r) (cong N₁ s)
         )
@@ -179,10 +179,10 @@ module _ {C : Bicategory ℓC ℓC'} where
 
     open import Cubical.Foundations.HLevels
 
-    isGroupoidWildNatTrans : isGroupoid (WildNatTrans _ _ ⟨F⟩ ⟨G⟩) 
-    isGroupoidWildNatTrans = isOfHLevelRespectEquiv 3 (invEquiv WildNatTransEquivΣ) 
+    isGroupoidWildNatTrans : isGroupoid (WildNatTrans _ _ ⟨F⟩ ⟨G⟩)
+    isGroupoidWildNatTrans = isOfHLevelRespectEquiv 3 (invEquiv WildNatTransEquivΣ)
       (isGroupoidΣ (isGroupoidΠ λ _ → isGpdHomGPD)
-        λ x → isSet→isGroupoid (isSetImplicitΠ2 
+        λ x → isSet→isGroupoid (isSetImplicitΠ2
           λ _ _ → isSetΠ λ f → isGpdHomGPD _ _
         )
       )
@@ -191,7 +191,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Cubical.WildCat.NaturalTransformation.Base
 
     isGroupoid2NatTrans : isGroupoid (2NatTrans F G)
-    isGroupoid2NatTrans = isGroupoidΣ 
-      isGroupoidWildNatTrans 
+    isGroupoid2NatTrans = isGroupoidΣ
+      isGroupoidWildNatTrans
       λ _ → isProp→isOfHLevelSuc 2 (isPropIs2NatTrans _)
 

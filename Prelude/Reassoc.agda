@@ -23,7 +23,7 @@ data Ev : ℕ → (x y : A) → Type ℓ where
   _∷_ : ∀ {n} {x y z} (p : x ≡ y) (l : Ev n y z)
     → Ev (suc n) x z
 
-split : ∀ {x y} m {n} → Ev (m + n) x y 
+split : ∀ {x y} m {n} → Ev (m + n) x y
   → Σ[ z ∈ A ] Ev m x z × Ev n z y
 split zero ev = _ , nil , ev
 split (suc m) (p ∷ ev) =
@@ -59,6 +59,7 @@ nf-sound (_◆_ {m} {n} t t') ev =
   in cong₂ _∙_ (nf-sound t ev₁) (nf-sound t' ev₂)
     ∙ nf-split-∙ m ev
 
-reassoc : ∀ {n} {x y} (ev : Ev n x y) (t t' : Term n)
-  → embed t ev ≡ embed t' ev
-reassoc ev t t' = nf-sound t ev ∙ sym (nf-sound t' ev)
+abstract 
+  reassoc : ∀ {n} {x y} (ev : Ev n x y) (t t' : Term n)
+    → embed t ev ≡ embed t' ev
+  reassoc ev t t' = nf-sound t ev ∙ sym (nf-sound t' ev)

@@ -20,26 +20,26 @@ module _ (C : Bicategory ℓC ℓC') where
   module _ where
     open WildCat
     open WildNatTrans
-    
+
     CopshWildCat : WildCat _ _
     CopshWildCat .ob = Copresheaf C
     CopshWildCat .Hom[_,_] F G = 2NatTrans F G
     CopshWildCat .id = id2NatTrans _
     CopshWildCat ._⋆_ = comp2NatTrans
-    CopshWildCat .⋆IdL (α , _) = 2NatTrans≡ 
+    CopshWildCat .⋆IdL (α , _) = 2NatTrans≡
       (WNatTrans≡
-        refl 
+        refl
         λ f → sym (lUnit (α .N-hom f))
       )
-    CopshWildCat .⋆IdR (α , _) = 2NatTrans≡ 
-      (WNatTrans≡ 
-        refl 
+    CopshWildCat .⋆IdR (α , _) = 2NatTrans≡
+      (WNatTrans≡
+        refl
         λ f → sym (rUnit (α .N-hom f))
-      ) 
+      )
     CopshWildCat .⋆Assoc (α , _) (β , _) (γ , _) = 2NatTrans≡
       (WNatTrans≡
         refl
-        λ f → 
+        λ f →
           cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
           ∙ sym assoc-inf
       )
@@ -55,7 +55,7 @@ module _ (C : Bicategory ℓC ℓC') where
     open import Prelude.Square
 
     isBicatCopsh : IsBicategory CopshWildCat
-    isBicatCopsh .triangle α β = sym (PathP→compPathR∙∙ 
+    isBicatCopsh .triangle α β = sym (PathP→compPathR∙∙
         (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)) )
     isBicatCopsh .pentagon α β γ δ = 2NatTrans□ goal
       where
@@ -65,7 +65,7 @@ module _ (C : Bicategory ℓC ℓC') where
       N₀ = fst » N-ob
       midpath : N₀ (((α ⋆ β) ⋆ γ) ⋆ δ) ≡ N₀ (α ⋆ (β ⋆ (γ ⋆ δ)))
       midpath = refl
-      goal = 
+      goal =
           cong N₀ (⋆Assoc α β γ ▹ δ ∙ ⋆Assoc α (β ⋆ γ) δ ∙ α ◃ ⋆Assoc β γ δ)
         ≡⟨ congFunct N₀ (⋆Assoc α β γ ▹ δ) _ ⟩
           cong N₀ (⋆Assoc α β γ ▹ δ) ∙ cong N₀ (⋆Assoc α (β ⋆ γ) δ ∙ α ◃ ⋆Assoc β γ δ)
