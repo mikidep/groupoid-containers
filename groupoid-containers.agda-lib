@@ -6,4 +6,3 @@ flags:
   --guardedness
   --lossy-unification
   --hidden-argument-puns
-  --allow-unsolved-metas
