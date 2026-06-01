@@ -51,7 +51,9 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
 
     makeNatTransPath :
       (p : α .N-ob ≡ β .N-ob)
-      → (∀ {x y} f → PathP (λ i → (F .F-hom {x} {y} f) ⋆⟨ D ⟩ (p i _) ≡ (p i _) ⋆⟨ D ⟩ (G .F-hom f))
+      → (∀ {x y} (f : C [ x , y ]) → 
+        PathP (λ i → F .F-hom f ⋆⟨ D ⟩ p i _ 
+            ≡ p i _ ⋆⟨ D ⟩ G .F-hom f)
           (α .N-hom f) (β .N-hom f))
       → α ≡ β
     makeNatTransPath p q i .N-ob = p i

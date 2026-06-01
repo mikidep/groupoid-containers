@@ -186,6 +186,46 @@ module _ {C : WildCat ℓC ℓC'}
       ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
     d = sym (rUnit _) ∙ lUnit _
 
+
+module _ {C : WildCat ℓC ℓC'}
+  {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
+  {α β : WildNatTrans _ _ F G} where
+
+  open Whiskering C using ()
+    renaming (
+      _◃_ to _◃ᶜ_;
+      _▹_ to _▹ᶜ_;
+      _⋆₂_ to _⋆₂ᶜ_
+    )
+  open Whiskering D using (_◃_; _▹_)
+    renaming (_⋆₂_ to _⋆₂ᵈ_)
+
+  open WildNatTrans α using ()
+    renaming (N-ob to α₀; N-hom to α□)
+  open WildNatTrans β using ()
+    renaming (N-ob to β₀; N-hom to β□)
+  open 2FunctNotation F using (F₁; F₂)
+  open 2FunctNotation G using ()
+    renaming (
+      F₁ to G₁;
+      F₂ to G₂
+    )
+
+  -- TODO: Surely an equivalence
+  natTransPath→mod :
+    (m : ∀ x → α₀ x ≡ β₀ x)
+    → ∀ {x y} (f : C [ x , y ])
+    → Square
+      (α□ f)      
+      (β□ f)
+      (F₁ f ◃ m y)
+      (m x ▹ G₁ f)
+    → α□ f ∙ m x ▹ G₁ f
+      ≡ F₁ f ◃ m y ∙ β□ f
+  natTransPath→mod _ _ sq = 
+    Square→compPath (flipSquare sq)
+    where open import Cubical.Foundations.Path
+
 module _ (C : Bicategory ℓC ℓC')
   (D : Bicategory ℓD ℓD') where
 
