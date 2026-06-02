@@ -26,11 +26,11 @@ private
 
 module _ (F : GpdEndo) where
   open WildNatTrans
-  open Is2NatTrans
+  open IsPseudonat
 
   private module F = Copresheaf F
 
-  iMG-lUnit-ob : 2NatTrans (idEndo ⊗₀ F) F
+  iMG-lUnit-ob : PseudonatTrans (idEndo ⊗₀ F) F
   iMG-lUnit-ob .fst .N-ob X = idfun _
   iMG-lUnit-ob .fst .N-hom f = refl
   iMG-lUnit-ob .snd .N-hom-id = refl
@@ -39,7 +39,7 @@ module _ (F : GpdEndo) where
         (refl′ ◆ tm)
         ((refl′ ◆ tm) ◆ refl′ ◆ refl′)
 
-module _ {F G : GpdEndo} (α : 2NatTrans F G) where
+module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
   open Bicategory GpdEndoBicat using ()
     renaming (_⋆_ to _⨾_)
   open Bicategory GPD using (id; _◃_; _▹_)
@@ -55,8 +55,8 @@ module _ {F G : GpdEndo} (α : 2NatTrans F G) where
 
   open 2CellLaws ⟨GPD⟩
 
-  iMG-lUnit-hom : (id2NatTrans idEndo ⊗₁ α) ⨾ λ₀ G ≡ λ₀ F ⨾ α
-  iMG-lUnit-hom = 2NatTrans≡ $ makeNatTransPath 
+  iMG-lUnit-hom : (idPseudonatTrans idEndo ⊗₁ α) ⨾ λ₀ G ≡ λ₀ F ⨾ α
+  iMG-lUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
     (funExt λ X → F.F-id ▹ α₀ X) 
     λ f → aux f
     where
@@ -133,7 +133,7 @@ module _ {F G : GpdEndo} (α : 2NatTrans F G) where
 
 module _ (F : GpdEndo) where
   open WildNatTrans
-  open Is2NatTrans
+  open IsPseudonat
   open wildIsIso
 
   private module F = Copresheaf F
@@ -146,10 +146,10 @@ module _ (F : GpdEndo) where
     (F.F-seq f g ∷ nil)
     (refl′ ◆ refl′ ◆ tm)
     (tm ◆ refl′ ◆ refl′)
-  iMG-lUnit-isIs .sect = 2NatTrans≡ $ makeNatTransPath
+  iMG-lUnit-isIs .sect = PseudonatTrans≡ $ makeNatTransPath
     refl 
     λ f → sym (lUnit _)
-  iMG-lUnit-isIs .retr = 2NatTrans≡ $ makeNatTransPath
+  iMG-lUnit-isIs .retr = PseudonatTrans≡ $ makeNatTransPath
     refl
     λ f → sym (lUnit _)
 

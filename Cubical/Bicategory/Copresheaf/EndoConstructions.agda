@@ -24,11 +24,11 @@ open import Cubical.Bicategory.Copresheaf.EndoConstructions.WhiskR ℓ
 private _⊗₀_ = compEndo₀
 
 module _ {F G H K : GpdEndo}
-  (α : 2NatTrans F H)
-  (β : 2NatTrans G K) where
+  (α : PseudonatTrans F H)
+  (β : PseudonatTrans G K) where
 
   open import Prelude
-  compEndo₁ : 2NatTrans (F ⊗₀ G) (H ⊗₀ K)
+  compEndo₁ : PseudonatTrans (F ⊗₀ G) (H ⊗₀ K)
   compEndo₁ = α▹G ⋆ᵉ H◃β
     where
     open Bicategory (CopshBicat GPD) using ()
@@ -51,7 +51,7 @@ compEndo : WildFunctor
   (ProdCat GpdEndoWildCat GpdEndoWildCat) GpdEndoWildCat
 compEndo .F-ob = uncurry compEndo₀
 compEndo .F-hom = uncurry compEndo₁
-compEndo .F-id {F , G} = 2NatTrans≡ $ WNatTrans≡ 
+compEndo .F-id {F , G} = PseudonatTrans≡ $ WNatTrans≡ 
   (funExt λ X → G.F-id) 
   goal
   where
@@ -96,7 +96,7 @@ compEndo .F-id {F , G} = 2NatTrans≡ $ WNatTrans≡
         ∷ nil )
         (tm ◆ tm ◆ tm)
         (((tm ◆ refl′ ◆ tm) ◆ refl′) ◆ tm)
-compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = 2NatTrans≡ $ WNatTrans≡ 
+compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = PseudonatTrans≡ $ WNatTrans≡ 
   (funExt λ X → 
     F'.F-seq (α₀ X) (β₀ X) ▹ α'₀ (H.F₀ X) ▹ β'₀ (H.F₀ X)
     ∙ F'.F₁ (α₀ X) ◃ α'□ (β₀ X) ▹ β'₀ (H.F₀ X))

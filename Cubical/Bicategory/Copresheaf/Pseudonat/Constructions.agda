@@ -28,15 +28,14 @@ private
     ℓC ℓC' : Level
 
 module _ {C : Bicategory ℓC ℓC'} where
-  open Bicategory C using ()
+  private module C = Bicategory C
+
+  open C using ()
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_];
       id to idᶜ;
-      _⋆_ to _⋆ᶜ_;
-      ⋆IdL to C-⋆IdL;
-      ⋆IdR to C-⋆IdR;
-      ⋆Assoc to C-⋆Assoc
+      _⋆_ to _⋆ᶜ_
     )
 
   module _ (F : Copresheaf C) where
@@ -45,7 +44,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     open WildNatTrans
 
     open import Cubical.Foundations.Function
-    open Is2NatTrans
+    open IsPseudonat
     open import Cubical.Foundations.GroupoidLaws
     open import Prelude.ExtraGpdLaws
 
@@ -54,24 +53,24 @@ module _ {C : Bicategory ℓC ℓC'} where
     idWildNatTrans .N-hom _ = refl
     {-# INLINE idWildNatTrans #-}
 
-    id2NatTrans : 2NatTrans F F
-    id2NatTrans .fst = idWildNatTrans
-    id2NatTrans .snd .N-hom-id = sym (lUnit _)
-    id2NatTrans .snd .N-hom-seq f g =
+    idPseudonatTrans : PseudonatTrans F F
+    idPseudonatTrans .fst = idWildNatTrans
+    idPseudonatTrans .snd .N-hom-id = sym (lUnit _)
+    idPseudonatTrans .snd .N-hom-seq f g =
       sym (lUnit _)
       ∙ rUnit _
       ∙ cong (F-seq f g ∙_) (rUnit _)
 
   module _ {F G H : Copresheaf C}
-    (α : 2NatTrans F G)
-    (β : 2NatTrans G H) where
+    (α : PseudonatTrans F G)
+    (β : PseudonatTrans G H) where
 
     open WildNatTrans
     open WildNatTrans (fst α) using ()
       renaming (N-ob to α₀; N-hom to α□)
     open WildNatTrans (fst β) using ()
       renaming (N-ob to β₀; N-hom to β□)
-    open Is2NatTrans
+    open IsPseudonat
 
     open Copresheaf F using (F₀; F₁; F₂; F-id; F-seq)
       renaming (str to ⟨F⟩)
@@ -104,9 +103,9 @@ module _ {C : Bicategory ℓC ℓC'} where
       α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f
     {-# INLINE compWildNatTrans #-}
 
-    comp2NatTrans : 2NatTrans F H
-    comp2NatTrans .fst = compWildNatTrans
-    comp2NatTrans .snd .N-hom-id {X} =
+    compPseudonatTrans : PseudonatTrans F H
+    compPseudonatTrans .fst = compWildNatTrans
+    compPseudonatTrans .snd .N-hom-id {X} =
         (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
       ≡⟨ sym assoc-inf ⟩
         α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ ∙ α₀ X ◃ β₀ X ◃ H-id
@@ -119,7 +118,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       ≡⟨ cong (_▹ β₀ X) (α .snd .N-hom-id) ⟩
         F-id ▹ α₀ X ▹ β₀ X
       ∎
-    comp2NatTrans .snd .N-hom-seq {X} {Y} {Z} f g =
+    compPseudonatTrans .snd .N-hom-seq {X} {Y} {Z} f g =
         (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ᶜ g))
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
       ≡⟨ sym assoc-inf ⟩

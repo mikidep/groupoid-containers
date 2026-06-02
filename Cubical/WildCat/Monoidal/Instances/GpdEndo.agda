@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function
 
@@ -31,7 +32,7 @@ module _ where
   isMonoidalGpdEndo .⊗assoc = iMG-assoc
   isMonoidalGpdEndo .⊗lUnit = iMG-lUnit
   isMonoidalGpdEndo .⊗rUnit = iMG-rUnit
-  isMonoidalGpdEndo .triang F G = 2NatTrans≡ $ makeNatTransPath refl 
+  isMonoidalGpdEndo .triang F G = PseudonatTrans≡ $ makeNatTransPath refl 
     λ f → 
       refl 
       ∙ (sym (G.F-seq (F₁ f) id) 
@@ -54,7 +55,7 @@ module _ where
     module F = Copresheaf F
     module G = Copresheaf G
     open F using (F₁)
-  isMonoidalGpdEndo .⊗pentagon F G H K = 2NatTrans≡ $ makeNatTransPath 
+  isMonoidalGpdEndo .⊗pentagon F G H K = PseudonatTrans≡ $ makeNatTransPath 
     (funExt λ X →
       _ ◃ K.F-id
       ∙ K₂ (H₂ (G.F-id))

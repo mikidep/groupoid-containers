@@ -108,7 +108,6 @@ module Extent where
     Ext-ob .str .F-hom f (s , px) = s , px » f
     Ext-ob .str .F-id = refl
     Ext-ob .str .F-seq _ _ = refl
-    Ext-ob .is2Copresheaf .F-seq-nat _ _ = sym (lUnit _) ∙ rUnit _
     Ext-ob .is2Copresheaf .F-IdL _ = sym (lUnit _)
     Ext-ob .is2Copresheaf .F-IdR _ = sym (rUnit _)
     Ext-ob .is2Copresheaf .F-Assoc _ _ _ = cong (refl ∙_) (lUnit _)
@@ -125,30 +124,30 @@ module Extent where
     open import Cubical.WildCat.Functor
 
     open WildNatTrans
-    open CPsh.Is2NatTrans
-    Ext-hom : CPsh.2NatTrans (Ext-ob F) (Ext-ob G)
+    open CPsh.IsPseudonat
+    Ext-hom : CPsh.PseudonatTrans (Ext-ob F) (Ext-ob G)
     Ext-hom .fst .N-ob (X , _) (s , px) = σ s , π s » px
     Ext-hom .fst .N-hom f = refl
     Ext-hom .snd .N-hom-id = sym (lUnit _)
     Ext-hom .snd .N-hom-seq f g = cong (refl ∙_) (lUnit _)
 
   open import Cubical.Bicategory.Functor
-  open Functor using (str; is2Functor)
+  open Functor using (str; isPseudofunctor)
   open import Cubical.WildCat.Functor using (WildFunctor)
   open import Cubical.WildCat.NaturalTransformation.Base
     using () renaming (makeNatTransPath to WNatTrans≡)
   open WildFunctor
-  open Is2Functor
+  open IsPseudofunctor
   open import Cubical.Foundations.Path
 
   Extent : Functor ContainerBicat GpdEndoCat
   Extent .str .F-ob = Ext-ob
   Extent .str .F-hom = Ext-hom
-  Extent .str .F-id = CPsh.2NatTrans≡ (WNatTrans≡ refl (λ _ → refl))
-  Extent .str .F-seq _ _ = CPsh.2NatTrans≡ (WNatTrans≡ refl (λ _ → lUnit refl))
-  Extent .is2Functor .F-IdL = PathP→compPathL (CPsh.2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
-  Extent .is2Functor .F-IdR = PathP→compPathL (CPsh.2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
-  Extent .is2Functor .F-Assoc = CPsh.2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)
+  Extent .str .F-id = CPsh.PseudonatTrans≡ (WNatTrans≡ refl (λ _ → refl))
+  Extent .str .F-seq _ _ = CPsh.PseudonatTrans≡ (WNatTrans≡ refl (λ _ → lUnit refl))
+  Extent .isPseudofunctor .F-IdL = PathP→compPathL (CPsh.PseudonatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
+  Extent .isPseudofunctor .F-IdR = PathP→compPathL (CPsh.PseudonatTrans□ (funExtSquare λ X → funExtSquare λ x → refl))
+  Extent .isPseudofunctor .F-Assoc = CPsh.PseudonatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)
 
   module _ {F G : Container} (α : F ⇒ G) where
     open Container F
@@ -179,7 +178,7 @@ module Extent where
       )
 
     Ext-hom-inv :
-      CPsh.2NatTrans (Ext-ob F) (Ext-ob G)
+      CPsh.PseudonatTrans (Ext-ob F) (Ext-ob G)
       → F ⇒ G
     Ext-hom-inv α = CMor σ π
       where
@@ -203,7 +202,7 @@ module Extent where
     isIso-Ext-hom : isIso (Ext-hom {F} {G})
     isIso-Ext-hom .fst = Ext-hom-inv
     isIso-Ext-hom .snd .fst α =
-      CPsh.2NatTrans≡ (WNatTrans≡
+      CPsh.PseudonatTrans≡ (WNatTrans≡
         (funExt₂ λ {
           X (s , v) →
             sym (α□ v ≡$ (s , idfun _))
@@ -248,7 +247,7 @@ module Extent where
       open import Cubical.Foundations.Path
       open Bicategory GPD
         using (_◃_; _▹_)
-      open CPsh.Is2NatTrans
+      open CPsh.IsPseudonat
       α₀ = α .fst .N-ob
       α□ = α .fst .N-hom
     isIso-Ext-hom .snd .snd (CMor σ π) = refl

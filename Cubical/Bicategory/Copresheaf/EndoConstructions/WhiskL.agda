@@ -12,7 +12,7 @@ module Cubical.Bicategory.Copresheaf.EndoConstructions.WhiskL
 
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Copresheaf ℓ
-  using (Copresheaf; GPD; Is2Copresheaf; 2NatTrans; Is2NatTrans)
+  using (Copresheaf; GPD; Is2Copresheaf; PseudonatTrans; IsPseudonat)
 open import Cubical.Bicategory.Instances.Copresheaf ℓ
 open import Cubical.Bicategory.Copresheaf.EndoConstructions.Base ℓ
 open import Cubical.Bicategory.Copresheaf.EndoConstructions.Composite ℓ
@@ -26,7 +26,7 @@ open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
 open 2CellLaws ⟨GPD⟩
 
 module _ (F : GpdEndo) {G H : GpdEndo}
-  (α : 2NatTrans G H) where
+  (α : PseudonatTrans G H) where
   open import Prelude
 
   private module F = Copresheaf F
@@ -57,9 +57,9 @@ module _ (F : GpdEndo) {G H : GpdEndo}
   private _⊗₀_ = compEndo₀
 
   open WildNatTrans
-  open Is2NatTrans
+  open IsPseudonat
 
-  whiskL-pseudonat : 2NatTrans (F ⊗₀ G) (F ⊗₀ H)
+  whiskL-pseudonat : PseudonatTrans (F ⊗₀ G) (F ⊗₀ H)
   whiskL-pseudonat .fst .N-ob x = α₀ (F₀ x)
   whiskL-pseudonat .fst .N-hom f = α□ (F₁ f)
   whiskL-pseudonat .snd .N-hom-id {X} = goal

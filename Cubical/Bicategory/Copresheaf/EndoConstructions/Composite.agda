@@ -12,7 +12,7 @@ module Cubical.Bicategory.Copresheaf.EndoConstructions.Composite
 
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Copresheaf ℓ
-  using (Copresheaf; GPD; Is2Copresheaf; 2NatTrans; Is2NatTrans)
+  using (Copresheaf; GPD; Is2Copresheaf; PseudonatTrans; IsPseudonat)
 open import Cubical.Bicategory.Copresheaf.EndoConstructions.Base ℓ
 
 open Copresheaf using (str; is2Copresheaf)

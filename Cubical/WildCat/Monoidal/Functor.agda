@@ -80,7 +80,7 @@ module ⊗CohSides (F : WildFunctor C D) where
   F[-]⊗F[-] = comp-WildFunctor (ProdFunctor F F) _⊗ᵈ_
   F[-⊗-] = comp-WildFunctor _⊗ᶜ_ F
 
-record IsMonoidalFunctor (F : WildFunctor C D) 
+record IsMonoidal (F : WildFunctor C D) 
   : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
   open WildFunctor F using () 
     renaming (F-ob to F₀; F-hom to F₁)
@@ -106,3 +106,15 @@ record IsMonoidalFunctor (F : WildFunctor C D)
         ≡ (D.id ⊗ᵈ₁ F-⊗₀ (y , z))
         ⋆ᵈ (F-⊗₀ (x , y ⊗ᶜ₀ z)
           ⋆ᵈ F₁ (⊗assocᶜ₀ (x , y , z)))
+
+record IsStrongMonoidal (F : WildFunctor C D) 
+  : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
+  field
+    isMonoidal : IsMonoidal F
+  open IsMonoidal isMonoidal public
+  field
+    isIsoF-𝟙 : wildIsIso {C = D} F-𝟙
+    isIsoF-⊗ : (x y : C₀) → wildIsIso {C = D} (F-⊗ .N-ob (x , y))
+
+MonoidalFunctor = Σ (WildFunctor C D) IsMonoidal
+StrongMonoidalFunctor = Σ (WildFunctor C D) IsStrongMonoidal

@@ -23,20 +23,20 @@ module _ (C : Bicategory ℓC ℓC') where
 
     CopshWildCat : WildCat _ _
     CopshWildCat .ob = Copresheaf C
-    CopshWildCat .Hom[_,_] F G = 2NatTrans F G
-    CopshWildCat .id = id2NatTrans _
-    CopshWildCat ._⋆_ = comp2NatTrans
-    CopshWildCat .⋆IdL (α , _) = 2NatTrans≡
+    CopshWildCat .Hom[_,_] F G = PseudonatTrans F G
+    CopshWildCat .id = idPseudonatTrans _
+    CopshWildCat ._⋆_ = compPseudonatTrans
+    CopshWildCat .⋆IdL (α , _) = PseudonatTrans≡
       (WNatTrans≡
         refl
         λ f → sym (lUnit (α .N-hom f))
       )
-    CopshWildCat .⋆IdR (α , _) = 2NatTrans≡
+    CopshWildCat .⋆IdR (α , _) = PseudonatTrans≡
       (WNatTrans≡
         refl
         λ f → sym (rUnit (α .N-hom f))
       )
-    CopshWildCat .⋆Assoc (α , _) (β , _) (γ , _) = 2NatTrans≡
+    CopshWildCat .⋆Assoc (α , _) (β , _) (γ , _) = PseudonatTrans≡
       (WNatTrans≡
         refl
         λ f →
@@ -56,12 +56,12 @@ module _ (C : Bicategory ℓC ℓC') where
 
     isBicatCopsh : IsBicategory CopshWildCat
     isBicatCopsh .triangle α β = sym (PathP→compPathR∙∙
-        (2NatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)) )
-    isBicatCopsh .pentagon α β γ δ = 2NatTrans□ goal
+        (PseudonatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)) )
+    isBicatCopsh .pentagon α β γ δ = PseudonatTrans□ goal
       where
       open WildNatTrans
       open import Prelude
-      N₀ : ∀ {a b : Copresheaf C} → 2NatTrans a b → _
+      N₀ : ∀ {a b : Copresheaf C} → PseudonatTrans a b → _
       N₀ = fst » N-ob
       midpath : N₀ (((α ⋆ β) ⋆ γ) ⋆ δ) ≡ N₀ (α ⋆ (β ⋆ (γ ⋆ δ)))
       midpath = refl
@@ -78,7 +78,7 @@ module _ (C : Bicategory ℓC ℓC') where
         ≡⟨ sym (congFunct N₀ (⋆Assoc (α ⋆ β) γ δ) _) ⟩
           cong N₀ (⋆Assoc (α ⋆ β) γ δ ∙ ⋆Assoc α β (γ ⋆ δ))
         ∎
-    isBicatCopsh .isGpdHom = isGroupoid2NatTrans
+    isBicatCopsh .isGpdHom = isGroupoidPseudonatTrans
 
   open Bicategory
   CopshBicat : Bicategory _ _

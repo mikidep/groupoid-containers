@@ -28,26 +28,20 @@ open Bicategory GPD using ()
     Hom[_,_] to D[_,_];
     _⋆_ to _⋆ᵈ_;
     _⋆₂_ to _⋆₂ᵈ_;
-    id to idᵈ;
-    isGpdHom to isGpdHomGPD;
-    ⋆IdL to D-⋆IdL;
-    ⋆IdR to D-⋆IdR;
-    ⋆Assoc to D-⋆Assoc
+    id to idᵈ
   )
 open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
 module _ (C : Bicategory ℓC ℓC') where
-  open Bicategory C using ()
+  private module C = Bicategory C
+  open C using ()
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_];
       id to idᶜ;
       _⋆_ to _⋆ᶜ_;
-      _⋆₂_ to _⋆₂ᶜ_;
-      ⋆IdL to C-⋆IdL;
-      ⋆IdR to C-⋆IdR;
-      ⋆Assoc to C-⋆Assoc
+      _⋆₂_ to _⋆₂ᶜ_
     )
 
   record Is2Copresheaf
@@ -58,18 +52,18 @@ module _ (C : Bicategory ℓC ℓC') where
       F-IdL : ∀ {x y} (f : C[ x , y ])
         → F-seq idᶜ f
           ∙ F-id ▹ F₁ f
-          ≡ F₂ (C-⋆IdL f)
+          ≡ F₂ (C.⋆IdL f)
       F-IdR : ∀ {x y} (f : C[ x , y ])
         → F-seq f idᶜ
           ∙ F₁ f ◃ F-id
-          ≡ F₂ (C-⋆IdR f)
+          ≡ F₂ (C.⋆IdR f)
       F-Assoc : ∀ {x y z w}
         (f : C[ x , y ])
         (g : C[ y , z ])
         (h : C[ z , w ])
         → F-seq (f ⋆ᶜ g) h
           ∙ F-seq f g ▹ F₁ h
-          ≡ F₂ (C-⋆Assoc f g h)
+          ≡ F₂ (C.⋆Assoc f g h)
           ∙ F-seq f (g ⋆ᶜ h)
           ∙ F₁ f ◃ F-seq g h
 

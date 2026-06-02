@@ -34,15 +34,13 @@ open Whiskering ⟨GPD⟩
 open 2CellLaws ⟨GPD⟩
 
 module _ {C : Bicategory ℓC ℓC'} where
-  open Bicategory C using ()
+  private module C = Bicategory C
+  open C using ()
     renaming (
       str to ⟨C⟩;
       Hom[_,_] to C[_,_];
       id to idᶜ;
-      _⋆_ to _⋆ᶜ_;
-      ⋆IdL to C-⋆IdL;
-      ⋆IdR to C-⋆IdR;
-      ⋆Assoc to C-⋆Assoc
+      _⋆_ to _⋆ᶜ_
     )
 
   open Copresheaf using () renaming (str to ⟨_⟩)
@@ -63,7 +61,7 @@ module _ {C : Bicategory ℓC ℓC'} where
         F₂ to G₂
       )
 
-    record Is2NatTrans : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
+    record IsPseudonat : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
       field
         N-hom-id :
           ∀ {X}
@@ -79,23 +77,23 @@ module _ {C : Bicategory ℓC ℓC'} where
               ∙ α□ f ▹ G₁ g
 
     open import Cubical.Foundations.HLevels
-    open Is2NatTrans
-    isPropIs2NatTrans : isProp Is2NatTrans
-    isPropIs2NatTrans αis βis i .N-hom-id {X} = aux i
+    open IsPseudonat
+    isPropIsPseudonat : isProp IsPseudonat
+    isPropIsPseudonat αis βis i .N-hom-id {X} = aux i
       where
       aux : αis .N-hom-id {X} ≡ βis .N-hom-id
       aux = isGpdHomGPD _ _ _ _ (αis .N-hom-id) (βis .N-hom-id)
-    isPropIs2NatTrans αis βis i .N-hom-seq f g = aux i
+    isPropIsPseudonat αis βis i .N-hom-seq f g = aux i
       where
       aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
       aux = isGpdHomGPD _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
 
   module _ (F G : Copresheaf C) where
     open Copresheaf using () renaming (str to ⟨_⟩)
-    2NatTrans = Σ (WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) (Is2NatTrans {F} {G})
+    PseudonatTrans = Σ (WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) (IsPseudonat {F} {G})
 
   module _ {F G : Copresheaf C}
-    {α β : 2NatTrans F G} where
+    {α β : PseudonatTrans F G} where
     open Copresheaf F using (F₁)
     open Copresheaf G using ()
       renaming (F₁ to G₁)
@@ -104,28 +102,28 @@ module _ {C : Bicategory ℓC ℓC'} where
     open import Cubical.Data.Sigma.Properties
     open import Cubical.Foundations.Equiv
 
-    2NatTrans≡Equiv :
+    PseudonatTrans≡Equiv :
       (α .fst ≡ β .fst) ≃ (α ≡ β)
-    2NatTrans≡Equiv = Σ≡PropEquiv isPropIs2NatTrans
+    PseudonatTrans≡Equiv = Σ≡PropEquiv isPropIsPseudonat
 
-    2NatTrans≡ :
+    PseudonatTrans≡ :
       α .fst ≡ β .fst → α ≡ β
-    2NatTrans≡ = equivFun 2NatTrans≡Equiv
+    PseudonatTrans≡ = equivFun PseudonatTrans≡Equiv
 
     private
       open WildNatTrans
       open import Prelude
-      N₀ : 2NatTrans F G → _
+      N₀ : PseudonatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ])
+      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C[ x , y ])
         → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
-    2NatTransPath≡ :
+    PseudonatTransPath≡ :
       ∀ {p q : α ≡ β}
       → cong N₀ p ≡ cong N₀ q
       → p ≡ q
-    2NatTransPath≡ {p} {q} N₀≡ = ΣSquareProp isPropIs2NatTrans aux
+    PseudonatTransPath≡ {p} {q} N₀≡ = ΣSquareProp isPropIsPseudonat aux
       where
       aux : cong fst p ≡ cong fst q
       aux = makeNatTransSquare N₀≡
@@ -136,7 +134,7 @@ module _ {C : Bicategory ℓC ℓC'} where
         )
 
   module _ {F G : Copresheaf C}
-    {α β γ δ : 2NatTrans F G} where
+    {α β γ δ : PseudonatTrans F G} where
     open Copresheaf F using (F₁)
     open Copresheaf G using ()
       renaming (F₁ to G₁)
@@ -144,22 +142,22 @@ module _ {C : Bicategory ℓC ℓC'} where
     private
       open WildNatTrans
       open import Prelude
-      N₀ : 2NatTrans F G → _
+      N₀ : PseudonatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : 2NatTrans F G) {x y} (f : C[ x , y ])
+      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C[ x , y ])
         → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
     open import Cubical.Foundations.HLevels
 
-    2NatTrans□ :
+    PseudonatTrans□ :
       ∀ {p : α ≡ β}
       → {q : γ ≡ δ}
       → {r : α ≡ γ}
       → {s : β ≡ δ}
       → (ob-□ : Square (cong N₀ p) (cong N₀ q) (cong N₀ r) (cong N₀ s))
       → Square p q r s
-    2NatTrans□ {p} {q} {r} {s} ob-□ = ΣSquareProp isPropIs2NatTrans snd□
+    PseudonatTrans□ {p} {q} {r} {s} ob-□ = ΣSquareProp isPropIsPseudonat snd□
       where
       open import Prelude.Square
       snd□ : Square (cong fst p) (cong fst q) (cong fst r) (cong fst s)
@@ -190,8 +188,8 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Cubical.Foundations.Equiv
       open import Cubical.WildCat.NaturalTransformation.Base
 
-    isGroupoid2NatTrans : isGroupoid (2NatTrans F G)
-    isGroupoid2NatTrans = isGroupoidΣ
+    isGroupoidPseudonatTrans : isGroupoid (PseudonatTrans F G)
+    isGroupoidPseudonatTrans = isGroupoidΣ
       isGroupoidWildNatTrans
-      λ _ → isProp→isOfHLevelSuc 2 (isPropIs2NatTrans _)
+      λ _ → isProp→isOfHLevelSuc 2 (isPropIsPseudonat _)
 
