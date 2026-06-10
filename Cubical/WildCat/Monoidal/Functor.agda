@@ -1,10 +1,8 @@
-
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function
-open import Cubical.Data.Unit
 
 open import Cubical.WildCat.Base
-open import Cubical.WildCat.BraidedSymmetricMonoidal
+open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Product
 open import Cubical.Data.Sigma renaming (_×_ to _×'_)
@@ -12,23 +10,24 @@ open import Cubical.WildCat.Product.Functor
 
 module Cubical.WildCat.Monoidal.Functor
   {ℓC ℓC' ℓD ℓD' : Level} 
-  (C : WildCat ℓC ℓC')
-  (D : WildCat ℓD ℓD')
-  (isMonCatC : isMonoidalWildCat C)
-  (isMonCatD : isMonoidalWildCat D)
+  (MC : MonoidalWildCat ℓC ℓC')
+  (MD : MonoidalWildCat ℓD ℓD')
   where
 
 private
+  C = MC .fst
+  D = MD .fst
+
   module C = WildCat C
   module D = WildCat D
-  module iMC = isMonoidalWildCat isMonCatC
-  module iMD = isMonoidalWildCat isMonCatD
+  module iMC = isMonoidalWildCat (MC .snd)
+  module iMD = isMonoidalWildCat (MD .snd)
 
 open C using ()
   renaming (ob to C₀; Hom[_,_] to C[_,_]; _⋆_ to _⋆ᶜ_)
 open D using ()
   renaming (Hom[_,_] to D[_,_]; _⋆_ to _⋆ᵈ_)
-open isMonoidalWildCat isMonCatC using ()
+open iMC using ()
   renaming (
     𝟙 to 𝟙ᶜ; 
     _⊗_ to _⊗ᶜ_;
@@ -36,7 +35,7 @@ open isMonoidalWildCat isMonCatC using ()
     ⊗rUnit to ⊗rUnitᶜ;
     ⊗assoc to ⊗assocᶜ
   )
-open isMonoidalWildCat isMonCatD using ()
+open iMD using ()
   renaming (
     𝟙 to 𝟙ᵈ; 
     _⊗_ to _⊗ᵈ_;
@@ -66,14 +65,8 @@ private
   _⊗ᵈ₀_ = curry (_⊗ᵈ_ .WildFunctor.F-ob)
   _⊗ᵈ₁_ = λ {x y} → curry (_⊗ᵈ_ .WildFunctor.F-hom {x} {y})
 
--- stricter defitinitions for more succint compositions
-
 module ⊗CohSides (F : WildFunctor C D) where
   open WildFunctor
-
---   private module F = WildFunctor F
---   open F using () 
---     renaming (F-ob to F₀; F-hom to F₁)
 
   F[-]⊗F[-] F[-⊗-] : WildFunctor (C × C) D
   

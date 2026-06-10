@@ -2,7 +2,7 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function
 
-open import Cubical.WildCat.BraidedSymmetricMonoidal
+open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 open import Cubical.WildCat.NaturalTransformation.Base
 
@@ -70,3 +70,6 @@ module _ where
     open G using () renaming (F₁ to G₁; F₂ to G₂)
     open H using () renaming (F₁ to H₁; F₂ to H₂)
     open K using () renaming (F₁ to K₁; F₂ to K₂)
+
+MonoidalGpdEndo : MonoidalWildCat _ _
+MonoidalGpdEndo = GpdEndoWildCat , isMonoidalGpdEndo

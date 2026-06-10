@@ -8,7 +8,7 @@ open import Cubical.WildCat.Product
 
 module Cubical.WildCat.Product.Functor where
 
-variable
+private variable
   ℓA ℓA' ℓB ℓB' ℓC ℓC' ℓD ℓD' : Level 
   A : WildCat ℓA ℓA'
   B : WildCat ℓB ℓB'

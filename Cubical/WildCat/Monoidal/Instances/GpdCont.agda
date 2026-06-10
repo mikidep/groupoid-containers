@@ -9,7 +9,7 @@ open import Cubical.Bicategory.Instances.Container
 open import Cubical.WildCat.Base 
 open import Cubical.WildCat.Functor 
 open import Cubical.WildCat.Product 
-open import Cubical.WildCat.BraidedSymmetricMonoidal
+open import Cubical.WildCat.Monoidal.Base
 
 open import Cubical.WildCat.Monoidal.Instances.Container as MW
   using ()
@@ -98,3 +98,8 @@ isMonoidalGpdCont .⊗lUnit = iMC-⊗lUnit
 isMonoidalGpdCont .⊗rUnit = iMC-⊗rUnit
 isMonoidalGpdCont .triang _ _ = refl
 isMonoidalGpdCont .⊗pentagon _ _ _ _ = refl
+
+
+MonoidalContainer = MonoidalWildCat _ _
+MonoidalGpdCont = ContainerWildCat isMonoidalGpdCont
+

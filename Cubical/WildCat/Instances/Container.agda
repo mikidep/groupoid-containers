@@ -3,6 +3,7 @@ open import Prelude
 open import Cubical.WildCat.Base
 
 open import Cubical.Container.Base
+import Cubical.Container.Constructions as CC
 
 module Cubical.WildCat.Instances.Container where
 
@@ -11,13 +12,15 @@ open WildCat
 ContainerWildCat : WildCat _ _
 ContainerWildCat .ob = Container
 ContainerWildCat .Hom[_,_] = _⇒_
-ContainerWildCat .id = CMor (idfun _) (λ s → idfun _)
-ContainerWildCat ._⋆_ (CMor σ π) (CMor σ′ π′) = CMor (σ » σ′) (λ s → π′ (σ s) » π s)
+ContainerWildCat .id = CC.Morphisms.id
+ContainerWildCat ._⋆_ = CC.Morphisms._⋆_
 ContainerWildCat .⋆IdL _ = refl
 ContainerWildCat .⋆IdR _ = refl
 ContainerWildCat .⋆Assoc _ _ _ = refl
 
 module Extent where
+  open CC.Extent
+
   open import Cubical.WildCat.Functor
   open import Cubical.WildCat.NaturalTransformation.Base
   open import Cubical.WildCat.Instances.WildCopresheaf
@@ -32,8 +35,8 @@ module Extent where
   module _ (F : Container) where
     open Container F
     Ext-ob : WildFunctor (TypeCat ℓ-zero) (TypeCat ℓ-zero)
-    Ext-ob .F-ob X = Σ S (λ s → P s → X)
-    Ext-ob .F-hom f (s , px) = s , px » f
+    Ext-ob .F-ob = ⟦ F ⟧₀
+    Ext-ob .F-hom = ⟦ F ⟧₁
     Ext-ob .F-id = refl
     Ext-ob .F-seq α β = refl
 
@@ -47,17 +50,8 @@ module Extent where
     open _⇒_ α
 
     Ext-hom : WildNatTrans _ _ (Ext-ob F) (Ext-ob G)
-    Ext-hom .N-ob X (s , px) = σ s , π s » px
+    Ext-hom .N-ob = Ext₁ α
     Ext-hom .N-hom f = refl
-
-    module _ where
-      private
-        G$ = Ext-ob G .F-hom
-      -- what′s going on here?
-      -- (S ⊲ P) ⇒ G ≃ Π(s : S) . ⟦G⟧ (P s)
-      _ : Ext-hom .N-ob  ≡ λ where
-        X (s , px) → G$ px (σ s , π s)
-      _ = refl
 
   Extent : WildFunctor ContainerWildCat TypeEndoCat
   Extent .F-ob = Ext-ob
@@ -67,10 +61,3 @@ module Extent where
     makeNatTransPath refl (λ _ → lUnit refl)
     where
     open import Cubical.Foundations.GroupoidLaws
-    -- Second goal was:
-    -- idfun
-    --   (refl ≡
-    --     -- (cong (_» (Ext-hom β .N-ob Y)) (Ext-hom α .N-hom f)) ∙ refl
-    --     -- God knows why the left path is refl
-    --     refl ∙ refl
-    --     )
