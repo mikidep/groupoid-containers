@@ -129,3 +129,17 @@ module _
 --     {! !}
 --     {! !})
 
+module _ {A : Type} {a b c d : A} 
+  {p : a ≡ c} {q : b ≡ d} 
+  {r : a ≡ b} {s : c ≡ d}
+  where
+
+  PathP→compPathL∙∙ : PathP (λ i → p i ≡ q i) r s
+    → sym p ∙∙ r ∙∙ q ≡ s
+  PathP→compPathL∙∙ = Square≃doubleComp r s p q .fst 
+
+  compPathL∙∙→PathP : sym p ∙∙ r ∙∙ q ≡ s
+    → PathP (λ i → p i ≡ q i) r s
+  compPathL∙∙→PathP = invEq (Square≃doubleComp r s p q)
+    where
+    open import Cubical.Foundations.Equiv

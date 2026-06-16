@@ -33,10 +33,18 @@ module _ (F G : Container) where
   _⇒ᶜ_ : Type
   _⇒ᶜ_ = Σ _⇒_ is-Cartesian
 
-  CMor′ : (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) → _⇒_
+module _ {F G : Container} where
+  open Container F
+  open Container G renaming
+    (
+      S to S′
+    ; P to P′
+    )
+
+  CMor′ : (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) → F ⇒ G
   CMor′ σπ = CMor (σπ » fst) (σπ » snd)
   
-  CMor′⁻ : _⇒_ → (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) 
+  CMor′⁻ : F ⇒ G → (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) 
   CMor′⁻ (CMor σ π) s = σ s , π s
 
   open import Cubical.Reflection.StrictEquiv
@@ -61,5 +69,19 @@ module _ {F G : Container} {α β : F ⇒ G} where
 
   CMor≡′ : (∀ (s : S) → _,_ {B = λ s′ → P′ s′ → P s} (σ s) (π s) ≡ (σ′ s , π′ s))
     → α ≡ β
-  CMor≡′ htpy = equivFun (congEquiv (CMor′≃CMor F G)) (funExt htpy)
+  CMor≡′ htpy = equivFun (congEquiv CMor′≃CMor) (funExt htpy)
 
+module _ {F G : Container} {α β γ δ : F ⇒ G} where
+  private module F = Container F
+
+  CMor□′ :
+    ∀ {p : α ≡ β}
+    → {q : γ ≡ δ}
+    → {r : α ≡ γ}
+    → {s : β ≡ δ}
+    → ((s' : F.S) 
+      → let f = λ (x : F ⇒ G) → CMor′⁻ x s'
+      in Square (cong f p) (cong f q) (cong f r) (cong f s))
+    → Square p q r s
+  CMor□′ sq i j ._⇒_.σ s = sq s i j .fst
+  CMor□′ sq i j ._⇒_.π s = sq s i j .snd
