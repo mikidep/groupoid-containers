@@ -131,3 +131,51 @@ module Fibration where
       → (α : S′ ⊲ P′ ⇒ S ⊲ P)
       → S′ ⊲ P′ ⇒ S′ ⊲ (α .σ *) P
     α ᵥ = CMor (idfun _) (α .π)
+
+module _ (S : Type) (P : S → Type) where
+  -- Paths between vertical maps over
+  -- related base maps
+  module Path {s₁ s₂ : S} 
+    {ps₁ : P s₁ → S} 
+    {ps₂ : P s₂ → S}
+    where
+    _≡[_,_]ᴾ_ : 
+      (π₁ : (p : P s₁) → P (ps₁ p)) 
+      (s≡ : s₁ ≡ s₂) (ps≡ : PathP (λ i → P (s≡ i) → S) ps₁ ps₂) 
+      (π₂ : (p : P s₂) → P (ps₂ p)) → Type
+    π₁ ≡[ s≡ , ps≡ ]ᴾ π₂ = PathP (λ i → (p : P (s≡ i)) → P (ps≡ i p)) π₁ π₂
+
+  -- How complicated can this get?
+  module Square {s₀₀ s₀₁ s₁₀ s₁₁ : S}
+    {s≡₀₋ : s₀₀ ≡ s₀₁}
+    {s≡₁₋ : s₁₀ ≡ s₁₁}
+    {s≡₋₀ : s₀₀ ≡ s₁₀}
+    {s≡₋₁ : s₀₁ ≡ s₁₁}
+    (s□ : Square s≡₀₋ s≡₁₋ s≡₋₀ s≡₋₁)
+    {ps₀₀ : P s₀₀ → S}
+    {ps₀₁ : P s₀₁ → S}
+    {ps₁₀ : P s₁₀ → S}
+    {ps₁₁ : P s₁₁ → S}
+    {ps≡₀₋ : PathP (λ i → P (s≡₀₋ i) → S) ps₀₀ ps₀₁}
+    {ps≡₁₋ : PathP (λ i → P (s≡₁₋ i) → S) ps₁₀ ps₁₁}
+    {ps≡₋₀ : PathP (λ i → P (s≡₋₀ i) → S) ps₀₀ ps₁₀}
+    {ps≡₋₁ : PathP (λ i → P (s≡₋₁ i) → S) ps₀₁ ps₁₁}
+    (ps□ : SquareP (λ i j → P (s□ i j) → S) ps≡₀₋ ps≡₁₋ ps≡₋₀ ps≡₋₁)
+    {π₀₀ : (p : P s₀₀) → P (ps₀₀ p)}
+    {π₀₁ : (p : P s₀₁) → P (ps₀₁ p)}
+    {π₁₀ : (p : P s₁₀) → P (ps₁₀ p)}
+    {π₁₁ : (p : P s₁₁) → P (ps₁₁ p)}
+    where
+
+    open Path
+
+    Squareᴾ : 
+      (π≡₀₋ : π₀₀ ≡[ s≡₀₋ , ps≡₀₋ ]ᴾ π₀₁)
+      (π≡₁₋ : π₁₀ ≡[ s≡₁₋ , ps≡₁₋ ]ᴾ π₁₁)
+      (π≡₋₀ : π₀₀ ≡[ s≡₋₀ , ps≡₋₀ ]ᴾ π₁₀)
+      (π≡₋₁ : π₀₁ ≡[ s≡₋₁ , ps≡₋₁ ]ᴾ π₁₁)
+      → Type
+    Squareᴾ π≡₀₋ π≡₁₋ π≡₋₀ π≡₋₁ = SquareP
+      (λ i j → (p : P (s□ i j)) → P (ps□ i j p))
+      π≡₀₋ π≡₁₋ π≡₋₀ π≡₋₁
+

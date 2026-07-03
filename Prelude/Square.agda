@@ -120,14 +120,6 @@ module _
   → Square x₀₋ x₁₋ x₋₀ x₋₁
 ΣSquareProp {A = A} {B = B} propB = ΣSquarePProp {A = λ _ _ → A} {B = λ _ _ → B} propB
 
--- Square≃compPath : {A : Type ℓ} {a b c d : A} 
---   {p : a ≡ c} {q : b ≡ d} {r : a ≡ b} {s : c ≡ d}
---   → Square r s p q ≃ (p ∙ s ≡ r ∙ q)
--- Square≃compPath {p} {q} {r} {s} = compEquiv 
---   (Square≃doubleComp r s p q)
---   (compEquiv
---     {! !}
---     {! !})
 
 module _ {A : Type} {a b c d : A} 
   {p : a ≡ c} {q : b ≡ d} 

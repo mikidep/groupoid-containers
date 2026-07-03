@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cubical.Foundations.Prelude
 
 open import Cubical.Foundations.Function
@@ -35,6 +36,9 @@ p ⊗₂ q = cong₂ _⊗₁_ p q
 
 open Container T
 
+open CC.Path S P
+open CC.Square S P
+
 record Pseudomonoid : Type where
   field
     η : 𝟙 ⇒ T 
@@ -63,19 +67,6 @@ record Pseudomonoid : Type where
       id ⊗₁ η ⊗₁ id ◃ assoc
       ∙ refl {x = id} ⊗₂ lUnit ▹ μ
       ≡ Assoc ◃ rUnit ⊗₂ refl {x = id} ▹ μ
-
--- Paths between vertical maps over
--- related base maps
-
-module _ {s₁₁ s₁₂ : S} 
-  {s₂₁ : P s₁₁ → S} 
-  {s₂₂ : P s₁₂ → S}
-  where
-  _≡[_,_]ᴾ_ : 
-    (π₁ : (p : P s₁₁) → P (s₂₁ p)) 
-    (s≡₁ : s₁₁ ≡ s₁₂) (s≡₂ : PathP (λ i → P (s≡₁ i) → S) s₂₁ s₂₂) 
-    (π₂ : (p : P s₁₂) → P (s₂₂ p)) → Type
-  π₁ ≡[ s≡₁ , s≡₂ ]ᴾ π₂ = PathP (λ i → (p : P (s≡₁ i)) → P (s≡₂ i p)) π₁ π₂
 
 open import Prelude.Utils
 
@@ -141,7 +132,7 @@ record PsMndCont : Type where
     assoc-π₃ :
       ∀ {s : S} {s′ : P s → S} 
       {s″ : (p : P s) → P (s′ p) → S}
-      → (λ p → ↗ {s′ = {! _ !}} (↗ p)) 
+      → (λ p → ↗ {s′ = s″ (↖ p)} (↗ {s′ = m′ s′ s″} p)) 
           ≡[ assoc-σ {s″ = s″} , (λ i p → s″ (assoc-π₁ i p) (assoc-π₂ i p)) ]ᴾ
         ↗ {s′ = m↖↗ s″}
 
@@ -155,68 +146,98 @@ record PsMndCont : Type where
 
     lrUnit-coh-π₁ : 
       ∀ {s : S} {s′ : P s → S} 
-      → SquareP
-        (λ i j → P (lrUnit-coh-σ {s} {s′} i j) → P s)
+      → Squareᴾ (lrUnit-coh-σ {s} {s′}) (λ _ _ _ → s)
         assoc-π₁
         (cong (λ x → ↖ {s′ = x}) (funExt (λ p → rUnit-σ (s′ p))))
-        (refl {x = ↖ {s′ = λ p → m e (const (s′ p))}})
+        refl 
         (congP (λ i → ↖ {s′ = λ p → s′ (lUnit-π i p)} »_) lUnit-π)
         -- (λ i p → lUnit-π i (↖ {s′ = λ x → s′ (lUnit-π i x)} p))
 
     lrUnit-coh-π₂ :
       ∀ {s : S} {s′ : P s → S} 
-      → SquareP
-      (λ i j → (p : P (lrUnit-coh-σ {s′ = s′} i j)) → P (s′ (lrUnit-coh-π₁ i j p)))
-      assoc-π₃
-      (λ i p → rUnit-π i (↗ {s′ = λ q → rUnit-σ (s′ q) i} p))
-      (refl {x = idfun ((x : P (m s (λ p → m e (const (s′ p))))) → P (s′ (↖ {s′ = λ p → m e (const (s′ p))} x))) (λ x → ↗ (↗ x))})
-      (congP (λ j f → ↗ {s′ = λ p → s′ (f p)}) lUnit-π)
+      → Squareᴾ (lrUnit-coh-σ {s′ = s′})
+        (λ i j p → s′ (lrUnit-coh-π₁ i j p))
+        assoc-π₃
+        (λ i p → rUnit-π i (↗ {s′ = λ q → rUnit-σ (s′ q) i} p))
+        refl
+        (congP (λ j f → ↗ {s′ = λ p → s′ (f p)}) lUnit-π)
 
-module _ (pmc : PsMndCont) where
-  open PsMndCont pmc
-  open Pseudomonoid
-  open _⇒_
+    -- assoc-coh-σ :
+    --   ∀ {s : S} {s′ : P s → S} 
+    --     {s″ : (p : P s) → P (s′ p) → S} 
+    --     {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
+    --   → Square
+    --     (assoc-σ {s = s} {s′ = s′} {s″ = λ p → m′ (s″ p) (s‴ p)})
+    --     {! !}
+    --     (λ i → m s (λ p → assoc-σ {s = s′ p} {s′ = s″ p} {s″ = s‴ p} i))
+    --     (assoc-σ {s = m s s′} {s′ = (m↖↗ s″)} {s″ = λ p → s‴ (↖ p) (↗ p)})
 
-  private
-    pm-η : 𝟙 ⇒ T
-    pm-η .σ _ = e
-    pm-η .π _ = _
-
-    pm-μ : T ⊗₀ T ⇒ T
-    pm-μ .σ = uncurry m
-    pm-μ .π _ pq = ↖ pq , ↗ pq
-
-  PsMndCont→Pseudomonoid : Pseudomonoid
-  PsMndCont→Pseudomonoid .η = pm-η
-  PsMndCont→Pseudomonoid .μ = pm-μ
-  PsMndCont→Pseudomonoid .lUnit = cong₂ CMor
-    (funExt λ ks → lUnit-σ (ks .fst))
-    (funExt λ _ → λ i p → lUnit-π i p , _)
-  PsMndCont→Pseudomonoid .rUnit = cong₂ CMor 
-    (funExt λ ks → rUnit-σ (ks .snd tt)) 
-    (funExt λ _ → λ i p → _ , rUnit-π i p)
-  PsMndCont→Pseudomonoid .assoc = cong₂ CMor
-    (funExt λ { ((s , s′), s″) → assoc-σ }) 
-    (funExt λ { ((s , s′), s″) 
-      → λ i p → (assoc-π₁ i p , assoc-π₂ i p) , assoc-π₃ i p }) 
-  PsMndCont→Pseudomonoid .assoc-coh = {! !}
-  PsMndCont→Pseudomonoid .lrUnit-coh = 
-    PathP→compPathL∙∙
-      (CMor□′ λ s → ΣSquare (
-        lrUnit-coh-σ
-        , goal s
-        ))
-    where
-    open import Cubical.Foundations.Path
-    open import Prelude.Square
-    goal : (s : Σ (Σ S (λ s₁ → P s₁ → Unit)) 
-        (λ s₁ → Σ (P (s₁ .fst)) (λ p′ → Unit) → S)) 
-      → SquareP (λ i j → P (lrUnit-coh-σ {s′ = λ p → s .snd (p , _)} i j) 
-          → Σ (Σ (P (s .fst .fst)) (λ p′ → Unit)) (λ p′ → P (s .snd p′)))
-        (λ i x → (assoc-π₁ i x , tt) , assoc-π₃ i x)
-        (λ i x → (↖ x , tt) , rUnit-π i (↗ x))
-        (λ _ x → (↖ x , tt) , ↗ (↗ x)) 
-        (λ i x → (lUnit-π i (↖ x) , tt) , ↗ x)
-    goal ((s , _) , ss) i j p .fst = lrUnit-coh-π₁ i j p , _
-    goal ((s , _) , ss) i j p .snd = lrUnit-coh-π₂ i j p
-
+-- module _ (pmc : PsMndCont) where
+--   open PsMndCont pmc
+--   open Pseudomonoid
+--   open _⇒_
+--
+--   private
+--     pm-η : 𝟙 ⇒ T
+--     pm-η .σ _ = e
+--     pm-η .π _ = _
+--
+--     pm-μ : T ⊗₀ T ⇒ T
+--     pm-μ .σ = uncurry m
+--     pm-μ .π _ pq = ↖ pq , ↗ pq
+--
+--   PsMndCont→Pseudomonoid : Pseudomonoid
+--   PsMndCont→Pseudomonoid .η = pm-η
+--   PsMndCont→Pseudomonoid .μ = pm-μ
+--   PsMndCont→Pseudomonoid .lUnit = cong₂ CMor
+--     (funExt λ ks → lUnit-σ (ks .fst))
+--     (funExt λ _ → λ i p → lUnit-π i p , _)
+--   PsMndCont→Pseudomonoid .rUnit = cong₂ CMor 
+--     (funExt λ ks → rUnit-σ (ks .snd tt)) 
+--     (funExt λ _ → λ i p → _ , rUnit-π i p)
+--   PsMndCont→Pseudomonoid .assoc = cong₂ CMor
+--     (funExt λ { ((s , s′), s″) → assoc-σ }) 
+--     (funExt λ { ((s , s′), s″) 
+--       → λ i p → (assoc-π₁ i p , assoc-π₂ i p) , assoc-π₃ i p }) 
+--   PsMndCont→Pseudomonoid .assoc-coh = 
+--     Square→compPath 
+--       (CMor□′ λ s → ΣSquare (
+--         goalσ s
+--         , {! !}
+--         ))
+--     where
+--     open import Cubical.Foundations.Path
+--     open import Prelude.Square
+--     goalσ : ∀ s → _
+--     goalσ (((s , s′) , s″') , s‴') = goal
+--       where
+--       s″ = curry s″'
+--       s‴ = curry (curry s‴')
+--       a = assoc-σ
+--       b = λ i → m (assoc-σ i) (λ p → s‴ (assoc-π₁ i p) (assoc-π₂ i p) (assoc-π₃ i p))
+--       goal : Square
+--         (assoc-σ {s = s} {s′ = s′} {s″ = λ p q → m (s″ p q) (s‴ p q)})
+--         {! _ !}
+--         (λ i → m s (λ p → assoc-σ {s = s′ p} {s′ = s″ p} {s″ = s‴ p} i))
+--         (assoc-σ {s = m s s′} {s′ = m↖↗ s″} {s″ = λ p → s‴ (↖ p) (↗ p)})
+--       goal = {! !}
+--   PsMndCont→Pseudomonoid .lrUnit-coh = 
+--     PathP→compPathL∙∙
+--       (CMor□′ λ s → ΣSquare (
+--         lrUnit-coh-σ
+--         , goal s
+--         ))
+--     where
+--     open import Cubical.Foundations.Path
+--     open import Prelude.Square
+--     goal : (s : Σ (Σ S (λ s₁ → P s₁ → Unit)) 
+--         (λ s₁ → Σ (P (s₁ .fst)) (λ p′ → Unit) → S)) 
+--       → SquareP (λ i j → P (lrUnit-coh-σ {s′ = λ p → s .snd (p , _)} i j) 
+--           → Σ (Σ (P (s .fst .fst)) (λ p′ → Unit)) (λ p′ → P (s .snd p′)))
+--         (λ i x → (assoc-π₁ i x , tt) , assoc-π₃ i x)
+--         (λ i x → (↖ x , tt) , rUnit-π i (↗ x))
+--         (λ _ x → (↖ x , tt) , ↗ (↗ x)) 
+--         (λ i x → (lUnit-π i (↖ x) , tt) , ↗ x)
+--     goal ((s , _) , ss) i j p .fst = lrUnit-coh-π₁ i j p , _
+--     goal ((s , _) , ss) i j p .snd = lrUnit-coh-π₂ i j p
+--
