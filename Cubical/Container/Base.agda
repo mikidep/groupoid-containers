@@ -50,38 +50,3 @@ module _ {F G : Container} where
   open import Cubical.Reflection.StrictEquiv
   unquoteDecl CMor′≃CMor = declStrictEquiv CMor′≃CMor CMor′ CMor′⁻
 
-module _ {F G : Container} {α β : F ⇒ G} where
-  open Container F
-  open Container G renaming
-    (
-      S to S′
-    ; P to P′
-    )
-  open _⇒_ α
-  open _⇒_ β renaming
-    (
-      σ to σ′
-    ; π to π′
-    )
-
-  open import Cubical.Foundations.Equiv
-  open import Cubical.Foundations.Equiv.Properties
-
-  CMor≡′ : (∀ (s : S) → _,_ {B = λ s′ → P′ s′ → P s} (σ s) (π s) ≡ (σ′ s , π′ s))
-    → α ≡ β
-  CMor≡′ htpy = equivFun (congEquiv CMor′≃CMor) (funExt htpy)
-
-module _ {F G : Container} {α β γ δ : F ⇒ G} where
-  private module F = Container F
-
-  CMor□′ :
-    ∀ {p : α ≡ β}
-    → {q : γ ≡ δ}
-    → {r : α ≡ γ}
-    → {s : β ≡ δ}
-    → ((s' : F.S) 
-      → let f = λ (x : F ⇒ G) → CMor′⁻ x s'
-      in Square (cong f p) (cong f q) (cong f r) (cong f s))
-    → Square p q r s
-  CMor□′ sq i j ._⇒_.σ s = sq s i j .fst
-  CMor□′ sq i j ._⇒_.π s = sq s i j .snd

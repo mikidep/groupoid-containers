@@ -5,7 +5,7 @@ open import Cubical.Data.Sigma
 
 open import Cubical.Container.Base
 open import Cubical.Container.Constructions
-open import Cubical.Container.MonoidContainer
+open import Cubical.Container.Monoid.PsMndCont
 open import HoTTOperads.Operad.Base
 open import HoTTOperads.Monad.Base
 open import HoTTOperads.Universe.Base
@@ -124,7 +124,7 @@ module _ (T : Container) where
     PmT .m s s′ = cmp s s′ .fst
     PmT .↖ {s} {s′} p = cmp s s′ .snd p .fst
     PmT .↗ {s} {s′} p = cmp s s′ .snd p .snd
-    PmT .lUnit-σ s = {! smth !}
+    PmT .lUnit-σ s = {! DM.id .snd !}
       where
       smth = DM.idr (P s) (s , idfun _)
     PmT .lUnit-π = {! DM.id .snd !}

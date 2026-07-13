@@ -1,13 +1,12 @@
 open import Cubical.Foundations.Prelude
 
 open import Cubical.Foundations.Function
-open import Cubical.Data.Sigma
 open import Cubical.Data.Unit
 
 open import Cubical.Container.Base
-open import Cubical.Container.MonoidContainer
+open import Cubical.Container.Monoid.PsMndCont
 
-module Cubical.Container.FreeMonoid (T : Container) where
+module Cubical.Container.Monoid.Free (T : Container) where
 
 open Container T
 
@@ -25,15 +24,15 @@ open PsMndCont
 
 T*Mnd-m : (s : S*) → (P* s → S*) → S*
 T*Mnd-m unit s′ = s′ _
-T*Mnd-m (sup s ps*) s′ = sup s λ p → T*Mnd-m (ps* p) λ p* → s′ (p , p*)
+T*Mnd-m (sup s ps*) s′ = sup s λ p → T*Mnd-m (ps* p) (curry s′ p)
 
 T*Mnd-↖ : ∀ s s′ → P* (T*Mnd-m s s′) → P* s
 T*Mnd-↖ unit s′ p = _
-T*Mnd-↖ (sup s ps*) s′ (p , p*) = p , T*Mnd-↖ (ps* p) (λ p*₁ → s′ (p , p*₁)) p*
+T*Mnd-↖ (sup s ps*) s′ (p , p*) = p , T*Mnd-↖ (ps* p) (curry s′ p) p*
 
 T*Mnd-↗ : ∀ s s′ → (p : P* (T*Mnd-m s s′)) → P* (s′ (T*Mnd-↖ s s′ p))
 T*Mnd-↗ unit s′ p = p
-T*Mnd-↗ (sup s ps*) s′ (p , p*) = T*Mnd-↗ (ps* p) (λ p*₁ → s′ (p , p*₁)) p*
+T*Mnd-↗ (sup s ps*) s′ (p , p*) = T*Mnd-↗ (ps* p) (curry s′ p) p*
 
 T*Mnd-lUnit-σ : (s : S*) → T*Mnd-m s (λ _ → unit) ≡ s
 T*Mnd-lUnit-σ unit = refl
@@ -50,7 +49,7 @@ T*Mnd-assoc-σ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p
   → T*Mnd-m s (λ p → T*Mnd-m (s′ p) (s″ p)) 
     ≡ T*Mnd-m (T*Mnd-m s s′) (λ p → s″ (T*Mnd-↖ s s′ p) (T*Mnd-↗ s s′ p))
 T*Mnd-assoc-σ unit s′ s″ = refl
-T*Mnd-assoc-σ (sup s ps*) s′ s″ = cong (sup s) (funExt λ p → T*Mnd-assoc-σ (ps* p) (λ z → s′ (p , z)) λ p₁ → s″ (p , p₁))
+T*Mnd-assoc-σ (sup s ps*) s′ s″ = cong (sup s) (funExt λ p → T*Mnd-assoc-σ (ps* p) (curry s′ p) (curry s″ p))
 
 T*Mnd-assoc-π₁ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
   → PathP (λ i → (p : P* (T*Mnd-assoc-σ s s′ s″ i)) → P* s)
@@ -92,9 +91,6 @@ T*Mnd-assoc-π₃ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s�
        (λ p₁ → s″ (T*Mnd-↖ s s′ p₁) (T*Mnd-↗ s s′ p₁)) p)
 T*Mnd-assoc-π₃ unit s′ s″ i p = T*Mnd-↗ (s′ tt) (s″ tt) p
 T*Mnd-assoc-π₃ (sup s ps*) s′ s″ i (p , p*) = T*Mnd-assoc-π₃ (ps* p) _ _ i p*
-
--- TODO: how about a container with shapes (s : S) and positions
--- lists of P whose shapes multiply to s?
 
 T*Mnd : PsMndCont T*
 T*Mnd .e = unit

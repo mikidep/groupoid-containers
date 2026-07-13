@@ -1,3 +1,5 @@
+{-# OPTIONS --hidden-argument-puns #-}
+
 module Prelude.Square where
 
 open import Cubical.Foundations.Prelude
@@ -121,7 +123,7 @@ module _
 ΣSquareProp {A = A} {B = B} propB = ΣSquarePProp {A = λ _ _ → A} {B = λ _ _ → B} propB
 
 
-module _ {A : Type} {a b c d : A} 
+module _ {A : Type ℓ} {a b c d : A} 
   {p : a ≡ c} {q : b ≡ d} 
   {r : a ≡ b} {s : c ≡ d}
   where
