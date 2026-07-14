@@ -58,24 +58,24 @@ record PsMndCont : Type where
         ≡ m (m s s′) (m↖↗ s″)
 
     assoc-π₁ :
-      ∀ {s : S} {s′ : P s → S} 
-      {s″ : (p : P s) → P (s′ p) → S}
+      ∀ (s : S) (s′ : P s → S) 
+      (s″ : (p : P s) → P (s′ p) → S)
       → ↖ {s′ = m′ s′ s″} 
           ≡[ assoc-σ _ _ _ , (λ _ _ → s) ]ᴾ 
         (↖ {s′ = m↖↗ s″} » ↖)
 
     assoc-π₂ :
-      ∀ {s : S} {s′ : P s → S} 
-      {s″ : (p : P s) → P (s′ p) → S}
+      ∀ (s : S) (s′ : P s → S) 
+      (s″ : (p : P s) → P (s′ p) → S)
       → (λ p → ↖ {s′ = s″ (↖ p)} (↗ {s′ = m′ s′ s″} p)) 
-          ≡[ assoc-σ _ _ _ , (λ i p → s′ (assoc-π₁ i p)) ]ᴾ
+          ≡[ assoc-σ _ _ _ , (λ i p → s′ (assoc-π₁ s s′ s″ i p)) ]ᴾ
         (↖ {s′ = m↖↗ s″} » ↗)
 
     assoc-π₃ :
-      ∀ {s : S} {s′ : P s → S} 
-      {s″ : (p : P s) → P (s′ p) → S}
+      ∀ (s : S) (s′ : P s → S) 
+      (s″ : (p : P s) → P (s′ p) → S)
       → (λ p → ↗ {s′ = s″ (↖ p)} (↗ {s′ = m′ s′ s″} p)) 
-          ≡[ assoc-σ _ _ s″ , (λ i p → s″ (assoc-π₁ i p) (assoc-π₂ i p)) ]ᴾ
+          ≡[ assoc-σ _ _ s″ , (λ i p → s″ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p)) ]ᴾ
         ↗ {s′ = m↖↗ s″}
 
     lrUnit-coh-σ : 
@@ -89,7 +89,7 @@ record PsMndCont : Type where
     lrUnit-coh-π₁ : 
       ∀ {s : S} {s′ : P s → S} 
       → Squareᴾ (lrUnit-coh-σ {s} {s′}) (λ _ _ _ → s)
-        assoc-π₁
+        (assoc-π₁ s (const e) (λ p _ → s′ p))
         (cong (λ x → ↖ {s′ = x}) (funExt (λ p → rUnit-σ (s′ p))))
         refl 
         (congP (λ i → ↖ {s′ = λ p → s′ (lUnit-π i p)} »_) lUnit-π)
@@ -99,7 +99,7 @@ record PsMndCont : Type where
       ∀ {s : S} {s′ : P s → S} 
       → Squareᴾ (lrUnit-coh-σ {s′ = s′})
         (λ i j p → s′ (lrUnit-coh-π₁ i j p))
-        assoc-π₃
+        (assoc-π₃ s (const e) (λ p _ → s′ p))
         (λ i p → rUnit-π i (↗ {s′ = λ q → rUnit-σ (s′ q) i} p))
         refl
         (congP (λ j f → ↗ {s′ = λ p → s′ (f p)}) lUnit-π)
@@ -112,9 +112,33 @@ record PsMndCont : Type where
         (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
         (assoc-σ s (m′ s′ s″) (λ p p′ → s‴ p (↖ p′) (↗ p′)))
         (λ i → m (assoc-σ s s′ s″ i) (λ (p : P (assoc-σ s s′ s″ i)) 
-          → s‴ (assoc-π₁ i p) (assoc-π₂ i p) (assoc-π₃ i p)))
+          → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
         (assoc-σ s s′ λ p → m′ (s″ p) (s‴ p))
         (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
+
+    assoc-coh-π₁ :
+      ∀ {s : S} {s′ : P s → S} 
+        {s″ : (p : P s) → P (s′ p) → S} 
+        {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
+      → PentagonP {B = λ cohs → P cohs → P s}
+          (assoc-coh-σ {s} {s′} {s″} {s‴})
+          (λ i p → ↖ p)
+          (assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
+          (λ i p → assoc-π₁ s s′ s″ i (↖ p))
+          (assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)))
+          (λ i p → ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i p))
+
+    assoc-coh-π₂ :
+      ∀ {s : S} {s′ : P s → S} 
+        {s″ : (p : P s) → P (s′ p) → S} 
+        {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
+      → PentagonP {B = λ cohs → P cohs → P ?}
+          (assoc-coh-σ {s} {s′} {s″} {s‴})
+          (λ i p → ?)
+          (λ i p → ?)
+          (λ i p → ?)
+          (λ i p → ?)
+          (λ i p → ?)
 
 open import Cubical.Foundations.Equiv
 

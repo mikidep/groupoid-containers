@@ -45,7 +45,10 @@ private
   pm-assoc = cong₂ CMor
     (funExt λ { ((s , s′), s″) → assoc-σ _ _ _ }) 
     (funExt λ { ((s , s′), s″) 
-      → λ i p → (assoc-π₁ i p , assoc-π₂ i p) , assoc-π₃ i p })
+      → λ i p → 
+        ( assoc-π₁ s s′ (curry s″) i p 
+        , assoc-π₂ s s′ (curry s″) i p) 
+        , assoc-π₃ s s′ (curry s″) i p })
 
 PsMndCont→Pseudomonoid : Pseudomonoid T
 PsMndCont→Pseudomonoid .η = pm-η
@@ -58,20 +61,52 @@ PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
   open import Prelude.Square
   open import Prelude.Utils
   aux : ∀ ss → _
-  aux ss = ΣPentagon (auxσ , {! !})
+  aux ss = ΣPentagon (auxσ , auxπ)
     where
     s = ss .fst .fst .fst
     s′ = ss .fst .fst .snd
     s″ = curry (ss .fst .snd)
     s‴ = curry (curry (ss .snd))
+    B : S → Type
+    B cohs = P cohs →
+      Σ (Σ (Σ (P s) (λ p′ → P (s′ p′)))
+       (λ p″ → P (uncurry s″ p″)))
+      (λ p‴ → P (uncurry (uncurry s‴) p‴))
     auxσ : Pentagon 
       (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
-      (assoc-σ s (m′ s′ s″) (λ p p′ → s‴ p (↖ p′) (↗ p′)))
+      (assoc-σ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
       (λ i → m (assoc-σ s s′ s″ i) (λ (p : P (assoc-σ s s′ s″ i)) → s‴ 
-        (assoc-π₁ i p) (assoc-π₂ i p) (assoc-π₃ i p)))
+        (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
       (assoc-σ s s′ λ p → m′ (s″ p) (s‴ p))
       (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
     auxσ = assoc-coh-σ {s} {s′} {s″} {s‴}
+    auxπ : PentagonP {B = B} auxσ 
+      (λ i x → 
+          ( (↖ x 
+            , assoc-π₁ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
+          , assoc-π₂ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
+        , assoc-π₃ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x))
+      (λ i x → 
+          ( ( assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x 
+            , ↖ (assoc-π₂ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)) 
+          , ↗ (assoc-π₂ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)) 
+        , assoc-π₃ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)
+      (λ i x → 
+          ( ( assoc-π₁ s s′ s″ i (↖ x) 
+            , assoc-π₂ s s′ s″ i (↖ x)) 
+          , assoc-π₃ s s′ s″ i (↖ x)) 
+        , ↗ x)
+      (λ i x → 
+          ( ( assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x 
+            , assoc-π₂ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x) 
+          , ↖ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x)) 
+        , ↗ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x))
+      (λ i x → 
+          ( ( ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x) 
+            , ↗ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)) 
+          , assoc-π₂ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x) 
+        , assoc-π₃ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)
+    auxπ = {! !}
 
 PsMndCont→Pseudomonoid .lrUnit-coh =
   PathP→compPathL∙∙

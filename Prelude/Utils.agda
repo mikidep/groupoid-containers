@@ -54,7 +54,7 @@ module _ {A : Type ℓ} {a b c d e : A} where
     {c' : B c}
     {d' : B d}
     {e' : B e}
-    {pnt : Pentagon p q r s t}
+    (pnt : Pentagon p q r s t)
     (p' : PathP (λ i → B (p i)) a' b')
     (q' : PathP (λ i → B (q i)) b' c')
     (r' : PathP (λ i → B (r i)) c' d')
@@ -129,7 +129,7 @@ module _ {A : Type ℓ} {B : A → Type ℓ'}
 
   ΣPentagon : 
     Σ[ pnt ∈ Pentagon p q r s t ] 
-      (PentagonP {B = B} {pnt = pnt} p' q' r' s' t')
+      (PentagonP {B = B} pnt p' q' r' s' t')
     → Pentagon pp qq rr ss tt
   ΣPentagon (pnt , pntP) = 
     sym (cong (pp ∙_) (ΣcompPath qq rr))
