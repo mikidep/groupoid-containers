@@ -30,6 +30,12 @@ record PsMndCont : Type where
     → P s → S
   m′ s′ s″ p = m (s′ p) (s″ p)
 
+  m″ : ∀ {s : S} {s′ : P s → S} 
+    (s″ : (p : P s) → P (s′ p) → S) 
+    (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
+    → (p : P s) → P (s′ p) → S
+  m″ s″ s‴ p = m′ (s″ p) (s‴ p)
+
   -- Collapse positions after multiplying
   -- outer tree
   m↖↗ : ∀ {s : S} 
@@ -110,17 +116,17 @@ record PsMndCont : Type where
         {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
       → Pentagon 
         (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
-        (assoc-σ s (m′ s′ s″) (λ p p′ → s‴ p (↖ p′) (↗ p′)))
+        (assoc-σ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
         (λ i → m (assoc-σ s s′ s″ i) (λ (p : P (assoc-σ s s′ s″ i)) 
           → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
-        (assoc-σ s s′ λ p → m′ (s″ p) (s‴ p))
+        (assoc-σ s s′ (m″ s″ s‴))
         (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
 
     assoc-coh-π₁ :
       ∀ {s : S} {s′ : P s → S} 
         {s″ : (p : P s) → P (s′ p) → S} 
         {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
-      → PentagonP {B = λ cohs → P cohs → P s}
+      → PentagonP' {B = λ cohs → P cohs → P s}
           (assoc-coh-σ {s} {s′} {s″} {s‴})
           (λ i p → ↖ p)
           (assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
@@ -132,7 +138,7 @@ record PsMndCont : Type where
       ∀ {s : S} {s′ : P s → S} 
         {s″ : (p : P s) → P (s′ p) → S} 
         {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
-      → PentagonP {B = λ cohs → P cohs → P ?}
+      → PentagonP' {B = λ cohs → P cohs → P ?}
           (assoc-coh-σ {s} {s′} {s″} {s‴})
           (λ i p → ?)
           (λ i p → ?)

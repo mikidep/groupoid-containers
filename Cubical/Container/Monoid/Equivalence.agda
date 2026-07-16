@@ -80,7 +80,7 @@ PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
       (assoc-σ s s′ λ p → m′ (s″ p) (s‴ p))
       (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
     auxσ = assoc-coh-σ {s} {s′} {s″} {s‴}
-    auxπ : PentagonP {B = B} auxσ 
+    auxπ : PentagonP' {B = B} auxσ 
       (λ i x → 
           ( (↖ x 
             , assoc-π₁ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
