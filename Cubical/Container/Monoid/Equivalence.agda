@@ -9,6 +9,8 @@ open import Cubical.Container.Path
 open import Cubical.Container.Monoid.Definition
 open import Cubical.Container.Monoid.PsMndCont
 
+open import Prelude.Shapes
+
 module Cubical.Container.Monoid.Equivalence 
   (T : Container) (pmc : PsMndCont T) where
 

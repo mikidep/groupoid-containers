@@ -3,7 +3,7 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Path
 open import Cubical.Container.Base
-open import Prelude.Utils
+open import Prelude.Shapes
 
 module Cubical.Container.Path where
 
@@ -55,16 +55,12 @@ module _ {F G : Container} {α β γ δ ζ : F ⇒ G} where
     → (∀ (s : S) → let f = λ (x : F ⇒ G) → CMor′⁻ x s
       in Pentagon (cong f p) (cong f q) (cong f r) (cong f u) (cong f v))
     → Pentagon p q r u v
-  CMorPentagon′ {p} {q} {r} {u} {v} pnt = CMor□′ aux
+  CMorPentagon′ {p} {q} {r} {u} {v} pnts = goal
     where
-    open import Cubical.Foundations.GroupoidLaws
-    open import Prelude.ExtraGpdLaws
-    aux : ∀ (s : S) → _
-    aux s =  
-      congFunct _ p (q ∙ r)
-      ∙ ∙l congFunct _ q r
-      ∙ pnt s
-      ∙ sym (congFunct _ u v)
+    goal : Σ _ (λ _ → Σ _ _)
+    goal .fst = CMor≡′ λ s → pnts s .fst
+    goal .snd .fst = CMor□′ λ s → pnts s .snd .fst
+    goal .snd .snd = CMor□′ λ s → pnts s .snd .snd
 
 module Displayed (S : Type) (P : S → Type) where
   -- Paths between vertical maps over

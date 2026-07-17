@@ -1,4 +1,5 @@
 open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Function
 open import Cubical.Data.Unit
 open import Cubical.Container.Base
 import Cubical.Container.Constructions as CC
@@ -7,6 +8,7 @@ import Cubical.Container.Path
 module Cubical.Container.Monoid.PsMndCont (T : Container) where
 
 open import Prelude.Utils
+open import Prelude.Shapes
 
 open Container T
 
@@ -122,29 +124,29 @@ record PsMndCont : Type where
         (assoc-σ s s′ (m″ s″ s‴))
         (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
 
-    assoc-coh-π₁ :
-      ∀ {s : S} {s′ : P s → S} 
-        {s″ : (p : P s) → P (s′ p) → S} 
-        {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
-      → PentagonP' {B = λ cohs → P cohs → P s}
-          (assoc-coh-σ {s} {s′} {s″} {s‴})
-          (λ i p → ↖ p)
-          (assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
-          (λ i p → assoc-π₁ s s′ s″ i (↖ p))
-          (assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)))
-          (λ i p → ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i p))
+    -- assoc-coh-π₁ :
+    --   ∀ {s : S} {s′ : P s → S} 
+    --     {s″ : (p : P s) → P (s′ p) → S} 
+    --     {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
+    --   → PentagonP {B = λ cohs → P cohs → P s}
+    --       (assoc-coh-σ {s} {s′} {s″} {s‴})
+    --       (λ i p → ↖ p)
+    --       (assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
+    --       (λ i p → assoc-π₁ s s′ s″ i (↖ p))
+    --       (assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)))
+    --       (λ i p → ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i p))
 
-    assoc-coh-π₂ :
-      ∀ {s : S} {s′ : P s → S} 
-        {s″ : (p : P s) → P (s′ p) → S} 
-        {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
-      → PentagonP' {B = λ cohs → P cohs → P ?}
-          (assoc-coh-σ {s} {s′} {s″} {s‴})
-          (λ i p → ?)
-          (λ i p → ?)
-          (λ i p → ?)
-          (λ i p → ?)
-          (λ i p → ?)
+    -- assoc-coh-π₂ :
+    --   ∀ {s : S} {s′ : P s → S} 
+    --     {s″ : (p : P s) → P (s′ p) → S} 
+    --     {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
+    --   → PentagonP' {B = λ cohs cohp → (p : P cohs) → P (s′ cohp)}
+    --       (assoc-coh-σ {s} {s′} {s″} {s‴})
+    --       (λ i p → ?)
+    --       (λ i p → ?)
+    --       (λ i p → ?)
+    --       (λ i p → ?)
+    --       (λ i p → ?)
 
 open import Cubical.Foundations.Equiv
 
