@@ -58,12 +58,14 @@ PsMndCont→Pseudomonoid .μ = pm-μ
 PsMndCont→Pseudomonoid .lUnit = pm-lUnit
 PsMndCont→Pseudomonoid .rUnit = pm-rUnit
 PsMndCont→Pseudomonoid .assoc = pm-assoc
-PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
+PsMndCont→Pseudomonoid .assoc-coh = 
+  Hex→compPath cmorhex 
+  ∙ sym (doubleCompPath≡compPath _ _ _)
   where
   open import Prelude.Square
-  open import Prelude.Utils
+  open import Prelude.Shapes
   aux : ∀ ss → _
-  aux ss = ΣPentagon (auxσ , auxπ)
+  aux ss = ΣHex (auxσ , auxπ)
     where
     s = ss .fst .fst .fst
     s′ = ss .fst .fst .snd
@@ -74,15 +76,8 @@ PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
       Σ (Σ (Σ (P s) (λ p′ → P (s′ p′)))
        (λ p″ → P (uncurry s″ p″)))
       (λ p‴ → P (uncurry (uncurry s‴) p‴))
-    auxσ : Pentagon 
-      (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
-      (assoc-σ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
-      (λ i → m (assoc-σ s s′ s″ i) (λ (p : P (assoc-σ s s′ s″ i)) → s‴ 
-        (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
-      (assoc-σ s s′ λ p → m′ (s″ p) (s‴ p))
-      (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
     auxσ = assoc-coh-σ {s} {s′} {s″} {s‴}
-    auxπ : PentagonP' {B = B} auxσ 
+    auxπ : HexP (λ i j k → B (Hex-filler (assoc-coh-σ {s} {s′} {s″} {s‴}) i j k))
       (λ i x → 
           ( (↖ x 
             , assoc-π₁ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
@@ -98,6 +93,7 @@ PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
             , assoc-π₂ s s′ s″ i (↖ x)) 
           , assoc-π₃ s s′ s″ i (↖ x)) 
         , ↗ x)
+      refl
       (λ i x → 
           ( ( assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x 
             , assoc-π₂ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x) 
@@ -108,7 +104,20 @@ PsMndCont→Pseudomonoid .assoc-coh = CMorPentagon′ aux
             , ↗ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)) 
           , assoc-π₂ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x) 
         , assoc-π₃ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)
-    auxπ = {! !}
+    -- auxπ = ΣHexP ?
+    auxπ .fst      i p .fst .fst .fst = assoc-coh-π₁ .fst i p
+    auxπ .fst      i p .fst .fst .snd = ?
+    auxπ .fst      i p .fst .snd      = ?
+    auxπ .fst      i p .snd           = ?
+    -- auxπ .snd .fst i p .fst .fst .fst = {! !}
+    -- auxπ .snd .fst i p .fst .fst .snd = {! !}
+    -- auxπ .snd .fst i p .fst .snd = {! !}
+    -- auxπ .snd .fst i p .snd = {! !}
+    -- auxπ .snd .snd i p .fst .fst .fst = {! !}
+    -- auxπ .snd .snd i p .fst .fst .snd = {! !}
+    -- auxπ .snd .snd i p .fst .snd = {! !}
+    -- auxπ .snd .snd i p .snd = {! !}
+  cmorhex = CMorHex′ aux
 
 PsMndCont→Pseudomonoid .lrUnit-coh =
   PathP→compPathL∙∙

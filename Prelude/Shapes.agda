@@ -78,8 +78,8 @@ module _ (A : I → I → Type ℓ)
   --     │       ¦  🯐🯑  
   --     │       ¦🯐🯑      
   --   a ∙───────∙ e     
-  --
-module _ (A : I → I → I → Type ℓ)
+
+module HexP (A : I → I → I → Type ℓ)
   {a : A i0 i0 i0}
   {b : A i0 i0 i1}
   {c : A i1 i0 i1}
@@ -97,241 +97,127 @@ module _ (A : I → I → I → Type ℓ)
     (fd : PathP (λ i → A i1 i1 i) f d)
     where
     
-    open import Cubical.Foundations.HLevels
-
     HexP : Type ℓ
     HexP = Σ (PathP (λ i → A i1 i0 i) e c)
       (λ ec → Σ (SquareP (λ i j → A i i0 j) ab ec ae bc)
         (λ _ → SquareP (A i1) ec fd ef cd))
 
-    module _ (hexp : HexP) where
+  module _
+    {ab : PathP (λ i → A i0 i0 i) a b}
+    {bc : PathP (λ i → A i i0 i1) b c}
+    {cd : PathP (λ i → A i1 i i1) c d}
+    {ae : PathP (λ i → A i i0 i0) a e}
+    {ef : PathP (λ i → A i1 i i0) e f}
+    {fd : PathP (λ i → A i1 i1 i) f d}
+    (hexp : HexP ab bc cd ae ef fd)
+    where
+    
+    open Σ hexp using ()
+      renaming (fst to ec)
+    open Σ (hexp .snd) using ()
+      renaming (fst to sq₁; snd to sq₂)
+
+    HexP-faces : (i j k : I) → Partial i (A i j k)
+    HexP-faces i j k (i = i1) = sq₂ j k
+
+    HexP-comp : (i k : I) → A i i1 k
+    HexP-comp i k = 
+      comp (λ j → A i j k) (λ j → HexP-faces i j k) (sq₁ i k)
+
+    HexP-filler : (i j k : I) → A i j k
+    HexP-filler i j k =
+      fill (λ j → A i j k) (λ j → HexP-faces i j k) 
+        (inS (sq₁ i k)) j
+
+open HexP public
+
+module ΣHexP 
+  {A : (i j k : I) → Type ℓ}
+  {B : (i j k : I) → A i j k → Type ℓ'}
+  where
+
+  ΣAB : (i j k : I) → Type (ℓ-max ℓ ℓ')
+  ΣAB i j k = Σ (A i j k) (B i j k)
+
+  module _
+    {a : ΣAB i0 i0 i0}
+    {b : ΣAB i0 i0 i1}
+    {c : ΣAB i1 i0 i1}
+    {d : ΣAB i1 i1 i1}
+    {e : ΣAB i1 i0 i0}
+    {f : ΣAB i1 i1 i0}
+    {ab : PathP (λ i → ΣAB i0 i0 i) a b}
+    {bc : PathP (λ i → ΣAB i i0 i1) b c}
+    {cd : PathP (λ i → ΣAB i1 i i1) c d}
+    {ae : PathP (λ i → ΣAB i i0 i0) a e}
+    {ef : PathP (λ i → ΣAB i1 i i0) e f}
+    {fd : PathP (λ i → ΣAB i1 i1 i) f d}
+    where
+
+    ΣHexP :
+      Σ (HexP A 
+          (λ i → fst (ab i))
+          (λ i → fst (bc i))
+          (λ i → fst (cd i))
+          (λ i → fst (ae i))
+          (λ i → fst (ef i))
+          (λ i → fst (fd i)))
+        (λ hexA → HexP (λ i j k → B i j k (HexP-filler A hexA i j k)) 
+          (λ i → snd (ab i))
+          (λ i → snd (bc i))
+          (λ i → snd (cd i))
+          (λ i → snd (ae i))
+          (λ i → snd (ef i))
+          (λ i → snd (fd i)))
+      → HexP ΣAB
+        ab bc cd ae ef fd
+    ΣHexP (hexA , hexB) .fst i = hexA .fst i , hexB .fst i
+    ΣHexP (hexA , hexB) .snd .fst i j = 
+      hexA .snd .fst i j , hexB .snd .fst i j
+    ΣHexP (hexA , hexB) .snd .snd i j =
+      hexA .snd .snd i j , hexB .snd .snd i j
       
-      open Σ hexp using ()
-        renaming (fst to ec)
-      open Σ (hexp .snd) using ()
-        renaming (fst to sq₁; snd to sq₂)
+open ΣHexP public
+  
+module _ {A : Type ℓ} where
+  open HexP (λ _ _ _ → A)
+    using ()
+    renaming 
+      ( HexP to Hex
+      ; HexP-comp to Hex-comp
+      ; HexP-filler to Hex-filler
+        )
+    public
 
-      HexP-faces : (i j k : I) → Partial i (A i j k)
-      HexP-faces i j k (i = i1) = sq₂ j k
+  module _
+    {a b c d e f : A}
+    {ab : a ≡ b}
+    {bc : b ≡ c}
+    {cd : c ≡ d}
+    {ae : a ≡ e}
+    {ef : e ≡ f}
+    {fd : f ≡ d}
+    where
 
-      HexP-comp : (i k : I) → A i i1 k
-      HexP-comp i k = 
-        comp (λ j → A i j k) (λ j → HexP-faces i j k) (sq₁ i k)
+    Hex→compPath :
+      Hex ab bc cd ae ef fd
+      → ab ∙ bc ∙ cd ≡ ae ∙ ef ∙ fd 
+    Hex→compPath (ec , sq₁ , sq₂) = goal
+      where
+      open import Prelude.ExtraGpdLaws
+      intrm : sym ae ∙ ab ∙ bc ≡ ef ∙ fd ∙ sym cd
+      intrm = PathP→compPathL sq₁ ∙ PathP→compPathR sq₂
+      intrm' = shuffleSymLD intrm ∙ ∙l assoc-inf ∙ assoc-inf
+      goal = assoc-inf ∙ shuffleSymRU intrm'
 
-      HexP-filler : (i j k : I) → A i j k
-      HexP-filler i j k =
-        fill (λ j → A i j k) (λ j → HexP-faces i j k) 
-          (inS (sq₁ i k)) j
-
--- module _ (A : I → I → I → Type ℓ)
---   {a : A i0 i0 i0}
---   {b : A i0 i0 i1}
---   {c : A i1 i0 i1}
---   {d : A i1 i1 i1}
---   {e : A i1 i0 i0}
---   where
---
---   module _
---     (ab : PathP (λ i → A i0 i0 i) a b)
---     (bc : PathP (λ i → A i i0 i1) b c)
---     (cd : PathP (λ i → A i1 i i1) c d)
---     (ae : PathP (λ i → A i i0 i0) a e)
---     (ed : PathP (λ i → A i1 i i)  e d)
---     where
---
---     PentagonP : Type ℓ
---     PentagonP = Σ (PathP (λ i → A i1 i0 i) e c)
---       (λ ec → Σ (SquareP (λ i j → A i i0 j) ab ec ae bc)
---         (λ _ → TriangleP (A i1) ec cd ed))
---
---   module _
---     {ab : PathP (λ i → A i0 i0 i) a b}
---     {bc : PathP (λ i → A i i0 i1) b c}
---     {cd : PathP (λ i → A i1 i i1) c d}
---     {ae : PathP (λ i → A i i0 i0) a e}
---     {ed : PathP (λ i → A i1 i i)  e d}
---     (pnt : PentagonP ab bc cd ae ed) 
---     where
---
---     private
---       dg = pnt .fst
---       sq = pnt .snd .fst
---       tr = pnt .snd .snd
---
---     pntP-comp : (j k : I)
---       → A i0 (j ∧ k) k
---     pntP-comp j k = goal
---       module PntP-comp where
---       private
---         part : ∀ i → Partial (~ j) (A (~ i) (j ∧ k) k)
---         part i (j = i0) = sq (~ i) k
---         goal = comp
---           (λ i → A (~ i) (j ∧ k) k)
---           part
---           (tr j k)
---       filler' : (i : I) → A (~ i) (j ∧ k) k
---       filler' = fill 
---           (λ i → A (~ i) (j ∧ k) k)
---           part
---           (inS (tr j k))
---
---     open PntP-comp 
---
---     pntP-filler : (i j k : I) → A i (j ∧ k) k
---     pntP-filler i j k = filler' (j ∧ k) k (~ i)
-
-    -- _ = λ (i j : I) → {! filler i i0 j !}
-
--- module _ {A : Type ℓ} {a b c d e : A} where
---   module _
---     (ab : a ≡ b)
---     (bc : b ≡ c)
---     (cd : c ≡ d)
---     (ae : a ≡ e)
---     (ed : e ≡ d)
---     where
---
---     Pentagon : Type ℓ
---     Pentagon = PentagonP (λ _ _ _ → A)
---       ab bc cd ae ed
---
---   module _
---     {ab : a ≡ b}
---     {bc : b ≡ c}
---     {cd : c ≡ d}
---     {ae : a ≡ e}
---     {ed : e ≡ d}
---     where
---
---     open import Prelude.ExtraGpdLaws
---
---     Pnt = Pentagon ab bc cd ae ed
---
---     -- Pnt-part : Pnt
---     --   → (i j k : I) 
---     --   → Partial (~ j ∨ i) A 
---     -- Pnt-part = PntP-part (λ _ _ _ → A) 
---
---     Pentagon→compPath' :
---       Pnt → sym ae ∙ ab ∙ bc ≡ ed ∙ sym cd
---     Pentagon→compPath' (ec , sq , tr) = 
---       PathP→compPathL sq
---       ∙ shuffleSymRD
---         (Square≃doubleComp ec ed refl cd .fst tr)
---
---     compPath'→Pentagon :
---       sym ae ∙ ab ∙ bc ≡ ed ∙ sym cd → Pnt
---     compPath'→Pentagon cmpp = goal
---       where
---       diag = sym ae ∙∙ ab ∙∙ bc
---       aux : diag ≡ ed ∙ sym cd
---       aux = doubleCompPath≡compPath (sym ae) ab bc ∙ cmpp
---       aux' : Square ed diag refl (sym cd)
---       aux' = invEq (Square≃doubleComp ed diag refl (sym cd)) (sym aux)
---       goal : Pnt
---       goal .fst = diag
---       goal .snd .fst = doubleCompPath-filler (sym ae) ab bc
---       goal .snd .snd = symP aux'
---
---     compPath'→compPath :
---       sym ae ∙ ab ∙ bc ≡ ed ∙ sym cd
---       → ab ∙ bc ∙ cd ≡ ae ∙ ed
---     compPath'→compPath cmpp' = 
---       assoc-inf ∙ shuffleSymRU 
---         (shuffleSymLD cmpp' ∙ assoc-inf)
---
---     compPath→compPath' :
---       ab ∙ bc ∙ cd ≡ ae ∙ ed
---       → sym ae ∙ ab ∙ bc ≡ ed ∙ sym cd
---     compPath→compPath' cmpp = 
---       shuffleSymLU 
---         (shuffleSymRD (sym assoc-inf ∙ cmpp) 
---           ∙ sym assoc-inf)
---
---   module _
---     {B : A → Type ℓ'}
---     {ab : a ≡ b}
---     {bc : b ≡ c}
---     {cd : c ≡ d}
---     {ae : a ≡ e}
---     {ed : e ≡ d}
---     {a' : B a}
---     {b' : B b}
---     {c' : B c}
---     {d' : B d}
---     {e' : B e}
---     (pnt : Pentagon ab bc cd ae ed)
---     (ab' : PathP (λ i → B (ab i)) a' b')
---     (bc' : PathP (λ i → B (bc i)) b' c')
---     (cd' : PathP (λ i → B (cd i)) c' d')
---     (ae' : PathP (λ i → B (ae i)) a' e')
---     (ed' : PathP (λ i → B (ed i)) e' d')
---     where
---
---     -- fam : I → I → I → Type ℓ'
---     -- fam i j k = B (Pnt-part pnt i j k {! !})
---
---     -- PentagonP' : Type ℓ'
---     -- PentagonP' = PentagonP (λ i j k → B (pnt i j k)) 
---     --   p' q' r' s' t' 
---
--- module _ {A : (i j k : I) → Type ℓ}
---   {B : (i j k : I) → A i j k → Type ℓ'}
---   {a : Σ (A i0 i0 i0) (B i0 i0 i0)}
---   {b : Σ (A i0 i0 i1) (B i0 i0 i1)}
---   {c : Σ (A i1 i0 i1) (B i1 i0 i1)}
---   {d : Σ (A i1 i1 i1) (B i1 i1 i1)}
---   {e : Σ (A i1 i0 i0) (B i1 i0 i0)}
---   {ab : PathP (λ i → Σ (A i0 i0 i) (B i0 i0 i)) a b}
---   {bc : PathP (λ i → Σ (A i i0 i1) (B i i0 i1)) b c}
---   {cd : PathP (λ i → Σ (A i1 i i1) (B i1 i i1)) c d}
---   {ae : PathP (λ i → Σ (A i i0 i0) (B i i0 i0)) a e}
---   {ed : PathP (λ i → Σ (A i1 i i ) (B i1 i i )) e d}
---   where
---
---   -- ΣPentagonP :
---   --   (pntA : PentagonP A
---   --     (λ i → fst (ab i))
---   --     (λ i → fst (bc i))
---   --     (λ i → fst (cd i))
---   --     (λ i → fst (ae i))
---   --     (λ i → fst (ed i)))
---   --   → PentagonP (λ i j k → B i j k {! pntP-filler A pntA i j k  !}) {! !} {! !} {! !} {! !} {! !} 
---   --   → PentagonP (λ i j k → Σ (A i j k) (B i j k))
---   --     ab bc cd ae ed
---   -- ΣPentagonP = {!  !}
---
--- -- module _ {A : Type ℓ} {B : A → Type ℓ'}
--- --   {a b c d e : Σ A B} 
--- --   {pp : a ≡ b}
--- --   {qq : b ≡ c}
--- --   {rr : c ≡ d}
--- --   {ss : a ≡ e}
--- --   {tt : e ≡ d}
--- --   where
--- --
---   private
---     p =  cong fst pp  
---     q =  cong fst qq  
---     r =  cong fst rr  
---     s =  cong fst ss  
---     t =  cong fst tt  
---
---     p' =  cong snd pp  
---     q' =  cong snd qq  
---     r' =  cong snd rr  
---     s' =  cong snd ss  
---     t' =  cong snd tt  
---
---   open import Prelude.Square
---   open import Cubical.Data.Sigma.Properties
---
---   ΣPentagon : 
---     Σ[ pnt ∈ Pentagon p q r s t ] 
---       (PentagonP' {B = B} pnt p' q' r' s' t')
---     → Pentagon pp qq rr ss tt
---   ΣPentagon (pnt , pntP) = 
---     sym (cong (pp ∙_) (ΣcompPath qq rr))
---     ∙ sym (ΣcompPath pp (ΣPathP (q ∙ r , compPathP' {B = B} q' r')))
---     ∙ ΣSquare (pnt , pntP)
---     ∙ ΣcompPath ss tt
+module _ 
+  {A : Type ℓ}
+  {B : A → Type ℓ'}
+  where
+  
+  open ΣHexP
+    {A = λ _ _ _ → A}
+    {B = λ _ _ _ → B}
+    using ()
+    renaming (ΣHexP to ΣHex)
+    public

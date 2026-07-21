@@ -43,24 +43,26 @@ module _ {F G : Container} {α β γ δ : F ⇒ G} where
   CMor□′ sq i j ._⇒_.σ s = sq s i j .fst
   CMor□′ sq i j ._⇒_.π s = sq s i j .snd
 
-module _ {F G : Container} {α β γ δ ζ : F ⇒ G} where
+module _ {F G : Container} {α β γ δ ζ θ : F ⇒ G} where
   open Container F
 
-  CMorPentagon′ :
+  CMorHex′ :
     ∀ {p : α ≡ β}
       {q : β ≡ γ}
       {r : γ ≡ δ}
       {u : α ≡ ζ}
-      {v : ζ ≡ δ}
+      {v : ζ ≡ θ}
+      {w : θ ≡ δ}
     → (∀ (s : S) → let f = λ (x : F ⇒ G) → CMor′⁻ x s
-      in Pentagon (cong f p) (cong f q) (cong f r) (cong f u) (cong f v))
-    → Pentagon p q r u v
-  CMorPentagon′ {p} {q} {r} {u} {v} pnts = goal
+      in Hex (cong f p) (cong f q) (cong f r) 
+        (cong f u) (cong f v) (cong f w))
+    → Hex p q r u v w
+  CMorHex′ hexs = goal
     where
     goal : Σ _ (λ _ → Σ _ _)
-    goal .fst = CMor≡′ λ s → pnts s .fst
-    goal .snd .fst = CMor□′ λ s → pnts s .snd .fst
-    goal .snd .snd = CMor□′ λ s → pnts s .snd .snd
+    goal .fst = CMor≡′ λ s → hexs s .fst
+    goal .snd .fst = CMor□′ λ s → hexs s .snd .fst
+    goal .snd .snd = CMor□′ λ s → hexs s .snd .snd
 
 module Displayed (S : Type) (P : S → Type) where
   -- Paths between vertical maps over
