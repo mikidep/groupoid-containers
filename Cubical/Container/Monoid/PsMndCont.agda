@@ -49,13 +49,13 @@ record PsMndCont : Type where
   field
     lUnit-σ : ∀ (s : S) → m s (const e) ≡ s
 
-    lUnit-π : ∀ {s : S}
+    lUnit-π : ∀ (s : S)
       → ↖ {s} {const e} ≡[ lUnit-σ s , (λ _ _ → s) ]ᴾ idfun (P s)
 
     rUnit-σ : ∀ (s : S) 
       → m e (const s) ≡ s
 
-    rUnit-π : ∀ {s : S}
+    rUnit-π : ∀ (s : S)
       → ↗ {e} {const s} ≡[ rUnit-σ s , (λ _ _ → s) ]ᴾ idfun (P s)
 
     -- This can probably be rewritten in terms of ⟦T⟧₁, but is it worth it?
@@ -77,7 +77,7 @@ record PsMndCont : Type where
       (s″ : (p : P s) → P (s′ p) → S)
       → (λ p → ↖ {s′ = s″ (↖ p)} (↗ {s′ = m′ s′ s″} p)) 
           ≡[ assoc-σ _ _ _ , (λ i p → s′ (assoc-π₁ s s′ s″ i p)) ]ᴾ
-        (↖ {s′ = m↖↗ s″} » ↗)
+        (λ p → ↗ (↖ {s′ = m↖↗ s″} p))
 
     assoc-π₃ :
       ∀ (s : S) (s′ : P s → S) 
@@ -90,13 +90,13 @@ record PsMndCont : Type where
       ∀ {s : S} {s′ : P s → S} 
       → Square
             {a₀₀ = m s (λ p → m e (const (s′ p)))} 
-            {a₀₁ = m (m s (const e)) (λ p → s′ (↖ p))}
+            {a₀₁ = m (m s (const e)) (λ p → s′ (↖ {s′ = const e} p))}
         (assoc-σ s (const e) (λ p _ → s′ p)) 
             {a₁₀ = m s (λ p → m e (const (s′ p)))} 
             {a₁₁ = m s s′}
-        (cong (m s) (funExt λ p → rUnit-σ (s′ p)))
+        (λ i → m s (λ p → rUnit-σ (s′ p) i))
         (refl {x = m s (λ p → m e (const (s′ p)))})
-        (cong₂ (λ s pp → m s (pp » s′)) (lUnit-σ s) lUnit-π)
+        (λ i → m (lUnit-σ s i) (λ p → s′ (lUnit-π s i p)))
 
     lrUnit-coh-π₁ : 
       ∀ {s : S} {s′ : P s → S} 
@@ -106,9 +106,9 @@ record PsMndCont : Type where
             {π₁₀ = ↖ {s′ = λ p → m e (λ _ → s′ p)}}
             {π₁₁ = ↖ {s′ = s′}}
         (assoc-π₁ s (const e) (λ p _ → s′ p))
-        (cong (λ x → ↖ {s′ = x}) (funExt (λ p → rUnit-σ (s′ p))))
-        refl 
-        (λ i p → lUnit-π i (↖ {s′ = λ x → s′ (lUnit-π i x)} p))
+        (λ i → ↖ {s′ = λ p → rUnit-σ (s′ p) i})
+        (refl {x = ↖ {s′ = λ p → m e (λ _ → s′ p)}})
+        (λ i p → lUnit-π s i (↖ {s′ = λ p′ → s′ (lUnit-π s i p′)} p))
 
     lrUnit-coh-π₂ :
       ∀ {s : S} {s′ : P s → S} 
@@ -119,9 +119,9 @@ record PsMndCont : Type where
             {π₁₀ = λ p → ↗ {s′ = const (s′ (↖ p))} (↗ p)}
             {π₁₁ = ↗ {s′ = λ p → s′ p}}
         (assoc-π₃ s (const e) (λ p _ → s′ p))
-        (λ i p → rUnit-π i (↗ {s′ = λ q → rUnit-σ (s′ q) i} p))
-        refl
-        (congP (λ j f → ↗ {s′ = λ p → s′ (f p)}) lUnit-π)
+        (λ i p → rUnit-π (s′ (↖ p)) i (↗ {s′ = λ q → rUnit-σ (s′ q) i} p))
+        (refl {x = λ p → ↗ {s′ = const (s′ (↖ p))} (↗ p)})
+        (λ i → ↗ {s′ = λ p → s′ (lUnit-π s i p)})
 
     assoc-coh-σ :
       ∀ {s : S} {s′ : P s → S} 
@@ -155,7 +155,8 @@ record PsMndCont : Type where
       ∀ {s : S} {s′ : P s → S} 
         {s″ : (p : P s) → P (s′ p) → S} 
         {s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S} 
-      → HexP (λ i j k → P (acσ-fill s s′ s″ s‴ i j k) → P s)
+      → HexP' (λ t → P t → P s)
+              (assoc-coh-σ {s} {s′} {s″} {s‴})
               {a = ↖ {s′ = m′ s′ (λ p → m′ (s″ p) (s‴ p))}}
               {b = ↖ {s′ = m′ (m′ s′ s″) (λ p → m↖↗ (s‴ p))}}
               {c = ↖ {s′ = m↖↗ (λ p → m↖↗ (s‴ p))} » ↖}
@@ -265,44 +266,44 @@ record PsMndCont : Type where
             → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
                 (acπ₂-fill s s′ s″ s‴ i j k p)
                 (acπ₃-fill s s′ s″ s‴ i j k p)))
-              -- {a = λ p → ↖ {s′ = s‴ (↖ p) (↖ (↗ p))} (↗ (↗ p))}
-              -- {b = λ p → ↗ {s′ = s″ (↖ p)} (↖ (↗ p))}
-              -- {c = λ p → ↗ {s′ = s″ (↖ (↖ p))} (↗ (↖ p))}
-              -- {d = λ p → ↗ {s′ = m↖↗ s″} (↖ p)}
-              -- {e = λ p → ↖ {s′ = s‴ (↖ p) (↖ (↗ p))} (↗ (↗ p))}
-              -- {f = λ p → ↖ {s′ = s‴ (↖ (↖ p)) (↗ (↖ p))} (↗ p)}
+              {a = λ p → ↗ {s′ = s‴ (↖ p) (↖ (↗ p))} (↗ (↗ p))}
+              {b = λ p → ↗ {s′ = λ q → s‴ (↖ p) (↖ q) (↗ q)} (↗ p)}
+              {c = λ p → ↗ {s′ = λ p → s‴ (↖ p) (↖ (↗ p)) (↗ (↗ p))} p}
+              {d = λ p → ↗ {s′ = λ p → s‴ (↖ (↖ p)) (↗ (↖ p)) (↗ p)} p}
+              {e = λ p → ↗ {s′ = s‴ (↖ p) (↖ (↗ p))} (↗ (↗ p))}
+              {f = λ p → ↗ {s′ = s‴ (↖ (↖ p)) (↗ (↖ p))} (↗ p)}
           (λ i p → assoc-π₃ (s′ (↖ p)) (s″ (↖ p)) (s‴ (↖ p)) i (↗ p))
           (λ i p → assoc-π₃ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i p)
-          (λ i → ↗ {s′ = {! _ !}})
+          (λ i → ↗ {s′ = λ p → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)})
           refl
           (λ i p → ↗ (assoc-π₃ s s′ (m″ s″ s‴) i p))
           (assoc-π₃ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
 
-  -- private
-  --   acπ₄-fill : 
-  --     ∀ (s : S) (s′ : P s → S) 
-  --       (s″ : (p : P s) → P (s′ p) → S) 
-  --       (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
-  --       (i j k : I) 
-  --       → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
-  --       → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
-  --           (acπ₂-fill s s′ s″ s‴ i j k p)
-  --           (acπ₃-fill s s′ s″ s‴ i j k p))
-  --   acπ₄-fill s s′ s″ s‴ = 
-  --     HexP-filler 
-  --       (λ i j k 
-  --           → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
-  --           → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
-  --               (acπ₂-fill s s′ s″ s‴ i j k p)
-  --               (acπ₃-fill s s′ s″ s‴ i j k p)))
-  --       (assoc-coh-π₃ {s} {s′} {s″} {s‴})
+-- private
+--   acπ₄-fill : 
+--     ∀ (s : S) (s′ : P s → S) 
+--       (s″ : (p : P s) → P (s′ p) → S) 
+--       (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
+--       (i j k : I) 
+--       → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
+--       → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
+--           (acπ₂-fill s s′ s″ s‴ i j k p)
+--           (acπ₃-fill s s′ s″ s‴ i j k p))
+--   acπ₄-fill s s′ s″ s‴ = 
+--     HexP-filler 
+--       (λ i j k 
+--           → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
+--           → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
+--               (acπ₂-fill s s′ s″ s‴ i j k p)
+--               (acπ₃-fill s s′ s″ s‴ i j k p)))
+--       (assoc-coh-π₃ {s} {s′} {s″} {s‴})
 
--- open import Cubical.Foundations.Equiv
---
--- record IsCartesian (pmc : PsMndCont) : Type where
---   open PsMndCont pmc
---   field
---     cart-e : P e ≃ Unit
---     cart-m : {s : S} {s′ : P s → S} 
---       → isEquiv (λ (p : P (m s s′)) → idfun (Σ (P s) (λ ↖p → P (s′ ↖p))) 
---         (↖ p , ↗ p))
+open import Cubical.Foundations.Equiv
+
+record IsCartesian (pmc : PsMndCont) : Type where
+  open PsMndCont pmc
+  field
+    cart-e : P e ≃ Unit
+    cart-m : {s : S} {s′ : P s → S} 
+      → isEquiv (λ (p : P (m s s′)) → idfun (Σ (P s) (λ ↖p → P (s′ ↖p))) 
+        (↖ p , ↗ p))

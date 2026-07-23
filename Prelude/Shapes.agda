@@ -32,44 +32,6 @@ module _ (A : I → I → Type ℓ)
   doubleCompP-filler i j =
     fill (λ j → A i j) (doubleCompP-faces i) (inS (q i)) j
 
--- module _ (A : I → I → Type ℓ)
---   {a : A i0 i0}
---   {b : A i0 i1}
---   {c : A i1 i1}
---   (ab : PathP (λ i → A i0 i ) a b)
---   (bc : PathP (λ i → A i  i1) b c)
---   (ac : PathP (λ i → A i  i ) a c)
---   where
---
---   -- b ∙──────∙ c
---   --   │    🯐🯑 
---   --   │  🯐🯑   
---   --   │🯐🯑     
---   -- a ∙
---
---   TriangleP : Type ℓ
---   TriangleP = PathP
---     (λ i → PathP (λ j → A (i ∧ j) j) a (bc i))
---     ab
---     ac
---
---   TriangleP≡SquareP : 
---     TriangleP 
---     ≡ SquareP
---       (λ i j → A (i ∧ j) j)
---       ab ac refl bc
---   TriangleP≡SquareP = refl
---
--- module _ {A : Type ℓ}
---   {a b c : A}
---   (ab : a ≡ b)
---   (bc : b ≡ c)
---   (ac : a ≡ c)
---   where
---
---   Triangle : Type ℓ
---   Triangle = TriangleP (λ _ _ → A) ab bc ac
-
   --                d ∙
   --                🯐🯑│
   --            c 🯐🯑  │
@@ -131,6 +93,57 @@ module HexP (A : I → I → I → Type ℓ)
 
 open HexP public
 
+module _ 
+  {A : (i j k : I) → Type ℓ}
+  (B : (i j k : I) → A i j k → Type ℓ')
+  {a : A i0 i0 i0}
+  {b : A i0 i0 i1}
+  {c : A i1 i0 i1}
+  {d : A i1 i1 i1}
+  {e : A i1 i0 i0}
+  {f : A i1 i1 i0}
+  {ab : PathP (λ i → A i0 i0 i) a b}
+  {bc : PathP (λ i → A i i0 i1) b c}
+  {cd : PathP (λ i → A i1 i i1) c d}
+  {ae : PathP (λ i → A i i0 i0) a e}
+  {ef : PathP (λ i → A i1 i i0) e f}
+  {fd : PathP (λ i → A i1 i1 i) f d}
+  where
+  
+  module HexP'Dep
+    (hexA : HexP A ab bc cd ae ef fd)
+    where
+
+    private
+      hexA-filler : (i j k : I) → A i j k
+      hexA-filler = HexP-filler A hexA
+      B' : (i j k : I) → Type ℓ'
+      B' i j k = B i j k (hexA-filler i j k)
+
+    open HexP B' using ()
+      renaming 
+        ( HexP to HexP'-dep
+        ; HexP-filler to HexP'-dep-filler
+        )
+      public
+
+  open HexP'Dep public
+
+module _ 
+  {A : Type ℓ}
+  (B : A → Type ℓ')
+  where
+
+  open HexP'Dep
+    {A = λ _ _ _ → A}
+    (λ _ _ _ → B)
+    using ()
+    renaming
+        ( HexP'-dep to HexP'
+        ; HexP'-dep-filler to HexP'-filler
+        )
+    public
+
 module ΣHexP 
   {A : (i j k : I) → Type ℓ}
   {B : (i j k : I) → A i j k → Type ℓ'}
@@ -162,7 +175,7 @@ module ΣHexP
           (λ i → fst (ae i))
           (λ i → fst (ef i))
           (λ i → fst (fd i)))
-        (λ hexA → HexP (λ i j k → B i j k (HexP-filler A hexA i j k)) 
+        (λ hexA → HexP'-dep B hexA 
           (λ i → snd (ab i))
           (λ i → snd (bc i))
           (λ i → snd (cd i))

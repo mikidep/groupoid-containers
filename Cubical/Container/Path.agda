@@ -109,3 +109,49 @@ module Displayed (S : Type) (P : S → Type) where
       (λ i j → (p : P (s□ i j)) → P (ps□ i j p))
       π≡₀₋ π≡₁₋ π≡₋₀ π≡₋₁
 
+  module _ {sa sb sc sd se sf : S}
+    {sab : sa ≡ sb}
+    {sbc : sb ≡ sc}
+    {scd : sc ≡ sd}
+    {sae : sa ≡ se}
+    {sef : se ≡ sf}
+    {sfd : sf ≡ sd}
+    (shex : Hex sab sbc scd sae sef sfd)
+    {psa : P sa → S}
+    {psb : P sb → S}
+    {psc : P sc → S}
+    {psd : P sd → S}
+    {pse : P se → S}
+    {psf : P sf → S}
+    {psab : PathP (λ i → P (sab i) → S) psa psb}
+    {psbc : PathP (λ i → P (sbc i) → S) psb psc}
+    {pscd : PathP (λ i → P (scd i) → S) psc psd}
+    {psae : PathP (λ i → P (sae i) → S) psa pse}
+    {psef : PathP (λ i → P (sef i) → S) pse psf}
+    {psfd : PathP (λ i → P (sfd i) → S) psf psd}
+    (pshex : HexP' (λ s → P s → S) shex 
+      psab psbc pscd psae psef psfd)
+    {πa : (p : P sa) → P (psa p)}
+    {πb : (p : P sb) → P (psb p)}
+    {πc : (p : P sc) → P (psc p)}
+    {πd : (p : P sd) → P (psd p)}
+    {πe : (p : P se) → P (pse p)}
+    {πf : (p : P sf) → P (psf p)}
+    where
+
+    Hexᴾ : 
+      (πab : πa ≡[ sab , psab ]ᴾ πb)
+      (πbc : πb ≡[ sbc , psbc ]ᴾ πc)
+      (πcd : πc ≡[ scd , pscd ]ᴾ πd)
+      (πae : πa ≡[ sae , psae ]ᴾ πe)
+      (πef : πe ≡[ sef , psef ]ᴾ πf)
+      (πfd : πf ≡[ sfd , psfd ]ᴾ πd)
+      → Type
+    Hexᴾ πab πbc πcd πae πef πfd = 
+      HexP
+        (λ i j k → (p : P (sfill i j k)) → P (psfill i j k p))
+        πab πbc πcd πae πef πfd
+      where
+      sfill = Hex-filler shex
+      psfill = HexP'-filler (λ s → P s → S) shex pshex
+

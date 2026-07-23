@@ -36,16 +36,16 @@ private
   pm-lUnit : pm-η ⊗₁ id ⋆ pm-μ ≡ MC.lUnit _
   pm-lUnit = cong₂ CMor
     (funExt λ ks → lUnit-σ (ks .fst))
-    (funExt λ _ → λ i p → lUnit-π i p , _)
+    (funExt λ ks → λ i p → lUnit-π (ks .fst) i p , _)
 
   pm-rUnit : id ⊗₁ pm-η ⋆ pm-μ ≡ MC.rUnit _
   pm-rUnit = cong₂ CMor 
     (funExt λ ks → rUnit-σ (ks .snd tt)) 
-    (funExt λ _ → λ i p → _ , rUnit-π i p)
+    (funExt λ ks → λ i p → _ , rUnit-π (ks .snd tt) i p)
 
   pm-assoc : MC.assoc _ _ _ ⋆ pm-μ ⊗₁ id ⋆ pm-μ ≡ id ⊗₁ pm-μ ⋆ pm-μ
   pm-assoc = cong₂ CMor
-    (funExt λ { ((s , s′), s″) → assoc-σ _ _ _ }) 
+    (funExt λ { ((s , s′), s″) → assoc-σ s s′ (curry s″) }) 
     (funExt λ { ((s , s′), s″) 
       → λ i p → 
         ( assoc-π₁ s s′ (curry s″) i p 
@@ -78,45 +78,44 @@ PsMndCont→Pseudomonoid .assoc-coh =
       (λ p‴ → P (uncurry (uncurry s‴) p‴))
     auxσ = assoc-coh-σ {s} {s′} {s″} {s‴}
     auxπ : HexP (λ i j k → B (Hex-filler (assoc-coh-σ {s} {s′} {s″} {s‴}) i j k))
-      (λ i x → 
-          ( (↖ x 
-            , assoc-π₁ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
-          , assoc-π₂ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x)) 
-        , assoc-π₃ (s′ (↖ x)) (s″ (↖ x)) (s‴ (↖ x)) i (↗ x))
-      (λ i x → 
-          ( ( assoc-π₁ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x 
-            , ↖ (assoc-π₂ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)) 
-          , ↗ (assoc-π₂ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)) 
-        , assoc-π₃ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)) i x)
-      (λ i x → 
-          ( ( assoc-π₁ s s′ s″ i (↖ x) 
-            , assoc-π₂ s s′ s″ i (↖ x)) 
-          , assoc-π₃ s s′ s″ i (↖ x)) 
-        , ↗ x)
+      (λ i p → 
+          ( (↖ p 
+            , assoc-π₁ (s′ (↖ p)) (s″ (↖ p)) (s‴ (↖ p)) i (↗ p)) 
+          , assoc-π₂ (s′ (↖ p)) (s″ (↖ p)) (s‴ (↖ p)) i (↗ p)) 
+        , assoc-π₃ (s′ (↖ p)) (s″ (↖ p)) (s‴ (↖ p)) i (↗ p))
+      (λ i p → 
+          ( ( assoc-π₁ s (m′ s′ s″) (λ p′ → m↖↗ (s‴ p′)) i p 
+            , ↖ (assoc-π₂ s (m′ s′ s″) (λ p′ → m↖↗ (s‴ p′)) i p)) 
+          , ↗ (assoc-π₂ s (m′ s′ s″) (λ p′ → m↖↗ (s‴ p′)) i p)) 
+        , assoc-π₃ s (m′ s′ s″) (λ p′ → m↖↗ (s‴ p′)) i p)
+      (λ i p → 
+          ( ( assoc-π₁ s s′ s″ i (↖ p) 
+            , assoc-π₂ s s′ s″ i (↖ p)) 
+          , assoc-π₃ s s′ s″ i (↖ p)) 
+        , ↗ p)
       refl
-      (λ i x → 
-          ( ( assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x 
-            , assoc-π₂ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x) 
-          , ↖ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x)) 
-        , ↗ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i x))
-      (λ i x → 
-          ( ( ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x) 
-            , ↗ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)) 
-          , assoc-π₂ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x) 
-        , assoc-π₃ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i x)
-    -- auxπ = ΣHexP ?
+      (λ i p → 
+          ( ( assoc-π₁ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i p 
+            , assoc-π₂ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i p) 
+          , ↖ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i p)) 
+        , ↗ (assoc-π₃ s s′ (λ p′ → m′ (s″ p′) (s‴ p′)) i p))
+      (λ i p → 
+          ( ( ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p′ → s‴ (↖ p′) (↗ p′)) i p) 
+            , ↗ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p′ → s‴ (↖ p′) (↗ p′)) i p)) 
+          , assoc-π₂ (m s s′) (m↖↗ s″) (λ p′ → s‴ (↖ p′) (↗ p′)) i p) 
+        , assoc-π₃ (m s s′) (m↖↗ s″) (λ p′ → s‴ (↖ p′) (↗ p′)) i p)
     auxπ .fst      i p .fst .fst .fst = assoc-coh-π₁ .fst i p
-    auxπ .fst      i p .fst .fst .snd = ?
-    auxπ .fst      i p .fst .snd      = ?
-    auxπ .fst      i p .snd           = ?
-    -- auxπ .snd .fst i p .fst .fst .fst = {! !}
-    -- auxπ .snd .fst i p .fst .fst .snd = {! !}
-    -- auxπ .snd .fst i p .fst .snd = {! !}
-    -- auxπ .snd .fst i p .snd = {! !}
-    -- auxπ .snd .snd i p .fst .fst .fst = {! !}
-    -- auxπ .snd .snd i p .fst .fst .snd = {! !}
-    -- auxπ .snd .snd i p .fst .snd = {! !}
-    -- auxπ .snd .snd i p .snd = {! !}
+    auxπ .fst      i p .fst .fst .snd = assoc-coh-π₂ .fst i p
+    auxπ .fst      i p .fst .snd      = assoc-coh-π₃ .fst i p
+    auxπ .fst      i p .snd           = assoc-coh-π₄ .fst i p
+    auxπ .snd .fst i j p .fst .fst .fst = assoc-coh-π₁ .snd .fst i j p
+    auxπ .snd .fst i j p .fst .fst .snd = assoc-coh-π₂ .snd .fst i j p
+    auxπ .snd .fst i j p .fst .snd      = assoc-coh-π₃ .snd .fst i j p
+    auxπ .snd .fst i j p .snd           = assoc-coh-π₄ .snd .fst i j p
+    auxπ .snd .snd i j p .fst .fst .fst = assoc-coh-π₁ .snd .snd i j p
+    auxπ .snd .snd i j p .fst .fst .snd = assoc-coh-π₂ .snd .snd i j p
+    auxπ .snd .snd i j p .fst .snd      = assoc-coh-π₃ .snd .snd i j p
+    auxπ .snd .snd i j p .snd           = assoc-coh-π₄ .snd .snd i j p
   cmorhex = CMorHex′ aux
 
 PsMndCont→Pseudomonoid .lrUnit-coh =
