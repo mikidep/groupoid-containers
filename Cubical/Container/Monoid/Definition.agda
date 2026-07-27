@@ -28,6 +28,8 @@ _⊗₂_ : ∀ {F G H K : Container}
   → α ⊗₁ β ≡ α′ ⊗₁ β′
 p ⊗₂ q = cong₂ _⊗₁_ p q
 
+open import Prelude.Shapes
+
 record Pseudomonoid : Type where
   field
     η : 𝟙 ⇒ T 
@@ -45,14 +47,30 @@ record Pseudomonoid : Type where
     -- Sect. 3, though those equations are for a
     -- Gray monoid, where ̰̰_⊗_ is strictly associative.
 
+    -- assoc-coh : 
+    --   id ⊗₁ Assoc ◃ Assoc ◃ assoc ⊗₂ refl {x = id} ▹ μ
+    --   ∙ id ⊗₁ Assoc ◃ id ⊗₁ μ ⊗₁ id ◃ assoc
+    --   ∙ refl {x = id} ⊗₂ assoc ▹ μ
+    --   ≡ Assoc ◃ μ ⊗₁ id ⊗₁ id ◃ assoc
+    --   ∙ id ⊗₁ id ⊗₁ μ ◃ assoc
+
     assoc-coh : 
-      id ⊗₁ Assoc ◃ Assoc ◃ assoc ⊗₂ refl {x = id} ▹ μ
-      ∙ id ⊗₁ Assoc ◃ id ⊗₁ μ ⊗₁ id ◃ assoc
-      ∙ refl {x = id} ⊗₂ assoc ▹ μ
-      ≡ Assoc ◃ μ ⊗₁ id ⊗₁ id ◃ assoc
-      ∙ id ⊗₁ id ⊗₁ μ ◃ assoc
+      Hex
+        (id ⊗₁ Assoc ◃ Assoc ◃ assoc ⊗₂ refl {x = id} ▹ μ)
+        (id ⊗₁ Assoc ◃ id ⊗₁ μ ⊗₁ id ◃ assoc)
+        (refl {x = id} ⊗₂ assoc ▹ μ)
+        refl
+        (Assoc ◃ μ ⊗₁ id ⊗₁ id ◃ assoc)
+        (id ⊗₁ id ⊗₁ μ ◃ assoc)
+
+    -- lrUnit-coh : 
+    --   id ⊗₁ η ⊗₁ id ◃ assoc
+    --   ∙ refl {x = id} ⊗₂ lUnit ▹ μ
+    --   ≡ Assoc ◃ rUnit ⊗₂ refl {x = id} ▹ μ
 
     lrUnit-coh : 
-      id ⊗₁ η ⊗₁ id ◃ assoc
-      ∙ refl {x = id} ⊗₂ lUnit ▹ μ
-      ≡ Assoc ◃ rUnit ⊗₂ refl {x = id} ▹ μ
+      Square 
+        (id ⊗₁ η ⊗₁ id ◃ assoc)
+        (Assoc ◃ rUnit ⊗₂ refl {x = id} ▹ μ)
+        refl
+        (refl {x = id} ⊗₂ lUnit ▹ μ)

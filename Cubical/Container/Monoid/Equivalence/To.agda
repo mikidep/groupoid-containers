@@ -11,19 +11,19 @@ open import Cubical.Container.Monoid.PsMndCont
 
 open import Prelude.Shapes
 
-module Cubical.Container.Monoid.Equivalence 
+module Cubical.Container.Monoid.Equivalence.To
   (T : Container) (pmc : PsMndCont T) where
 
 open CC.Morphisms using (_⋆_; id)
 open CC.Monoidal using (𝟙; _⊗₀_; _⊗₁_)
 private module MC = CC.Monoidal
 
-open PsMndCont pmc
-open Pseudomonoid
 open _⇒_
 
 open Container T
 
+open PsMndCont pmc
+open Pseudomonoid
 private
   pm-η : 𝟙 ⇒ T
   pm-η .σ _ = e
@@ -58,9 +58,7 @@ PsMndCont→Pseudomonoid .μ = pm-μ
 PsMndCont→Pseudomonoid .lUnit = pm-lUnit
 PsMndCont→Pseudomonoid .rUnit = pm-rUnit
 PsMndCont→Pseudomonoid .assoc = pm-assoc
-PsMndCont→Pseudomonoid .assoc-coh = 
-  Hex→compPath cmorhex 
-  ∙ sym (doubleCompPath≡compPath _ _ _)
+PsMndCont→Pseudomonoid .assoc-coh = CMorHex′ aux
   where
   open import Prelude.Square
   open import Prelude.Shapes
@@ -116,15 +114,12 @@ PsMndCont→Pseudomonoid .assoc-coh =
     auxπ .snd .snd i j p .fst .fst .snd = assoc-coh-π₂ .snd .snd i j p
     auxπ .snd .snd i j p .fst .snd      = assoc-coh-π₃ .snd .snd i j p
     auxπ .snd .snd i j p .snd           = assoc-coh-π₄ .snd .snd i j p
-  cmorhex = CMorHex′ aux
 
 PsMndCont→Pseudomonoid .lrUnit-coh =
-  PathP→compPathL∙∙
-    (CMor□′ λ s → ΣSquare (
+    CMor□′ λ s → ΣSquare (
       lrUnit-coh-σ
       , λ i j p → (lrUnit-coh-π₁ i j p , _) 
         , lrUnit-coh-π₂ i j p
-      ))
+      )
   where
-  open import Cubical.Foundations.Path
   open import Prelude.Square
