@@ -94,8 +94,8 @@ compEndo .F-id {F , G} = PseudonatTrans≡ $ WNatTrans≡
         ∷ G-seq id (F₁ f)
         ∷ G-id ▹ G₁ (F₁ f)
         ∷ nil )
-        (tm ◆ tm ◆ tm)
-        (((tm ◆ refl′ ◆ tm) ◆ refl′) ◆ tm)
+        (tm ∙′ tm ∙′ tm)
+        (((tm ∙′ refl′ ∙′ tm) ∙′ refl′) ∙′ tm)
 compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = PseudonatTrans≡ $ WNatTrans≡ 
   (funExt λ X → 
     F'.F-seq (α₀ X) (β₀ X) ▹ α'₀ (H.F₀ X) ▹ β'₀ (H.F₀ X)

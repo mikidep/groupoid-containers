@@ -42,8 +42,8 @@ module _ where
         ( sym (G.F-seq (F₁ f) id) 
         ∷ G.F-seq id (F₁ f) 
         ∷ nil ) 
-        (refl′ ◆ (tm ◆ refl′ ◆ tm) ◆ refl′)
-        (((tm ◆ refl′) ◆ refl′ ◆ refl′ ◆ tm) ◆ refl′)
+        (refl′ ∙′ (tm ∙′ refl′ ∙′ tm) ∙′ refl′)
+        (((tm ∙′ refl′) ∙′ refl′ ∙′ refl′ ∙′ tm) ∙′ refl′)
       ⟩
       ((sym (G.F-seq (F₁ f) id) ∙ refl) ∙ refl ∙ refl ∙ G.F-seq id (F₁ f)) 
       ∙ refl

@@ -35,9 +35,10 @@ module _ (F : GpdEndo) where
   iMG-lUnit-ob .fst .N-hom f = refl
   iMG-lUnit-ob .snd .N-hom-id = refl
   iMG-lUnit-ob .snd .N-hom-seq f g = 
-      reassoc (F.F-seq f g ∷ nil)
-        (refl′ ◆ tm)
-        ((refl′ ◆ tm) ◆ refl′ ◆ refl′)
+      reassoc 
+        (refl′ ∙′ F.F-seq f g)
+        ((refl′ ∙′ F.F-seq f g) ∙′ refl′ ∙′ refl′)
+        refl
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
   open Bicategory GpdEndoBicat using ()
