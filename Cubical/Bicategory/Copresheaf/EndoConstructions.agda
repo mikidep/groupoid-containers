@@ -47,6 +47,8 @@ open import Prelude.Reassoc
 
 open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
 
+open BicatReassoc ⟨GPD⟩
+
 compEndo : WildFunctor
   (ProdCat GpdEndoWildCat GpdEndoWildCat) GpdEndoWildCat
 compEndo .F-ob = uncurry compEndo₀
@@ -90,12 +92,14 @@ compEndo .F-id {F , G} = PseudonatTrans≡ $ WNatTrans≡
     goal' = sym (rUnit _)
       ∙ shuffleSymLD goal''
       ∙ reassoc
-        ( sym (G-seq (F₁ f) id)
-        ∷ G-seq id (F₁ f)
-        ∷ G-id ▹ G₁ (F₁ f)
-        ∷ nil )
-        (tm ∙′ tm ∙′ tm)
-        (((tm ∙′ refl′ ∙′ tm) ∙′ refl′) ∙′ tm)
+        ( ↑ sym (G-seq (F₁ f) id) 
+        ∙′ ↑ G-seq id (F₁ f) 
+        ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
+        ( ((↑ sym (G-seq (F₁ f) id) 
+            ∙′ refl′ ∙′ ↑ G-seq id (F₁ f)) 
+          ∙′ refl′) 
+        ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
+        refl
 compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = PseudonatTrans≡ $ WNatTrans≡ 
   (funExt λ X → 
     F'.F-seq (α₀ X) (β₀ X) ▹ α'₀ (H.F₀ X) ▹ β'₀ (H.F₀ X)

@@ -134,6 +134,15 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
     ∙ sym assoc-inf
 
+  -- reassoc helper
+  -- does not work because universes
+  -- open import Prelude.Reassoc
+  -- F₂′ : ∀ {X} {Y} {f g : C[ X , Y ]}
+  --   (f≡g : Term f g)
+  --   → Term (F₁ f) (F₁ g)
+  -- F₂′ = cong′ F₁ 
+
+
 module _ {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
   (α : WildNatTrans _ _ F G) where

@@ -36,9 +36,9 @@ module _ (F : GpdEndo) where
   iMG-rUnit-ob .snd .N-hom-id = sym (lUnit _) ∙ rUnit _
   iMG-rUnit-ob .snd .N-hom-seq f g = 
     reassoc
-      (F.F-seq f g ∷ nil)
-      (refl′ ◆ tm)
-      ((tm ◆ refl′) ◆ refl′ ◆ refl′)
+      (refl′ ∙′ ↑ F.F-seq f g)
+      ((↑ F.F-seq f g ∙′ refl′) ∙′ refl′ ∙′ refl′)
+      refl
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
   open Bicategory GpdEndoBicat using ()
@@ -60,9 +60,9 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
   iMG-rUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
     refl 
     λ f → reassoc
-      (α□ f ∷ nil)
-      (((refl′ ◆ tm ◆ refl′) ◆ refl′) ◆ refl′)
-      (refl′ ◆ tm)
+      (((refl′ ∙′ ↑ α□ f ∙′ refl′) ∙′ refl′) ∙′ refl′)
+      (refl′ ∙′ ↑ α□ f)
+      refl
   
 module _ (F : GpdEndo) where
   open WildNatTrans
@@ -76,9 +76,9 @@ module _ (F : GpdEndo) where
   iMG-rUnit-isIs .inv' .fst .N-hom _ = refl
   iMG-rUnit-isIs .inv' .snd .N-hom-id = sym (rUnit _ ∙ lUnit _)
   iMG-rUnit-isIs .inv' .snd .N-hom-seq f g = reassoc
-    (F.F-seq f g ∷ nil)
-    (refl′ ◆ tm ◆ refl′)
-    (tm ◆ refl′ ◆ refl′)
+    (refl′ ∙′ ↑ F.F-seq f g ∙′ refl′)
+    (↑ F.F-seq f g ∙′ refl′ ∙′ refl′)
+    refl
   iMG-rUnit-isIs .sect = PseudonatTrans≡ $ makeNatTransPath
     refl λ f → sym (lUnit _)
   iMG-rUnit-isIs .retr = PseudonatTrans≡ $ makeNatTransPath

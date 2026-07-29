@@ -25,7 +25,7 @@ module _ (C : WildCat ℓC ℓC') where
 
   module _
     (F G H : WildFunctor C TYPE) where
-    open import Prelude
+    open import Prelude.Utils
 
     compWildNatTransTypes : WildNatTrans _ _ F G → WildNatTrans _ _ G H → WildNatTrans _ _ F H
     N-ob (compWildNatTransTypes η γ) X = N-ob η X » N-ob γ X
@@ -55,36 +55,4 @@ module _ (C : WildCat ℓC ℓC') where
       λ f →
         cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
         ∙ sym assoc-inf
-        where open import Prelude
-        --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f) ∙ cong (α .N-ob _ »_) (β .N-hom f))
-        --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        -- ≡⟨ cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _) ⟩
-        --                 (
-        --                   cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f))
-        --                   ∙ cong (_» γ .N-ob _) (cong (α .N-ob _ »_) (β .N-hom f))
-        --                 )
-        --                 ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        -- ≡⟨ sym assoc-inf ⟩
-        --
-        --                 cong (_» γ .N-ob _) (cong (_» β .N-ob _) (N-hom α f))
-        --                 ∙ (
-        --                   cong (_» γ .N-ob _) (cong (α .N-ob _ »_) (β .N-hom f))
-        --                   ∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)
-        --                 )
-        -- ≡⟨ refl ??? ⟩
-        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f)
-        --                 ∙ (
-        --                   cong (α .N-ob _ »_) (cong (_» γ .N-ob _) (β .N-hom f))
-        --                   ∙ cong (α .N-ob _ »_) (cong (β .N-ob _ »_) (γ .N-hom f))
-        --                 )
-        -- ≡⟨
-        --   -- cong (cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f) ∙_) (sym (cong-∙ (α .N-ob _ »_) (cong (_» γ .N-ob _) (β .N-hom f)) (cong (β .N-ob _ »_) (γ .N-hom f))))
-        --   refl ???
-        -- ⟩
-        --                 cong (_» (β .N-ob _ » γ .N-ob _)) (α .N-hom f)
-        --                 ∙ cong (α .N-ob _ »_) (
-        --                   cong (_» γ .N-ob _) (β .N-hom f)
-        --                   ∙ cong (β .N-ob _ »_) (γ .N-hom f)
-        --                 )
-        -- ∎
-
+        where open import Prelude.Utils

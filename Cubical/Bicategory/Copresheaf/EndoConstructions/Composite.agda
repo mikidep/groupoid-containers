@@ -23,7 +23,9 @@ open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
 open 2CellLaws ⟨GPD⟩
 
 module _ (F G : GpdEndo) where
-  open import Prelude
+  open import Prelude.Utils
+  open import Prelude.Reassoc
+  open BicatReassoc ⟨GPD⟩
 
   open Copresheaf F using (F₀; F₁; F₂)
   private module F = Copresheaf F
@@ -48,17 +50,13 @@ module _ (F G : GpdEndo) where
   compEndo₀ .is2Copresheaf .F-IdL f =
       (G₂ (F.F-seq id f) ∙ G-seq (F₁ id) (F₁ f))
       ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (F₁ f)
-    ≡⟨ sym assoc-inf ⟩
-      G₂ (F.F-seq id f)
-      ∙ G-seq (F₁ id) (F₁ f)
-      ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (F₁ f)
-    ≡⟨ cong (λ x → G₂ (F.F-seq id f) ∙ G-seq (F₁ id) (F₁ f) ∙ x)
-        (▹-∙ _ _) ⟩
-      G₂ (F.F-seq id f)
-      ∙ G-seq (F₁ id) (F₁ f)
-      ∙ G₂ F.F-id ▹ G₁ (F₁ f)
-      ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ cong (G₂ (F.F-seq id f) ∙_) assoc-inf ⟩
+    ≡⟨ reassoc
+          ( (↑ G₂ (F.F-seq id f) ∙′ ↑ G-seq (F₁ id) (F₁ f))
+          ∙′ (↑ G₂ F.F-id ∙′ ↑ G-id) ▹′ G₁ (F₁ f) )
+          ( ↑ G₂ (F.F-seq id f)
+          ∙′ (↑ G-seq (F₁ id) (F₁ f) ∙′ ↑ G₂ F.F-id ▹′ G₁ (F₁ f))
+          ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
+          refl ⟩
       G₂ (F.F-seq id f)
       ∙ (G-seq (F₁ id) (F₁ f) ∙ G₂ F.F-id ▹ G₁ (F₁ f))
       ∙ G-id ▹ G₁ (F₁ f)
@@ -72,7 +70,7 @@ module _ (F G : GpdEndo) where
         ∙ G₂ (F.F-id ▹ F₁ f)
         ∙ G-seq id (F₁ f))
       ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ cong (_∙ G-id ▹ G₁ (F₁ f)) assoc-inf ⟩
+    ≡⟨ ∙r assoc-inf ⟩
       ((G₂ (F.F-seq id f) ∙ G₂ (F.F-id ▹ F₁ f))
         ∙ G-seq id (F₁ f))
       ∙ G-id ▹ G₁ (F₁ f)
@@ -141,18 +139,16 @@ module _ (F G : GpdEndo) where
         ∙ G-seq (F₁ (f ⋆ g)) (F₁ h))
       ∙ (G₂ (F.F-seq f g)
         ∙ G-seq (F₁ f) (F₁ g)) ▹ G₁ (F₁ h)
-    ≡⟨ cong ((G₂ (F.F-seq (f ⋆ g) h) ∙ G-seq (F₁ (f ⋆ g)) (F₁ h)) ∙_)
-        (▹-∙ _ _) ⟩
-      (G₂ (F.F-seq (f ⋆ g) h)
-        ∙ G-seq (F₁ (f ⋆ g)) (F₁ h))
-      ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h)
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ sym assoc-inf ⟩
-      G₂ (F.F-seq (f ⋆ g) h)
-      ∙ G-seq (F₁ (f ⋆ g)) (F₁ h)
-      ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h)
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ cong (G₂ (F.F-seq (f ⋆ g) h) ∙_) assoc-inf ⟩
+    ≡⟨ reassoc
+          ( (↑ G₂ (F.F-seq (f ⋆ g) h)
+            ∙′ ↑ G-seq (F₁ (f ⋆ g)) (F₁ h))
+          ∙′ (↑ G₂ (F.F-seq f g)
+            ∙′ ↑ G-seq (F₁ f) (F₁ g)) ▹′ G₁ (F₁ h) )
+          ( ↑ G₂ (F.F-seq (f ⋆ g) h)
+          ∙′ (↑ G-seq (F₁ (f ⋆ g)) (F₁ h)
+            ∙′ ↑ G₂ (F.F-seq f g) ▹′ G₁ (F₁ h))
+          ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
+          refl ⟩
       G₂ (F.F-seq (f ⋆ g) h)
       ∙ (G-seq (F₁ (f ⋆ g)) (F₁ h)
         ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h))
@@ -244,22 +240,18 @@ module _ (F G : GpdEndo) where
       ∙ (G-seq (F₁ f) (F₁ (g ⋆ h))
         ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h))
       ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ cong (λ x → refl ∙ G₂ (F.F-seq f (g ⋆ h)) ∙ x)
-        (sym assoc-inf) ⟩
-      refl
-      ∙ G₂ (F.F-seq f (g ⋆ h))
-      ∙ G-seq (F₁ f) (F₁ (g ⋆ h))
-      ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h)
-      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ cong (refl ∙_) assoc-inf ⟩
-      refl
-      ∙ (G₂ (F.F-seq f (g ⋆ h))
-        ∙ G-seq (F₁ f) (F₁ (g ⋆ h)))
-      ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h)
-      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ cong (λ x → refl ∙ (G₂ (F.F-seq f (g ⋆ h))
-          ∙ G-seq (F₁ f) (F₁ (g ⋆ h))) ∙ x)
-        (sym (◃-∙ _ _)) ⟩
+    ≡⟨ reassoc 
+          ( refl′
+          ∙′ ↑ G₂ (F.F-seq f (g ⋆ h))
+          ∙′ (↑ G-seq (F₁ f) (F₁ (g ⋆ h))
+            ∙′ G₁ (F₁ f) ◃′ ↑ G₂ (F.F-seq g h))
+          ∙′ G₁ (F₁ f) ◃′ ↑ G-seq (F₁ g) (F₁ h) )
+          ( refl′
+          ∙′ (↑ G₂ (F.F-seq f (g ⋆ h))
+            ∙′ ↑ G-seq (F₁ f) (F₁ (g ⋆ h)))
+          ∙′ G₁ (F₁ f) ◃′ (↑ G₂ (F.F-seq g h)
+            ∙′ ↑ G-seq (F₁ g) (F₁ h)) )
+          refl ⟩
       refl
       ∙ (G₂ (F.F-seq f (g ⋆ h))
         ∙ G-seq (F₁ f) (F₁ (g ⋆ h)))

@@ -39,12 +39,17 @@ module _ where
         ∙ refl ∙ G.F-seq id (F₁ f)) 
       ∙ refl
     ≡⟨ reassoc 
-        ( sym (G.F-seq (F₁ f) id) 
-        ∷ G.F-seq id (F₁ f) 
-        ∷ nil ) 
-        (refl′ ∙′ (tm ∙′ refl′ ∙′ tm) ∙′ refl′)
-        (((tm ∙′ refl′) ∙′ refl′ ∙′ refl′ ∙′ tm) ∙′ refl′)
-      ⟩
+        ( refl′ 
+        ∙′ (↑ sym (G.F-seq (F₁ f) id) 
+          ∙′ refl′ 
+          ∙′ ↑ G.F-seq id (F₁ f)) 
+        ∙′ refl′ )
+        ( ((↑ sym (G.F-seq (F₁ f) id) 
+            ∙′ refl′) 
+          ∙′ refl′ ∙′ refl′ 
+          ∙′ ↑ G.F-seq id (F₁ f)) 
+        ∙′ refl′ )
+        refl ⟩
       ((sym (G.F-seq (F₁ f) id) ∙ refl) ∙ refl ∙ refl ∙ G.F-seq id (F₁ f)) 
       ∙ refl
     ≡⟨ ∙r ∙r sym (symDistr _ _) ⟩

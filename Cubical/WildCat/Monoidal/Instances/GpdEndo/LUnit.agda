@@ -36,8 +36,8 @@ module _ (F : GpdEndo) where
   iMG-lUnit-ob .snd .N-hom-id = refl
   iMG-lUnit-ob .snd .N-hom-seq f g = 
       reassoc 
-        (refl′ ∙′ F.F-seq f g)
-        ((refl′ ∙′ F.F-seq f g) ∙′ refl′ ∙′ refl′)
+        (refl′ ∙′ ↑ F.F-seq f g)
+        ((refl′ ∙′ ↑ F.F-seq f g) ∙′ refl′ ∙′ refl′)
         refl
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
@@ -55,6 +55,7 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
     module G = Copresheaf G
 
   open 2CellLaws ⟨GPD⟩
+  open BicatReassoc ⟨GPD⟩
 
   iMG-lUnit-hom : (idPseudonatTrans idEndo ⊗₁ α) ⨾ λ₀ G ≡ λ₀ F ⨾ α
   iMG-lUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
@@ -108,19 +109,15 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
           ∙ F.F₁ id ◃ α□ f 
           ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
         ≡⟨ reassoc
-            ( sym (F.F-seq f id) ▹ α₀ y 
-            ∷ F.F-seq id f ▹ α₀ y
-            ∷ F.F₁ id ◃ α□ f 
-            ∷ F.F-id ▹ α₀ x ▹ G.F₁ f
-            ∷ nil )
-            (tm ◆ tm ◆ tm ◆ tm)
-            ((((tm ◆ tm) ◆ tm) ◆ refl′) ◆ tm)
-           ⟩ 
-          (((sym (F.F-seq f id) ▹ α₀ y ∙ F.F-seq id f ▹ α₀ y)
-              ∙ F.F₁ id ◃ α□ f) 
-            ∙ refl)
-          ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
-        ≡⟨ ∙r ∙r ∙r sym (▹-∙ _ _) ⟩ 
+              ( ↑ sym (F.F-seq f id) ▹′ α₀ y 
+              ∙′ ↑ F.F-seq id f ▹′ α₀ y
+              ∙′ F.F₁ id ◃′ ↑ α□ f 
+              ∙′ ↑ F.F-id ▹′ α₀ x ▹′ G.F₁ f )
+              ((((↑ sym (F.F-seq f id) ∙′ ↑ F.F-seq id f) ▹′ α₀ y
+                  ∙′ F.F₁ id ◃′ ↑ α□ f) 
+                ∙′ refl′)
+              ∙′ ↑ F.F-id ▹′ α₀ x ▹′ G.F₁ f)
+              refl ⟩ 
           (((sym (F.F-seq f id) ∙ F.F-seq id f) ▹ α₀ y
               ∙ F.F₁ id ◃ α□ f) 
             ∙ refl)
@@ -144,9 +141,9 @@ module _ (F : GpdEndo) where
   iMG-lUnit-isIs .inv' .fst .N-hom _ = refl
   iMG-lUnit-isIs .inv' .snd .N-hom-id = sym (lUnit _ ∙ lUnit _)
   iMG-lUnit-isIs .inv' .snd .N-hom-seq f g = reassoc
-    (F.F-seq f g ∷ nil)
-    (refl′ ◆ refl′ ◆ tm)
-    (tm ◆ refl′ ◆ refl′)
+    (refl′ ∙′ refl′ ∙′ ↑ F.F-seq f g)
+    (↑ F.F-seq f g ∙′ refl′ ∙′ refl′)
+    refl
   iMG-lUnit-isIs .sect = PseudonatTrans≡ $ makeNatTransPath
     refl 
     λ f → sym (lUnit _)

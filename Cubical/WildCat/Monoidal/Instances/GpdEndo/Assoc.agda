@@ -51,12 +51,15 @@ module _ (F G H : GpdEndo) where
   iMG-assoc-ob .snd .N-hom-seq f g = 
     ∙l ∙r H.F₂-funct _ _ 
     ∙ reassoc
-      ( H₂ (G₂ (F.F-seq f g)) 
-      ∷ H₂ (G.F-seq (F₁ f) (F₁ g)) 
-      ∷ H.F-seq (G₁ (F₁ f)) (G₁ (F₁ g))
-      ∷ nil )
-      (refl′ ◆ (tm ◆ tm) ◆ tm)
-      ((tm  ◆ tm ◆ tm) ◆ refl′ ◆ refl′)
+      ( refl′ 
+      ∙′ (↑ H₂ (G₂ (F.F-seq f g)) 
+        ∙′ ↑ H₂ (G.F-seq (F₁ f) (F₁ g))) 
+      ∙′ ↑ H.F-seq (G₁ (F₁ f)) (G₁ (F₁ g)) )
+      ( (↑ H₂ (G₂ (F.F-seq f g)) 
+        ∙′ ↑ H₂ (G.F-seq (F₁ f) (F₁ g)) 
+        ∙′ ↑ H.F-seq (G₁ (F₁ f)) (G₁ (F₁ g))) 
+      ∙′ refl′ ∙′ refl′ )
+      refl
 
 module _ {F G H F′ G′ H′ : GpdEndo} 
   (α : PseudonatTrans F F′) 

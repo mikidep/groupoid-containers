@@ -110,9 +110,10 @@ module _ {C : Bicategory ℓC ℓC'} where
     compPseudonatTrans .fst = compWildNatTrans
     compPseudonatTrans .snd .N-hom-id {X} =
         (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
-      ≡⟨ sym assoc-inf ⟩
-        α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ ∙ α₀ X ◃ β₀ X ◃ H-id
-      ≡⟨ cong (α□ idᶜ ▹ β₀ X ∙_) (◃-∙ (β□ idᶜ) (β₀ X ◃ H-id)) ⟩
+      ≡⟨ reassoc 
+            ( (↑ α□ idᶜ ▹′ β₀ X ∙′ α₀ X ◃′ ↑ β□ idᶜ) ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-id )
+            ( ↑ α□ idᶜ ▹′ β₀ X ∙′ α₀ X ◃′ (↑ β□ idᶜ ∙′ β₀ X ◃′ ↑ H-id) )
+            refl ⟩
         α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ (β□ idᶜ ∙ β₀ X ◃ H-id)
       ≡⟨ cong (λ x → α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ x) (β .snd .N-hom-id) ⟩
         α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ G-id ▹ β₀ X
@@ -124,12 +125,12 @@ module _ {C : Bicategory ℓC ℓC'} where
     compPseudonatTrans .snd .N-hom-seq {X} {Y} {Z} f g =
         (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ᶜ g))
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
-      ≡⟨ sym assoc-inf ⟩
-        α□ (f ⋆ᶜ g) ▹ β₀ Z
-        ∙ α₀ X ◃ β□ (f ⋆ᶜ g)
-        ∙ α₀ X ◃ β₀ X ◃ H-seq f g
-      ≡⟨ cong (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙_)
-          (sym (◃-∙ (β□ (f ⋆ᶜ g)) (β₀ X ◃ H-seq f g))) ⟩
+      ≡⟨ reassoc 
+            ( (↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z ∙′ α₀ X ◃′ ↑ β□ (f ⋆ᶜ g))
+            ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-seq f g )
+            ( ↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z
+            ∙′ α₀ X ◃′ (↑ β□ (f ⋆ᶜ g) ∙′ β₀ X ◃′ ↑ H-seq f g) )
+            refl ⟩
         α□ (f ⋆ᶜ g) ▹ β₀ Z
         ∙ α₀ X ◃ (β□ (f ⋆ᶜ g) ∙ β₀ X ◃ H-seq f g)
       ≡⟨ cong (λ x → α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ x)
@@ -137,51 +138,27 @@ module _ {C : Bicategory ℓC ℓC'} where
         α□ (f ⋆ᶜ g) ▹ β₀ Z
         ∙ α₀ X ◃ (G-seq f g ▹ β₀ Z
           ∙ G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
-      ≡⟨ cong (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙_)
-          (◃-∙ (G-seq f g ▹ β₀ Z) (G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)) ⟩
-        α□ (f ⋆ᶜ g) ▹ β₀ Z
-        ∙ α₀ X ◃ G-seq f g ▹ β₀ Z
-        ∙ α₀ X ◃ (G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
-      ≡⟨ cong (λ x → α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ G-seq f g ▹ β₀ Z ∙ x)
-          (◃-∙ (G₁ f ◃ β□ g ) (β□ f ▹ H₁ g)) ⟩
-        α□ (f ⋆ᶜ g) ▹ β₀ Z
-        ∙ α₀ X ◃ G-seq f g ▹ β₀ Z
-        ∙ α₀ X ◃ G₁ f ◃ β□ g
-        ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ assoc-inf ⟩
-        (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ G-seq f g ▹ β₀ Z)
-        ∙ α₀ X ◃ G₁ f ◃ β□ g
-        ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
-          (sym (▹-∙ (α□ (f ⋆ᶜ g)) (α₀ X ◃ G-seq f g))) ⟩
+      ≡⟨ reassoc
+            ( ↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z
+            ∙′ α₀ X ◃′ (↑ G-seq f g ▹′ β₀ Z
+              ∙′ G₁ f ◃′ ↑ β□ g ∙′ ↑ β□ f ▹′ H₁ g) )
+            ( (↑ α□ (f ⋆ᶜ g) ∙′ α₀ X ◃′ ↑ G-seq f g) ▹′ β₀ Z
+            ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g
+            ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
+            refl ⟩
         (α□ (f ⋆ᶜ g) ∙ α₀ X ◃ G-seq f g) ▹ β₀ Z
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ cong (λ x → x ▹ β₀ Z
             ∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
           (α .snd .N-hom-seq f g) ⟩
-        (F-seq f g ▹ α₀ Z ∙ F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z
-        ∙ α₀ X ◃ G₁ f ◃ β□ g
-        ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ cong (_∙ α₀ X ◃ G₁ f ◃ β□ g ∙ α₀ X ◃ β□ f ▹ H₁ g)
-          (▹-∙ (F-seq f g ▹ α₀ Z) (F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g)) ⟩
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z
-          ∙ (F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z)
-        ∙ α₀ X ◃ G₁ f ◃ β□ g
-        ∙ α₀ X ◃ β□ f ▹ H₁ g
-      ≡⟨ cong (λ x → (F-seq f g ▹ α₀ Z ▹ β₀ Z ∙ x)
-        ∙ α₀ X ◃ G₁ f ◃ β□ g
-        ∙ α₀ X ◃ β□ f ▹ H₁ g)
-          (▹-∙ (F₁ f ◃ α□ g) (α□ f ▹ G₁ g)) ⟩
-        (F-seq f g ▹ α₀ Z ▹ β₀ Z
-          ∙ F₁ f ◃ α□ g ▹ β₀ Z
-          ∙ α□ f ▹ G₁ g ▹ β₀ Z)
+        (F-seq f g ▹ α₀ Z 
+          ∙ F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ reassoc
-            ( (↑ F-seq f g ▹′ α₀ Z ▹′ β₀ Z
-              ∙′ F₁ f ◃′ ↑ α□ g ▹′ β₀ Z
-              ∙′ ↑ α□ f ▹′ G₁ g ▹′ β₀ Z)
+            ( (↑ F-seq f g ▹′ α₀ Z 
+              ∙′ F₁ f ◃′ ↑ α□ g ∙′ ↑ α□ f ▹′ G₁ g) ▹′ β₀ Z
             ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g
             ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
             ( ↑ F-seq f g ▹′ α₀ Z ▹′ β₀ Z
