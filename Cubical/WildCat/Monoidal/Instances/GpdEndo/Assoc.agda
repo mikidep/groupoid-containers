@@ -38,25 +38,25 @@ module _ (F G H : GpdEndo) where
     module H = Copresheaf H
 
   open F using (F₁; F₂)
-  open G using () renaming (F₁ to G₁; F₂ to G₂)
-  open H using () renaming (F₁ to H₁; F₂ to H₂)
+  open G using () renaming (F₁ to G₁; F₂ to G₂; F₂′ to G₂′)
+  open H using () renaming (F₁ to H₁; F₂ to H₂; F₂′ to H₂′)
 
   iMG-assoc-ob : PseudonatTrans (F ⊗₀ (G ⊗₀ H)) ((F ⊗₀ G) ⊗₀ H)
   iMG-assoc-ob .fst .N-ob X        = idfun _
   iMG-assoc-ob .fst .N-hom f       = refl
-  iMG-assoc-ob .snd .N-hom-id      = 
-    sym (lUnit _) 
-    ∙ ∙r H.F₂-funct _ _
-    ∙ sym assoc-inf
+  iMG-assoc-ob .snd .N-hom-id      =
+    reassoc
+      ( refl′ ∙′ H₂′ (G₂′ (↑ F.F-id) ∙′ ↑ G.F-id) ∙′ ↑ H.F-id )
+      ( H₂′ (G₂′ (↑ F.F-id)) ∙′ H₂′ (↑ G.F-id) ∙′ ↑ H.F-id )
+      refl
   iMG-assoc-ob .snd .N-hom-seq f g = 
-    ∙l ∙r H.F₂-funct _ _ 
-    ∙ reassoc
+    reassoc
       ( refl′ 
-      ∙′ (↑ H₂ (G₂ (F.F-seq f g)) 
-        ∙′ ↑ H₂ (G.F-seq (F₁ f) (F₁ g))) 
+      ∙′ (H₂′ (↑ G₂ (F.F-seq f g) 
+        ∙′ ↑ G.F-seq (F₁ f) (F₁ g))) 
       ∙′ ↑ H.F-seq (G₁ (F₁ f)) (G₁ (F₁ g)) )
-      ( (↑ H₂ (G₂ (F.F-seq f g)) 
-        ∙′ ↑ H₂ (G.F-seq (F₁ f) (F₁ g)) 
+      ( (H₂′ (↑ G₂ (F.F-seq f g)) 
+        ∙′ H₂′ (↑ G.F-seq (F₁ f) (F₁ g)) 
         ∙′ ↑ H.F-seq (G₁ (F₁ f)) (G₁ (F₁ g))) 
       ∙′ refl′ ∙′ refl′ )
       refl
@@ -111,7 +111,7 @@ module _ {F G H F′ G′ H′ : GpdEndo}
     where
     aux : 
       ∀ {X Y} (f : GPD[ X , Y ])
-      → Square ? {!  !} {! !} {! !}
+      → Square {! !} {!  !} {! !} {! !}
     aux f = {! !}
 
 

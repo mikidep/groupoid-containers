@@ -1,4 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
 open import Cubical.Foundations.Prelude
 
 open import Cubical.Foundations.Function
@@ -39,17 +38,13 @@ module _ {F H : GpdEndo} (α : PseudonatTrans F H)
     renaming (
       F₀ to    G₀;
       F₁ to    G₁;
-      F₂ to    G₂;
-      F-id to  G-id;
-      F-seq to G-seq
+      F₂ to    G₂
     )
   open H using ()
     renaming (
       F₀ to    H₀;
       F₁ to    H₁;
-      F₂ to    H₂;
-      F-id to  H-id;
-      F-seq to H-seq
+      F₂ to    H₂
     )
   
   open WildNatTrans (α .fst) using ()
@@ -63,50 +58,50 @@ module _ {F H : GpdEndo} (α : PseudonatTrans F H)
   whiskR-pseudonat : PseudonatTrans (F ⊗₀ G) (H ⊗₀ G)
   whiskR-pseudonat .fst .N-ob x = G₁ (α₀ x)
   whiskR-pseudonat .fst .N-hom {x} {y} f = 
-    sym (G-seq (F₁ f) (α₀ y)) 
+    sym (G.F-seq (F₁ f) (α₀ y)) 
     ∙ G₂ (α□ f) 
-    ∙ G-seq (α₀ x) (H₁ f)
+    ∙ G.F-seq (α₀ x) (H₁ f)
   whiskR-pseudonat .snd .N-hom-id {X} = goal
     where
-    sq₁ : G₂ (α□ id ∙ α₀ X ◃ H-id) 
+    sq₁ : G₂ (α□ id ∙ α₀ X ◃ H.F-id) 
           ≡ G₂ (F.F-id ▹ α₀ X)
     sq₁ = cong G₂ (α .snd .N-hom-id)
     sq₂ : G₂ (α□ id) 
-          ∙ G-seq (α₀ X) (H₁ id)
-          ∙ G₁ (α₀ X) ◃ G₂ H-id 
-          ∙ sym (G-seq (α₀ X) id)
-          ≡ G-seq (F₁ id) (α₀ X)
+          ∙ G.F-seq (α₀ X) (H₁ id)
+          ∙ G₁ (α₀ X) ◃ G₂ H.F-id 
+          ∙ sym (G.F-seq (α₀ X) id)
+          ≡ G.F-seq (F₁ id) (α₀ X)
           ∙ G₂ F.F-id ▹ G₁ (α₀ X)
-          ∙ sym (G-seq id (α₀ X))
-    sq₂ = ∙l (sym (G.F₂-◃ H-id))
+          ∙ sym (G.F-seq id (α₀ X))
+    sq₂ = ∙l (sym (G.F₂-◃ H.F-id))
       ∙ sym (G.F₂-funct _ _)
       ∙ sq₁
       ∙ G.F₂-▹ F.F-id
     sq₃ : G₂ (α□ id) 
-          ∙ G-seq (α₀ X) (H₁ id)
-          ∙ G₁ (α₀ X) ◃ G₂ H-id 
-          ∙ G₁ (α₀ X) ◃ G-id
-          ≡ (G-seq (F₁ id) (α₀ X))
+          ∙ G.F-seq (α₀ X) (H₁ id)
+          ∙ G₁ (α₀ X) ◃ G₂ H.F-id 
+          ∙ G₁ (α₀ X) ◃ G.F-id
+          ≡ (G.F-seq (F₁ id) (α₀ X))
           ∙ G₂ F.F-id ▹ G₁ (α₀ X)
-          ∙ G-id ▹ G₁ (α₀ X)
+          ∙ G.F-id ▹ G₁ (α₀ X)
     sq₃ = 
       ∙l ∙l ∙l sym (invUniq (G.F-IdR (α₀ X)))
       ∙ sq₂ 
       ∙ ∙l ∙l invUniq (G.F-IdL (α₀ X)) 
     sq₄ : G₂ (α□ id) 
-          ∙ G-seq (α₀ X) (H₁ id)
-          ∙ G₁ (α₀ X) ◃ (G₂ H-id ∙ G-id)
-          ≡ G-seq (F₁ id) (α₀ X)
-          ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (α₀ X)
+          ∙ G.F-seq (α₀ X) (H₁ id)
+          ∙ G₁ (α₀ X) ◃ (G₂ H.F-id ∙ G.F-id)
+          ≡ G.F-seq (F₁ id) (α₀ X)
+          ∙ (G₂ F.F-id ∙ G.F-id) ▹ G₁ (α₀ X)
     sq₄ = 
-      ∙l ∙l ◃-∙ (G₂ H-id) G-id
+      ∙l ∙l ◃-∙ (G₂ H.F-id) G.F-id
       ∙ sq₃
-      ∙ ∙l sym (▹-∙ _ G-id) 
-    goal : (sym (G-seq (F₁ id) (α₀ X))
+      ∙ ∙l sym (▹-∙ _ G.F-id) 
+    goal : (sym (G.F-seq (F₁ id) (α₀ X))
              ∙ G₂ (α□ id) 
-             ∙ G-seq (α₀ X) (H₁ id))
-           ∙ G₁ (α₀ X) ◃ (G₂ H-id ∙ G-id)
-           ≡ (G₂ F.F-id ∙ G-id) ▹ G₁ (α₀ X)
+             ∙ G.F-seq (α₀ X) (H₁ id))
+           ∙ G₁ (α₀ X) ◃ (G₂ H.F-id ∙ G.F-id)
+           ≡ (G₂ F.F-id ∙ G.F-id) ▹ G₁ (α₀ X)
     goal =
       sym assoc-inf
       ∙ ∙l sym assoc-inf
@@ -115,263 +110,411 @@ module _ {F H : GpdEndo} (α : PseudonatTrans F H)
     where
     open import Prelude.Reassoc
     open BicatReassoc ⟨GPD⟩
-    -- sq₁ : G₂ (α□ (f » g) 
-    --         ∙ α₀ X ◃ H-seq f g) 
-    --       ≡ G₂ (F.F-seq f g ▹ α₀ Z 
-    --         ∙ F₁ f ◃ α□ g 
-    --         ∙ α□ f ▹ H₁ g)
-    -- sq₁ = cong G₂ (α .snd .N-hom-seq f g)
-    -- sq₂ : G₂ (α□ (f » g)) 
-    --       ∙ G₂ (α₀ X ◃ H-seq f g) 
-    --       ≡ G₂ (F.F-seq f g ▹ α₀ Z) 
-    --       ∙ G₂ (F₁ f ◃ α□ g) 
-    --       ∙ G₂ (α□ f ▹ H₁ g)
-    -- sq₂ = sym (G.F₂-funct _ _)
-    --   ∙ sq₁
-    --   ∙ G.F₂-funct _ _
-    --   ∙ ∙l (G.F₂-funct _ _)
-    -- sq₃ : G₂ (α□ (f » g)) 
-    --       ∙ G-seq (α₀ X) (H₁ (f » g))
-    --       ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-    --       ∙ sym (G-seq (α₀ X) (H₁ f » H₁ g))
-    --       ≡ (G-seq (F₁ (f » g)) (α₀ Z)
-    --         ∙ G₂ (F.F-seq f g) ▹ G₁ (α₀ Z) 
-    --         ∙ sym (G-seq (F₁ f » F₁ g) (α₀ Z)))
-    --       ∙ (G-seq (F₁ f) (F₁ g » α₀ Z)
-    --         ∙ G₁ (F₁ f) ◃ G₂ (α□ g)
-    --         ∙ sym (G-seq (F₁ f) (α₀ Y » H₁ g)))
-    --       ∙ G-seq (F₁ f » α₀ Y) (H₁ g)
-    --       ∙ G₂ (α□ f) ▹ G₁ (H₁ g) 
-    --       ∙ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-    -- sq₃ = ∙l sym (G.F₂-◃ (H-seq f g))
-    --   ∙ sq₂
-    --   ∙ cong₂ _∙_
-    --     (G.F₂-▹ (F.F-seq f g))
-    --     (cong₂ _∙_
-    --       (G.F₂-◃ (α□ g))
-    --       (G.F₂-▹ (α□ f)))
-    -- sq₄ = ∙l ∙l ∙l aux₁
-    --   ∙ sq₃
-    --   ∙ ∙r ∙l ∙l aux₂
-    --   ∙ ∙l ∙r ∙l ∙l aux₃
-    --   ∙ ∙l ∙l ∙l ∙l aux₄
-    --   where
-    --   aux₁ = 
-    --     ∙l sym (symDistr _ _) 
-    --     ∙ sym (symDistr _ _) 
-    --     ∙ (cong sym $ shuffleSymRU $
-    --       G.F-Assoc (α₀ X) (H₁ f) (H₁ g) ∙ sym (lUnit _))
-    --   aux₂ = (cong sym $ shuffleSymRD $ 
-    --       G.F-Assoc (F₁ f) (F₁ g) (α₀ Z))
-    --     ∙ symDistr _ _ 
-    --     ∙ ∙l symDistr _ _ 
-    --     ∙ ∙l sym (rUnit _) ∙ 
-    --     ∙l (symDistr _ _)
-    --   aux₃ = 
-    --     sym (cong sym $ shuffleSymRU $
-    --       G.F-Assoc (F₁ f) (α₀ Y ) (H₁ g) ∙ sym (lUnit _))
-    --     ∙ symDistr _ _ 
-    --     ∙ ∙l symDistr _ _ 
-    --   aux₄ = (cong sym $ shuffleSymRD $ 
-    --       G.F-Assoc (α₀ X) (H₁ f) (H₁ g))
-    --     ∙ symDistr _ _ 
-    --     ∙ ∙l symDistr _ _ 
-    --     ∙ ∙l sym (rUnit _) ∙ 
-    --     ∙l (symDistr _ _)
-    -- sq₅ = reassoc
-    --     ( G₂ (α□ (f » g))
-    --     ∷ G-seq (α₀ X) (H₁ (f » g))
-    --     ∷ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-    --     ∷ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-    --     ∷ sym (G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
-    --     ∷ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-    --     ∷ nil )
-    --     (((tm ◆ tm ◆ tm ◆ tm) ◆ tm) ◆ tm)
-    --     (tm ◆ tm ◆ tm ◆ tm ◆ tm ◆ tm)
-    --   ∙ sq₄
-    --   ∙ reassoc
-    --     ( G-seq (F₁ (f » g)) (α₀ Z)
-    --     ∷ G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
-    --     ∷ G-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
-    --     ∷ G₁ (F₁ f) ◃ sym (G-seq (F₁ g) (α₀ Z))
-    --     ∷ sym (G-seq (F₁ f) (F₁ g » α₀ Z))
-    --     ∷ G-seq (F₁ f) (F₁ g » α₀ Z)
-    --     ∷ G₁ (F₁ f) ◃ G₂ (α□ g)
-    --     ∷ G₁ (F₁ f) ◃ G-seq (α₀ Y) (H₁ g)
-    --     ∷ sym (G-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
-    --     ∷ sym (G-seq (F₁ f » α₀ Y) (H₁ g))
-    --     ∷ G-seq (F₁ f » α₀ Y) (H₁ g)
-    --     ∷ G₂ (α□ f) ▹ G₁ (H₁ g) 
-    --     ∷ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
-    --     ∷ sym (G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g))
-    --     ∷ sym (G-seq (α₀ X) (H₁ f ⋆ H₁ g))
-    --     ∷ nil )
-    --     ((tm ◆ tm ◆ tm ◆ tm ◆ tm) ◆ (tm ◆ tm ◆ tm ◆ tm ◆ tm)
-    --       ◆ tm ◆ tm ◆ tm ◆ tm ◆ tm)
-    --     (((tm ◆ (tm ◆ tm) ◆ (tm ◆ (tm ◆ tm) ◆ tm ◆ tm) 
-    --       ◆ tm ◆ (tm ◆ tm) ◆ tm ◆ tm) ◆ tm) ◆ tm)
-    -- -- postulate
-    -- --   -- TODO: too large to compute
-    -- goal : (sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-    --        ∙ G₂ (α□ (f » g)) 
-    --        ∙ G-seq (α₀ X) (H₁ (f » g)))
-    --      ∙ G₁ (α₀ X) ◃ (G₂ (H-seq f g) 
-    --        ∙ G-seq (H₁ f) (H₁ g))
-    --      ≡ (G₂ (F.F-seq f g) 
-    --        ∙ G-seq (F₁ f) (F₁ g)) ▹ G₁ (α₀ Z)
-    --      ∙ G₁ (F₁ f) ◃ (sym (G-seq (F₁ g) (α₀ Z)) 
-    --        ∙ G₂ (α□ g) 
-    --        ∙ G-seq (α₀ Y) (H₁ g))
-    --      ∙ (sym (G-seq (F₁ f) (α₀ Y)) 
-    --        ∙ G₂ (α□ f) 
-    --        ∙ G-seq (α₀ X) (H₁ f)) ▹ G₁ (H₁ g)
-    -- goal = ∙l ◃-∙ (G₂ (H-seq f g)) (G-seq (H₁ f) (H₁ g))
-    --   ∙ rUnit _
-    --   ∙ ∙l aux₁
-    --   ∙ reassoc 
-    --     ( sym (G-seq (F₁ (f » g)) (α₀ Z))
-    --     ∷ G₂ (α□ (f » g))
-    --     ∷ G-seq (α₀ X) (H₁ (f » g))
-    --     ∷ G₁ (α₀ X) ◃ G₂ (H-seq f g)
-    --     ∷ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-    --     ∷ sym (G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
-    --     ∷ sym (G-seq (α₀ X » H₁ f) (H₁ g))
-    --     ∷ G-seq (α₀ X) (H₁ f ⋆ H₁ g)
-    --     ∷ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-    --     ∷ nil )
-    --     (((tm ◆ tm ◆ tm) ◆ tm ◆ tm) ◆ ((tm ◆ tm) ◆ tm ◆ tm))
-    --     (tm ◆ ((((tm ◆ tm ◆ tm ◆ tm) ◆ tm) ◆ tm) ◆ tm) ◆ tm)
-    --   ∙ (shuffleSymLU $ shuffleSymRU $ shuffleSymRU $ sq₅)
-    --   ∙ aux₂
-    --   where
-    --   aux₁₀ =
-    --     ∙l sym (rUnit _)
-    --     ∙ G.F-Assoc (α₀ X) (H₁ f) (H₁ g)
-    --     ∙ sym (lUnit _)
-    --   aux₁ = shuffleSymLD (shuffleSymLD aux₁₀)
-    --     ∙ assoc-inf
-    --   aux₂ = 
-    --     ∙r sym (▹-∙ {k = G₁ (α₀ Z)} 
-    --       (G₂ (F.F-seq f g)) (G-seq (F₁ f) (F₁ g)))
-    --     ∙ ∙l ∙r ∙l ∙r lCancel _
-    --     ∙ ∙l ∙r ∙l sym (lUnit _)
-    --     ∙ ∙l ∙r ∙l sym (◃-∙ (G₂ (α□ g)) (G-seq (α₀ Y) (H₁ g)))
-    --     ∙ ∙l ∙r sym (◃-∙ (sym (G-seq (F₁ g) (α₀ Z))) 
-    --       (G₂ (α□ g) ∙ G-seq (α₀ Y) (H₁ g)))
-    --     ∙ ∙l ∙l ∙l ∙r lCancel _
-    --     ∙ ∙l ∙l ∙l sym (lUnit _)
-    --     ∙ ∙l ∙l ∙l sym (▹-∙ (G₂ (α□ f)) (G-seq (α₀ X) (H₁ f)))
-    --     ∙ ∙l ∙l sym (▹-∙ (sym (G-seq (F₁ f) (α₀ Y))) 
-    --       (G₂ (α□ f) ∙ G-seq (α₀ X) (H₁ f)))
     goal = 
-        (sym (G-seq (F₁ (f » g)) (α₀ Z)) 
+        (sym (G.F-seq (F₁ (f » g)) (α₀ Z)) 
           ∙ G₂ (α□ (f » g)) 
-          ∙ G-seq (α₀ X) (H₁ (f » g)))
-        ∙ G₁ (α₀ X) ◃ (G₂ (H-seq f g) 
-          ∙ G-seq (H₁ f) (H₁ g))
-      ≡⟨ {! !} ⟩ 
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ G₂ (α□ (f » g)) 
-        ∙ (G-seq (α₀ X) (H₁ (f » g))
-          ∙ G₁ (α₀ X) ◃ G₂ (H-seq f g)) 
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ ∙l ∙l ∙r G.F-seq-nat refl (H-seq f g) ⟩
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ G₂ (α□ (f » g)) 
-        ∙ (G₂ (α₀ X ◃ H-seq f g) 
-          ∙ G-seq (α₀ X) (H₁ f » H₁ g))
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ {! !} ⟩ -- reassoc
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ (G₂ (α□ (f » g)) 
-          ∙ G₂ (α₀ X ◃ H-seq f g)) 
-        ∙ G-seq (α₀ X) (H₁ f » H₁ g)
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ ∙l ∙r sym (G.F₂-funct _ _) ⟩
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ G₂ (α□ (f » g) 
-          ∙ α₀ X ◃ H-seq f g) 
-        ∙ G-seq (α₀ X) (H₁ f » H₁ g)
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ ∙l ∙r cong G₂ (α .snd .N-hom-seq f g) ⟩
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ G₂ (F.F-seq f g ▹ α₀ Z
-          ∙ F₁ f ◃ α□ g
-          ∙ α□ f ▹ H₁ g)
-        ∙ G-seq (α₀ X) (H₁ f » H₁ g)
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ {! !} ⟩ -- reassoc
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) 
-        ∙ G₂ (F.F-seq f g ▹ α₀ Z) 
-        ∙ G₂ (F₁ f ◃ α□ g) 
-        ∙ G₂ (α□ f ▹ H₁ g) 
-        ∙ refl
-        ∙ G-seq (α₀ X) (H₁ f » H₁ g)
-        ∙ G₁ (α₀ X) ◃ G-seq (H₁ f) (H₁ g)
-      ≡⟨ ∙l ∙l ∙l ∙l sym (G.F-Assoc (α₀ X) (H₁ f) (H₁ g)) ⟩ 
-        sym (G-seq (F₁ (f » g)) (α₀ Z)) -- use F-Assoc and inv unique
-        ∙ G₂ (F.F-seq f g ▹ α₀ Z) 
-        ∙ G₂ (F₁ f ◃ α□ g) 
-        ∙ G₂ (α□ f ▹ H₁ g) 
-        ∙ G-seq (α₀ X » H₁ f) (H₁ g)
-        ∙ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
-      ≡⟨ {! !} ⟩ -- ...
+          ∙ G.F-seq (α₀ X) (H₁ (f » g)))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ ∙r ∙l ∙r lemma₁ ⟩ 
+        (sym (G.F-seq (F₁ (f » g)) (α₀ Z)) 
+          ∙ G₂ ((F.F-seq f g ▹ α₀ Z
+              ∙ F₁ f ◃ α□ g
+              ∙ α□ f ▹ H₁ g)
+            ∙ α₀ X ◃ sym (H.F-seq f g)) 
+          ∙ G.F-seq (α₀ X) (H₁ (f » g)))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ reassoc
+            ( ((↑ sym (G.F-seq (F₁ (f » g)) (α₀ Z))
+              ∙′ G.F₂′ ((↑ F.F-seq f g ▹′ α₀ Z
+                ∙′ (F₁ f ◃′ ↑ α□ g
+                  ∙′ ↑ α□ f ▹′ H₁ g))
+                ∙′ α₀ X ◃′ ↑ sym (H.F-seq f g))
+              ∙′ ↑ G.F-seq (α₀ X) (H₁ (f » g)))
+            ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+              ∙′ ↑ G.F-seq (H₁ f) (H₁ g)) ))
+            ( (((↑ sym (G.F-seq (F₁ (f » g)) (α₀ Z))
+                ∙′ G.F₂′ (↑ F.F-seq f g ▹′ α₀ Z))
+              ∙′ G.F₂′ (F₁ f ◃′ ↑ α□ g
+                ∙′ ↑ α□ f ▹′ H₁ g)
+              ∙′ G.F₂′ (α₀ X ◃′ ↑ sym (H.F-seq f g))
+              ∙′ ↑ G.F-seq (α₀ X) (H₁ (f » g)))
+            ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+              ∙′ ↑ G.F-seq (H₁ f) (H₁ g)) ))
+            refl ⟩
+        ((sym (G.F-seq (F₁ (f » g)) (α₀ Z)) 
+            ∙ G₂ (F.F-seq f g ▹ α₀ Z))
+          ∙ G₂ (F₁ f ◃ α□ g
+            ∙ α□ f ▹ H₁ g)
+          ∙ G₂ (α₀ X ◃ sym (H.F-seq f g)) 
+          ∙ G.F-seq (α₀ X) (H₁ (f » g)))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ ∙r ∙r lemma₂ ⟩
+        ((G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z)))
+          ∙ G₂ (F₁ f ◃ α□ g
+            ∙ α□ f ▹ H₁ g)
+          ∙ G₂ (α₀ X ◃ sym (H.F-seq f g)) 
+          ∙ G.F-seq (α₀ X) (H₁ (f » g)))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ ∙r ∙l ∙l lemma₃ ⟩
+        ((G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z)))
+          ∙ G₂ (F₁ f ◃ α□ g
+            ∙ α□ f ▹ H₁ g)
+          ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+          ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g)))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ reassoc
+            ( ((↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+                ∙′ ↑ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z)))
+              ∙′ G.F₂′ (F₁ f ◃′ ↑ α□ g
+                ∙′ ↑ α□ f ▹′ H₁ g)
+              ∙′ ↑ G.F-seq (α₀ X) (H₁ f » H₁ g)
+              ∙′ G₁ (α₀ X) ◃′ ↑ sym (G₂ (H.F-seq f g)))
+            ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+              ∙′ ↑ G.F-seq (H₁ f) (H₁ g)) )
+            ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+            ∙′ ↑ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z))
+            ∙′ G.F₂′ (F₁ f ◃′ ↑ α□ g)
+            ∙′ G.F₂′ (↑ α□ f ▹′ H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f » H₁ g)
+            ∙′ G₁ (α₀ X) ◃′ ↑ sym (G₂ (H.F-seq f g))
+            ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+              ∙′ ↑ G.F-seq (H₁ f) (H₁ g)) )
+            refl ⟩
         G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
-        ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
-        ∙ G₁ (F₁ f) ◃ sym (G-seq (F₁ g) (α₀ Z)) 
-        ∙ sym (G-seq (F₁ f) (F₁ g » α₀ Z))
-        ∙ G₂ (F₁ f ◃ α□ g) 
-        ∙ G-seq (F₁ f) (α₀ Y » H₁ g)
-        ∙ G₁ (F₁ f) ◃ G-seq (α₀ Y) (H₁ g)
-        ∙ sym (G-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g) 
-        ∙ sym (G-seq (F₁ f » α₀ Y) (H₁ g))
-        ∙ G₂ (α□ f ▹ H₁ g) 
-        ∙ G-seq (α₀ X » H₁ f) (H₁ g)
-        ∙ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
-      ≡⟨ {! !} ⟩ -- G.F₂-◃ and cancel
+        ∙ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z))
+        ∙ G₂ (F₁ f ◃ α□ g)
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ cong (λ q →
+            G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ q
+            ∙ G₂ (F₁ f ◃ α□ g)
+            ∙ G₂ (α□ f ▹ H₁ g)
+            ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+            ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+            ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+              ∙ G.F-seq (H₁ f) (H₁ g)))
+            lemma₄ ⟩
         G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
-        ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
-        ∙ G₁ (F₁ f) ◃ sym (G-seq (F₁ g) (α₀ Z)) 
-        ∙ G₁ (F₁ f) ◃ G₂ (α□ g) 
-        ∙ G₁ (F₁ f) ◃ G-seq (α₀ Y) (H₁ g)
-        ∙ sym (G-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g) 
-        ∙ sym (G-seq (F₁ f » α₀ Y) (H₁ g))
-        ∙ G₂ (α□ f ▹ H₁ g) 
-        ∙ G-seq (α₀ X » H₁ f) (H₁ g)
-        ∙ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
-      ≡⟨ {! !} ⟩ -- G₂-▹
-        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
-        ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
-        ∙ G₁ (F₁ f) ◃ sym (G-seq (F₁ g) (α₀ Z)) 
-        ∙ G₁ (F₁ f) ◃ G₂ (α□ g) 
-        ∙ G₁ (F₁ f) ◃ G-seq (α₀ Y) (H₁ g)
-        ∙ sym (G-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g) 
-        ∙ G₂ (α□ f) ▹ G₁ (H₁ g) 
-        ∙ G-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+        ∙ ((G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+            ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z))
+            ∙ sym (G.F-seq (F₁ f) (F₁ g » α₀ Z)))
+          ∙ G₂ (F₁ f ◃ α□ g)
+          ∙ G₂ (α□ f ▹ H₁ g)
+          ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+          ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+          ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+            ∙ G.F-seq (H₁ f) (H₁ g)))
       ≡⟨ reassoc
             ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
-            ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
-            ∙′ G₁ (F₁ f) ◃′ ↑ sym (G-seq (F₁ g) (α₀ Z)) 
-            ∙′ G₁ (F₁ f) ◃′ ↑ G₂ (α□ g) 
-            ∙′ G₁ (F₁ f) ◃′ ↑ G-seq (α₀ Y) (H₁ g)
-            ∙′ ↑ sym (G-seq (F₁ f) (α₀ Y)) ▹′ G₁ (H₁ g) 
-            ∙′ ↑ G₂ (α□ f) ▹′ G₁ (H₁ g) 
-            ∙′ ↑ G-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) )
-            ( (↑ G₂ (F.F-seq f g) 
-              ∙′ ↑ G-seq (F₁ f) (F₁ g)) ▹′ G₁ (α₀ Z)
-              ∙′ G₁ (F₁ f) ◃′ (↑ sym (G-seq (F₁ g) (α₀ Z)) 
-              ∙′ ↑ G₂ (α□ g) 
-              ∙′ ↑ G-seq (α₀ Y) (H₁ g))
-              ∙′ (↑ sym (G-seq (F₁ f) (α₀ Y)) 
-                ∙′ ↑ G₂ (α□ f) 
-                ∙′ ↑ G-seq (α₀ X) (H₁ f)) ▹′ G₁ (H₁ g) )
+            ∙′ ((↑ G.F-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
+                ∙′ G₁ (F₁ f) ◃′ ↑ sym (G.F-seq (F₁ g) (α₀ Z))
+                ∙′ ↑ sym (G.F-seq (F₁ f) (F₁ g » α₀ Z)))
+              ∙′ G.F₂′ (F₁ f ◃′ ↑ α□ g)
+              ∙′ G.F₂′ (↑ α□ f ▹′ H₁ g)
+              ∙′ ↑ G.F-seq (α₀ X) (H₁ f » H₁ g)
+              ∙′ G₁ (α₀ X) ◃′ ↑ sym (G₂ (H.F-seq f g))
+              ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+                ∙′ ↑ G.F-seq (H₁ f) (H₁ g))) )
+            ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+            ∙′ (↑ G.F-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
+              ∙′ G₁ (F₁ f) ◃′ ↑ sym (G.F-seq (F₁ g) (α₀ Z)))
+            ∙′ (↑ sym (G.F-seq (F₁ f) (F₁ g » α₀ Z))
+              ∙′ G.F₂′ (F₁ f ◃′ ↑ α□ g))
+            ∙′ G.F₂′ (↑ α□ f ▹′ H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f » H₁ g)
+            ∙′ G₁ (α₀ X) ◃′ ↑ sym (G₂ (H.F-seq f g))
+            ∙′ G₁ (α₀ X) ◃′ (↑ G₂ (H.F-seq f g)
+              ∙′ ↑ G.F-seq (H₁ f) (H₁ g)) )
+            refl ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+        ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+        ∙ (sym (G.F-seq (F₁ f) (F₁ g » α₀ Z))
+          ∙ G₂ (F₁ f ◃ α□ g))
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ cong (λ q →
+            G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+              ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+            ∙ q
+            ∙ G₂ (α□ f ▹ H₁ g)
+            ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+            ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+            ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+              ∙ G.F-seq (H₁ f) (H₁ g)))
+            lemma₅ ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+        ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+
+        ∙ (G₁ (F₁ f) ◃ G₂ (α□ g)
+          ∙ sym (G.F-seq (F₁ f) (α₀ Y » H₁ g)))
+
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+      ≡⟨ cong (λ q →
+            G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+              ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+            ∙ (G₁ (F₁ f) ◃ G₂ (α□ g) ∙ q)
+            ∙ G₂ (α□ f ▹ H₁ g)
+            ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+            ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+            ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+              ∙ G.F-seq (H₁ f) (H₁ g)))
+            lemma₆ ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+        ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+        ∙ (G₁ (F₁ f) ◃ G₂ (α□ g)
+
+          ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+            ∙ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+            ∙ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g)))
+
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g) 
+          ∙ G.F-seq (H₁ f) (H₁ g))
+
+      ≡⟨ cong (λ q →
+            G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+              ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+            ∙ (G₁ (F₁ f) ◃ G₂ (α□ g)
+              ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+              ∙ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+              ∙ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g)))
+            ∙ G₂ (α□ f ▹ H₁ g)
+            ∙ q)
+            lemma₇ ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+          ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)))
+        ∙ (G₁ (F₁ f) ◃ G₂ (α□ g)
+          ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+          ∙ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+          ∙ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g)))
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+      ≡⟨ reassoc
+            ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+            ∙′ (↑ G.F-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
+              ∙′ G₁ (F₁ f) ◃′ ↑ sym (G.F-seq (F₁ g) (α₀ Z)))
+            ∙′ (G₁ (F₁ f) ◃′ ↑ G₂ (α□ g)
+              ∙′ G₁ (F₁ f) ◃′ ↑ G.F-seq (α₀ Y) (H₁ g)
+              ∙′ ↑ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+              ∙′ ↑ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g)))
+            ∙′ G.F₂′ (↑ α□ f ▹′ H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X » H₁ f) (H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) )
+            ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+            ∙′ ↑ G.F-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
+            ∙′ G₁ (F₁ f) ◃′ ↑ sym (G.F-seq (F₁ g) (α₀ Z))
+            ∙′ G₁ (F₁ f) ◃′ ↑ G₂ (α□ g)
+            ∙′ G₁ (F₁ f) ◃′ ↑ G.F-seq (α₀ Y) (H₁ g)
+            ∙′ ↑ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+            ∙′ ↑ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+            ∙′ G.F₂′ (↑ α□ f ▹′ H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X » H₁ f) (H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) )
+            refl ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+        ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z))
+        ∙ G₁ (F₁ f) ◃ G₂ (α□ g)
+        ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+        ∙ sym (G.F-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g)
+        ∙ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+      ≡⟨ cong (λ q →
+            G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+            ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+            ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z))
+            ∙ G₁ (F₁ f) ◃ G₂ (α□ g)
+            ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+            ∙ sym (G.F-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g)
+            ∙ q)
+            lemma₈ ⟩
+        G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+        ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z)) 
+        ∙ G₁ (F₁ f) ◃ G₂ (α□ g) 
+        ∙ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+        ∙ sym (G.F-seq (F₁ f) (α₀ Y)) ▹ G₁ (H₁ g)
+        ∙ G₂ (α□ f) ▹ G₁ (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+      ≡⟨ reassoc
+            ( ↑ G₂ (F.F-seq f g) ▹′ G₁ (α₀ Z)
+            ∙′ ↑ G.F-seq (F₁ f) (F₁ g) ▹′ G₁ (α₀ Z)
+            ∙′ G₁ (F₁ f) ◃′ ↑ sym (G.F-seq (F₁ g) (α₀ Z))
+            ∙′ G₁ (F₁ f) ◃′ ↑ G₂ (α□ g)
+            ∙′ G₁ (F₁ f) ◃′ ↑ G.F-seq (α₀ Y) (H₁ g)
+            ∙′ ↑ sym (G.F-seq (F₁ f) (α₀ Y)) ▹′ G₁ (H₁ g)
+            ∙′ ↑ G₂ (α□ f) ▹′ G₁ (H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) )
+            ( (↑ G₂ (F.F-seq f g)
+                ∙′ ↑ G.F-seq (F₁ f) (F₁ g)) ▹′ G₁ (α₀ Z)
+            ∙′ G₁ (F₁ f) ◃′ (↑ sym (G.F-seq (F₁ g) (α₀ Z))
+              ∙′ ↑ G₂ (α□ g)
+              ∙′ ↑ G.F-seq (α₀ Y) (H₁ g))
+            ∙′ (↑ sym (G.F-seq (F₁ f) (α₀ Y))
+              ∙′ ↑ G₂ (α□ f)
+              ∙′ ↑ G.F-seq (α₀ X) (H₁ f)) ▹′ G₁ (H₁ g) )
             refl ⟩
         (G₂ (F.F-seq f g) 
-          ∙ G-seq (F₁ f) (F₁ g)) ▹ G₁ (α₀ Z)
-          ∙ G₁ (F₁ f) ◃ (sym (G-seq (F₁ g) (α₀ Z)) 
-          ∙ G₂ (α□ g) 
-          ∙ G-seq (α₀ Y) (H₁ g))
-          ∙ (sym (G-seq (F₁ f) (α₀ Y)) 
+          ∙ G.F-seq (F₁ f) (F₁ g)) ▹ G₁ (α₀ Z)
+          ∙ G₁ (F₁ f) ◃ (sym (G.F-seq (F₁ g) (α₀ Z)) 
+            ∙ G₂ (α□ g) 
+            ∙ G.F-seq (α₀ Y) (H₁ g))
+          ∙ (sym (G.F-seq (F₁ f) (α₀ Y)) 
             ∙ G₂ (α□ f) 
-            ∙ G-seq (α₀ X) (H₁ f)) ▹ G₁ (H₁ g)
+            ∙ G.F-seq (α₀ X) (H₁ f)) ▹ G₁ (H₁ g)
       ∎
+      where
+      lemma₁ :
+        G₂ (α□ (f » g)) 
+        ≡ G₂ ((F.F-seq f g ▹ α₀ Z
+            ∙ F₁ f ◃ α□ g
+            ∙ α□ f ▹ H₁ g)
+          ∙ α₀ X ◃ sym (H.F-seq f g))
+      lemma₁ = cong G₂ (shuffleSymRD (α .snd .N-hom-seq f g))
+      lemma₂ :
+        sym (G.F-seq (F₁ (f » g)) (α₀ Z))
+        ∙ G₂ (F.F-seq f g ▹ α₀ Z)
+        ≡ G₂ (F.F-seq f g) ▹ G₁ (α₀ Z)
+        ∙ sym (G.F-seq (F₁ f » F₁ g) (α₀ Z))
+      lemma₂ = shuffleSymLU (G.F₂-▹ (F.F-seq f g))
+      lemma₃ :
+        G₂ (α₀ X ◃ sym (H.F-seq f g)) 
+        ∙ G.F-seq (α₀ X) (H₁ (f » g))
+        ≡ G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+      lemma₃ = sym (G.F-seq-nat refl (sym (H.F-seq f g)))
+      lemma₄ :
+        sym (G.F-seq (F₁ f » F₁ g) (α₀ Z))
+        ≡ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (α₀ Z)
+          ∙ G₁ (F₁ f) ◃ sym (G.F-seq (F₁ g) (α₀ Z))
+          ∙ sym (G.F-seq (F₁ f) (F₁ g » α₀ Z))
+      lemma₄ =
+        (cong sym $ shuffleSymRD $
+          G.F-Assoc (F₁ f) (F₁ g) (α₀ Z))
+        ∙ symDistr _ _
+        ∙ ∙l symDistr _ _
+        ∙ ∙l sym (rUnit _)
+        ∙ ∙l (symDistr _ _)
+      lemma₅ :
+        sym (G.F-seq (F₁ f) (F₁ g » α₀ Z))
+        ∙ G₂ (F₁ f ◃ α□ g)
+        ≡ G₁ (F₁ f) ◃ G₂ (α□ g)
+        ∙ sym (G.F-seq (F₁ f) (α₀ Y » H₁ g))
+      lemma₅ = shuffleSymRD
+        (sym assoc-inf ∙ G.F□-◃ (α□ g))
+      lemma₆ :
+        sym (G.F-seq (F₁ f) (α₀ Y » H₁ g))
+        ≡ G₁ (F₁ f) ◃ G.F-seq (α₀ Y) (H₁ g)
+          ∙ sym (G.F-seq (F₁ f) (α₀ Y) ▹ G₁ (H₁ g))
+          ∙ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+      lemma₆ =
+        sym (cong sym $ shuffleSymRU $
+          G.F-Assoc (F₁ f) (α₀ Y) (H₁ g) ∙ sym (lUnit _))
+        ∙ symDistr _ _
+        ∙ ∙l symDistr _ _
+      cancel-H-seq :
+        G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+          ∙ G.F-seq (H₁ f) (H₁ g))
+        ≡ G₁ (α₀ X) ◃ G.F-seq (H₁ f) (H₁ g)
+      cancel-H-seq =
+        ∙l (◃-∙ (G₂ (H.F-seq f g)) (G.F-seq (H₁ f) (H₁ g)))
+        ∙ assoc-inf
+        ∙ ∙r (lCancel (G₁ (α₀ X) ◃ G₂ (H.F-seq f g)))
+        ∙ sym (lUnit _)
+      lemma₇ :
+        G.F-seq (α₀ X) (H₁ f » H₁ g)
+        ∙ G₁ (α₀ X) ◃ sym (G₂ (H.F-seq f g))
+        ∙ G₁ (α₀ X) ◃ (G₂ (H.F-seq f g)
+          ∙ G.F-seq (H₁ f) (H₁ g))
+        ≡ G.F-seq (α₀ X » H₁ f) (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+      lemma₇ =
+        ∙l cancel-H-seq
+        ∙ lUnit _
+        ∙ sym (G.F-Assoc (α₀ X) (H₁ f) (H₁ g))
+      lemma₈ :
+        sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+        ∙ G₂ (α□ f ▹ H₁ g)
+        ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+        ≡ G₂ (α□ f) ▹ G₁ (H₁ g)
+        ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+      lemma₈ =
+          sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+          ∙ G₂ (α□ f ▹ H₁ g)
+          ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+          ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+        ≡⟨ cong (λ q →
+              sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+              ∙ q
+              ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+              ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
+              (G.F₂-▹ (α□ f)) ⟩
+          sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+          ∙ (G.F-seq (F₁ f » α₀ Y) (H₁ g)
+            ∙ G₂ (α□ f) ▹ G₁ (H₁ g)
+            ∙ sym (G.F-seq (α₀ X » H₁ f) (H₁ g)))
+          ∙ G.F-seq (α₀ X » H₁ f) (H₁ g)
+          ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+        ≡⟨ reassoc
+          ( ↑ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+          ∙′ ((↑ G.F-seq (F₁ f » α₀ Y) (H₁ g)
+              ∙′ G.F₂′ (↑ α□ f) ▹′ G₁ (H₁ g)
+              ∙′ ↑ sym (G.F-seq (α₀ X » H₁ f) (H₁ g)))
+            ∙′ ↑ G.F-seq (α₀ X » H₁ f) (H₁ g)
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) ))
+          ( ((↑ sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+              ∙′ ↑ G.F-seq (F₁ f » α₀ Y) (H₁ g))
+            ∙′ G.F₂′ (↑ α□ f) ▹′ G₁ (H₁ g))
+          ∙′ ((↑ sym (G.F-seq (α₀ X » H₁ f) (H₁ g))
+              ∙′ ↑ G.F-seq (α₀ X » H₁ f) (H₁ g))
+            ∙′ ↑ G.F-seq (α₀ X) (H₁ f) ▹′ G₁ (H₁ g) ))
+          refl ⟩
+          ((sym (G.F-seq (F₁ f » α₀ Y) (H₁ g))
+              ∙ G.F-seq (F₁ f » α₀ Y) (H₁ g))
+            ∙ G₂ (α□ f) ▹ G₁ (H₁ g))
+          ∙ ((sym (G.F-seq (α₀ X » H₁ f) (H₁ g))
+              ∙ G.F-seq (α₀ X » H₁ f) (H₁ g))
+            ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
+        ≡⟨ ∙r (∙r (lCancel (G.F-seq (F₁ f » α₀ Y) (H₁ g)))
+              ∙ sym (lUnit _)) ⟩
+          G₂ (α□ f) ▹ G₁ (H₁ g)
+          ∙ ((sym (G.F-seq (α₀ X » H₁ f) (H₁ g))
+              ∙ G.F-seq (α₀ X » H₁ f) (H₁ g))
+            ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g))
+        ≡⟨ ∙l (∙r (lCancel (G.F-seq (α₀ X » H₁ f) (H₁ g)))
+              ∙ sym (lUnit _)) ⟩
+          G₂ (α□ f) ▹ G₁ (H₁ g)
+          ∙ G.F-seq (α₀ X) (H₁ f) ▹ G₁ (H₁ g)
+        ∎

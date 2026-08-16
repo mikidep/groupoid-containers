@@ -1,6 +1,5 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function
-open import Cubical.Data.Unit
 open import Cubical.Container.Base
 import Cubical.Container.Constructions as CC
 import Cubical.Container.Path
@@ -25,6 +24,16 @@ record PsMndCont : Type where
 
   -- Helpers
 
+  -- Currying through m
+  -- Kind of like currying in a T-induced subuniverse?
+  T-uncurry :
+    {s : S}         -- A 
+    {s′ : P s → S}  -- B 
+    {C : (p : P s) → P (s′ p) → Type}
+    → (f : (p : P s) (p′ : P (s′ p)) → C p p′)
+    → (p : P (m s s′)) → C (↖ p) (↗ p)
+  T-uncurry f p = f (↖ p) (↗ p)
+
   -- Multiply inner trees
   m′ : ∀ {s : S} 
     (s′ : P s → S) 
@@ -40,11 +49,20 @@ record PsMndCont : Type where
 
   -- Collapse positions after multiplying
   -- outer tree
+
   m↖↗ : ∀ {s : S} 
     {s′ : P s → S} 
     (s″ : (p : P s) → P (s′ p) → S)
     → P (m s s′) → S
-  m↖↗ s″ p = s″ (↖ p) (↗ p)
+  m↖↗ s″ = T-uncurry s″
+  -- m↖↗ s″ p = s″ (↖ p) (↗ p)
+
+  m↖↗′ : ∀ {s : S} {s′ : P s → S} 
+    {s″ : (p : P s) → P (s′ p) → S} 
+    (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
+    → (p : P (m s s′)) → P (m↖↗ s″ p) → S
+  m↖↗′ s‴ = T-uncurry s‴
+  -- m↖↗′ s‴ p = s‴ (↖ p) (↗ p)
 
   field
     lUnit-σ : ∀ (s : S) → m s (const e) ≡ s
@@ -131,7 +149,7 @@ record PsMndCont : Type where
             {a = m s (m′ s′ (λ p → m′ (s″ p) (s‴ p)))}
             {b = m s (m′ (m′ s′ s″) (λ p → m↖↗ (s‴ p)))}
             {c = m (m s (m′ s′ s″)) (m↖↗ (λ p → m↖↗ (s‴ p)))}
-            {d = m (m (m s s′) (m↖↗ s″)) (m↖↗ (λ p → s‴ (↖ p) (↗ p)))}
+            {d = m (m (m s s′) (m↖↗ s″)) (m↖↗ (m↖↗′ s‴))}
             {e = m s (m′ s′ (λ p → m′ (s″ p) (s‴ p)))}
             {f = m (m s s′) (m↖↗ (m″ s″ s‴))}
         (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
@@ -140,7 +158,7 @@ record PsMndCont : Type where
           → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
         refl
         (assoc-σ s s′ (m″ s″ s‴))
-        (assoc-σ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
+        (assoc-σ (m s s′) (m↖↗ s″) (m↖↗′ s‴))
 
   private
     acσ-fill : 
@@ -168,7 +186,7 @@ record PsMndCont : Type where
           (λ i p → assoc-π₁ s s′ s″ i (↖ p))
           refl
           (assoc-π₁ s s′ (m″ s″ s‴))
-          (λ i p → ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)) i p))
+          (λ i p → ↖ (assoc-π₁ (m s s′) (m↖↗ s″) (m↖↗′ s‴) i p))
 
   private
     acπ₁-fill : 
@@ -237,7 +255,7 @@ record PsMndCont : Type where
           (λ i p → assoc-π₃ s s′ s″ i (↖ p))
           refl
           (λ i p → ↖ (assoc-π₃ s s′ (m″ s″ s‴) i p))
-          (assoc-π₂ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
+          (assoc-π₂ (m s s′) (m↖↗ s″) (m↖↗′ s‴))
 
   private
     acπ₃-fill : 
@@ -277,33 +295,4 @@ record PsMndCont : Type where
           (λ i → ↗ {s′ = λ p → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)})
           refl
           (λ i p → ↗ (assoc-π₃ s s′ (m″ s″ s‴) i p))
-          (assoc-π₃ (m s s′) (m↖↗ s″) (λ p → s‴ (↖ p) (↗ p)))
-
--- private
---   acπ₄-fill : 
---     ∀ (s : S) (s′ : P s → S) 
---       (s″ : (p : P s) → P (s′ p) → S) 
---       (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
---       (i j k : I) 
---       → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
---       → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
---           (acπ₂-fill s s′ s″ s‴ i j k p)
---           (acπ₃-fill s s′ s″ s‴ i j k p))
---   acπ₄-fill s s′ s″ s‴ = 
---     HexP-filler 
---       (λ i j k 
---           → (p : P (acσ-fill s s′ s″ s‴ i j k)) 
---           → P (s‴ (acπ₁-fill s s′ s″ s‴ i j k p) 
---               (acπ₂-fill s s′ s″ s‴ i j k p)
---               (acπ₃-fill s s′ s″ s‴ i j k p)))
---       (assoc-coh-π₃ {s} {s′} {s″} {s‴})
-
-open import Cubical.Foundations.Equiv
-
-record IsCartesian (pmc : PsMndCont) : Type where
-  open PsMndCont pmc
-  field
-    cart-e : P e ≃ Unit
-    cart-m : {s : S} {s′ : P s → S} 
-      → isEquiv (λ (p : P (m s s′)) → idfun (Σ (P s) (λ ↖p → P (s′ ↖p))) 
-        (↖ p , ↗ p))
+          (assoc-π₃ (m s s′) (m↖↗ s″) (m↖↗′ s‴))

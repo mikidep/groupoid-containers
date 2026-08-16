@@ -135,12 +135,11 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     ∙ sym assoc-inf
 
   -- reassoc helper
-  -- does not work because universes
-  -- open import Prelude.Reassoc
-  -- F₂′ : ∀ {X} {Y} {f g : C[ X , Y ]}
-  --   (f≡g : Term f g)
-  --   → Term (F₁ f) (F₁ g)
-  -- F₂′ = cong′ F₁ 
+  open import Prelude.Reassoc
+  F₂′ : ∀ {X} {Y} {f g : C[ X , Y ]}
+    (f≡g : Term f g)
+    → Term (F₁ f) (F₁ g)
+  F₂′ = cong′ F₁ 
 
 
 module _ {C : WildCat ℓC ℓC'}
