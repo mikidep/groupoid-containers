@@ -76,7 +76,6 @@ module _ (pmc₀ : PsMndCont₀) where
           (T-uncurry _,_)
       -- is cart-m equivalent to asking that
       -- T-uncurry is an equiv. for all B?
-      
 
   record PsMndCont₁-σ : Type where
     field
@@ -118,7 +117,7 @@ module _
     {! cart-m-iso {s} {const e} .fun ? .fst  !}
     -- {! cart-m-iso {s} {const e} .rightInv (? , ?) i .fst  !}
   pmc .PsMndCont.rUnit-σ = rUnit-σ
-  -- Reason on the pullback
+  -- Check out isProp isEquiv
   pmc .PsMndCont.rUnit-π s i p = 
     {! transp (λ j → P ()) !}
   pmc .PsMndCont.assoc-σ = assoc-σ

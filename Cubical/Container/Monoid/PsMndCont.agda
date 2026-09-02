@@ -55,14 +55,12 @@ record PsMndCont : Type where
     (s″ : (p : P s) → P (s′ p) → S)
     → P (m s s′) → S
   m↖↗ s″ = T-uncurry s″
-  -- m↖↗ s″ p = s″ (↖ p) (↗ p)
 
   m↖↗′ : ∀ {s : S} {s′ : P s → S} 
     {s″ : (p : P s) → P (s′ p) → S} 
     (s‴ : (p : P s) → (p′ : P (s′ p)) → P (s″ p p′) → S) 
     → (p : P (m s s′)) → P (m↖↗ s″ p) → S
   m↖↗′ s‴ = T-uncurry s‴
-  -- m↖↗′ s‴ p = s‴ (↖ p) (↗ p)
 
   field
     lUnit-σ : ∀ (s : S) → m s (const e) ≡ s
@@ -101,7 +99,8 @@ record PsMndCont : Type where
       ∀ (s : S) (s′ : P s → S) 
       (s″ : (p : P s) → P (s′ p) → S)
       → (λ p → ↗ {s′ = s″ (↖ p)} (↗ {s′ = m′ s′ s″} p)) 
-          ≡[ assoc-σ _ _ s″ , (λ i p → s″ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p)) ]ᴾ
+          ≡[ assoc-σ _ _ s″ , (λ i p → s″  
+              (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p)) ]ᴾ
         ↗ {s′ = m↖↗ s″}
 
     lrUnit-coh-σ : 

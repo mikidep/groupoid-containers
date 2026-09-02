@@ -3,6 +3,10 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    agda = {
+      url = "github:agda/agda?ref=55fbe4f";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     agda-index = {
       url = "github:phijor/agda-index?ref=418fb0";
     };
@@ -18,10 +22,16 @@
         "aarch64-darwin" # 64-bit ARM macOS
       ];
       perSystem = {
-        pkgs,
+        system,
         inputs',
         ...
       }: let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [
+            inputs.agda.overlays.default
+          ];
+        };
         agdaWithPackages = ps:
           pkgs.agda.withPackages {
             pkgs = ps;
@@ -29,6 +39,7 @@
           };
         cubical = pkgs.agdaPackages.cubical;
       in rec {
+        _module.args = {inherit pkgs;};
         packages = {
           groupoid-containers = pkgs.agdaPackages.mkDerivation {
             pname = "groupoid-containers";

@@ -33,7 +33,6 @@ module _ (c : C.ob) where
   C[c,-] .str .F-hom f h = h C.⋆ f
   C[c,-] .str .F-id = funExt C.⋆IdR
   C[c,-] .str .F-seq f g = funExt λ h → sym (C.⋆Assoc h f g)
-  -- missing F-seq-nat
   C[c,-] .is2Copresheaf .F-IdL f = funExtSquare λ h →
         sym (C.⋆Assoc h C.id f) ∙ C.⋆IdR h C.▹ f
       ≡⟨ {! !} ⟩

@@ -14,94 +14,197 @@ data S* : Type where
   unit : S*
   sup : (s : S) → (ps* : P s → S*) → S*
 
+module _ 
+  (B : S* → Type)
+  (unit′ : B unit)
+  (sup′ : {s : S} {ps* : P s → S*} 
+    (ps*′ : (p : P s) → B (ps* p)) → B (sup s ps*))
+  where
+
+  S*-elim : ∀ s* → B s*
+  S*-elim unit = unit′
+  S*-elim (sup s ps*) = sup′ λ p → S*-elim (ps* p)
+
 P* : S* → Type
 P* unit = Unit
 P* (sup s ps*) = Σ (P s) (λ p → P* (ps* p))
 
 T* = S* ⊲ P*
 
+private module T*Mnd where
+  m : (s : S*) → (P* s → S*) → S*
+  m unit s′ = s′ tt
+  m (sup s ps*) s′ = sup s λ p → m (ps* p) (curry s′ p)
+
+  ↖ : ∀ {s s′} → P* (m s s′) → P* s
+  ↖ {(unit)} = _
+  ↖ {sup s ps*} {s′} (p , p*) = p , ↖ {ps* p} {curry s′ p} p*
+
+  ↗ : ∀ {s s′} → (p : P* (m s s′)) → P* (s′ (↖ p))
+  ↗ {(unit)} p = p
+  ↗ {sup s ps*} {s′} (p , p*) = ↗ {ps* p} {curry s′ p} p*
+
+  -- Currying through m
+  -- Kind of like currying in a T-induced subuniverse?
+  T-uncurry :
+    {s : S*}         -- A 
+    {s′ : P* s → S*}  -- B 
+    {C : (p : P* s) → P* (s′ p) → Type}
+    → (f : (p : P* s) (p′ : P* (s′ p)) → C p p′)
+    → (p : P* (m s s′)) → C (↖ p) (↗ p)
+  T-uncurry f p = f (↖ p) (↗ p)
+
+  -- Multiply inner trees
+  m′ : ∀ {s : S*} 
+    (s′ : P* s → S*) 
+    (s″ : (p : P* s) → P* (s′ p) → S*)
+    → P* s → S*
+  m′ s′ s″ p = m (s′ p) (s″ p)
+
+  m″ : ∀ {s : S*} {s′ : P* s → S*} 
+    (s″ : (p : P* s) → P* (s′ p) → S*) 
+    (s‴ : (p : P* s) → (p′ : P* (s′ p)) → P* (s″ p p′) → S*) 
+    → (p : P* s) → P* (s′ p) → S*
+  m″ s″ s‴ p = m′ (s″ p) (s‴ p)
+
+  -- Collapse positions after multiplying
+  -- outer tree
+
+  m↖↗ : ∀ {s : S*} 
+    {s′ : P* s → S*} 
+    (s″ : (p : P* s) → P* (s′ p) → S*)
+    → P* (m s s′) → S*
+  m↖↗ s″ = T-uncurry s″
+
+  m↖↗′ : ∀ {s : S*} {s′ : P* s → S*} 
+    {s″ : (p : P* s) → P* (s′ p) → S*} 
+    (s‴ : (p : P* s) → (p′ : P* (s′ p)) → P* (s″ p p′) → S*) 
+    → (p : P* (m s s′)) → P* (m↖↗ s″ p) → S*
+  m↖↗′ s‴ = T-uncurry s‴
+
+  lUnit-σ : (s : S*) → m s (λ _ → unit) ≡ s
+  lUnit-σ unit = refl
+  lUnit-σ (sup s ps*) = cong (sup s) (funExt λ p → lUnit-σ (ps* p))
+
+  lUnit-π : (s : S*) 
+    → PathP (λ i → (p : P* (lUnit-σ s i)) → P* s) 
+      (λ p → ↖ p) 
+      (λ x → x)
+  lUnit-π unit = refl
+  lUnit-π (sup s ps*) i (p , p*) = p , lUnit-π (ps* p) i p*
+
+  assoc-σ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
+    → m s (λ p → m (s′ p) (s″ p)) 
+      ≡ m (m s s′) (λ p → s″ (↖ p) (↗ p))
+  assoc-σ unit s′ s″ = refl
+  assoc-σ (sup s ps*) s′ s″ = cong (sup s) (funExt λ p → assoc-σ (ps* p) (curry s′ p) (curry s″ p))
+
+  assoc-π₁ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
+    → PathP (λ i → (p : P* (assoc-σ s s′ s″ i)) → P* s)
+      (λ p → ↖ {s′ = λ p₁ → m (s′ p₁) (s″ p₁)} p)
+      (λ x → ↖ {s′ = s′} (↖ {m s s′} {m↖↗ s″} x))
+  assoc-π₁ unit s′ s″ i p = _
+  assoc-π₁ (sup s ps*) s′ s″ i (p , p*) = p , assoc-π₁ (ps* p) _ _ i p*
+
+  assoc-π₂ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
+    → PathP
+      (λ i → (p : P* (assoc-σ s s′ s″ i)) → P* (s′ (assoc-π₁ s s′ s″ i p)))
+      (λ p → ↖ {s′ (↖ {s′ = m′ s′ s″} p)} {s″ (↖ {s′ = m′ s′ s″} p)}
+         (↗ {s′ = m′ s′ s″} p))
+      (λ p → ↗ (↖ {m s s′} {m↖↗ s″} p))
+  assoc-π₂ unit s′ s″ i p = ↖ {s′ tt} {s″ tt} p
+  assoc-π₂ (sup s ps*) s′ s″ i (p , p*) = assoc-π₂ (ps* p) _ _ i p*
+
+  assoc-π₃ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
+    → PathP
+      (λ i →
+         (p : P* (assoc-σ s s′ s″ i)) →
+         P* (s″ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p)))
+      (λ p → ↗ {s′ (↖ {s′ = m′ s′ s″} p)} {s″ (↖ {s′ = m′ s′ s″} p)}
+         (↗ {s′ = m′ s′ s″} p))
+      (λ p → ↗ {m s s′} {m↖↗ s″} p)
+  assoc-π₃ unit s′ s″ i p = ↗ {s′ tt} {s″ tt} p
+  assoc-π₃ (sup s ps*) s′ s″ i (p , p*) = assoc-π₃ (ps* p) _ _ i p*
+
+  open import Prelude.Shapes
+  assoc-coh-σ :
+    ∀ {s : S*} {s′ : P* s → S*} 
+      {s″ : (p : P* s) → P* (s′ p) → S*} 
+      {s‴ : (p : P* s) → (p′ : P* (s′ p)) → P* (s″ p p′) → S*} 
+    → Hex 
+          {a = m s (m′ s′ (m″ s″ s‴))}
+          {b = m s (m′ (m′ s′ s″) (λ p → m↖↗ (s‴ p)))}
+          {c = m (m s (m′ s′ s″)) (m↖↗ (λ p → m↖↗ (s‴ p)))}
+          {d = m (m (m s s′) (m↖↗ s″)) (m↖↗ (m↖↗′ s‴))}
+          {e = m s (m′ s′ (m″ s″ s‴))}
+          {f = m (m s s′) (m↖↗ (m″ s″ s‴))}
+      (λ i → m s (λ p → assoc-σ (s′ p) (s″ p) (s‴ p) i))
+      (assoc-σ s (m′ s′ s″) (λ p → m↖↗ (s‴ p)))
+      (λ i → m (assoc-σ s s′ s″ i) (λ (p : P* (assoc-σ s s′ s″ i)) 
+        → s‴ (assoc-π₁ s s′ s″ i p) (assoc-π₂ s s′ s″ i p) (assoc-π₃ s s′ s″ i p)))
+      refl
+      (assoc-σ s s′ (m″ s″ s‴))
+      (assoc-σ (m s s′) (m↖↗ s″) (m↖↗′ s‴))
+  assoc-coh-σ {(unit)} {s′} {s″} {s‴} = 
+    goal {s′ = s′ tt} {s″ = s″ tt} {s‴ = s‴ tt}
+    where
+    goal : 
+      ∀ {s′ : S*} 
+        {s″ : P* s′ → S*} 
+        {s‴ : (p′ : P* s′) → P* (s″ p′) → S*} 
+      → Hex 
+            {a = m s′ (m′ s″ s‴)}
+            {b = m (m s′ s″) (m↖↗ s‴)}
+            {c = m (m s′ s″) (m↖↗ s‴)}
+            {d = m (m s′ s″) (m↖↗ s‴)}
+            {e = m s′ (m′ s″ s‴)}
+            {f = m s′ (m′ s″ s‴)}
+        (assoc-σ s′ s″ s‴)
+        refl
+        (λ i → m (m s′ s″) (λ p → s‴ 
+          (assoc-π₂ unit (const s′) (const s″) i p) 
+          (assoc-π₃ unit (const s′) (const s″) i p)))
+        refl
+        refl
+        (assoc-σ s′ s″ s‴)
+    goal {(unit)}    = refl , refl , refl
+    -- sup s λ p → HexP-filler something?
+    goal {sup s ps*} {s″} {s‴} .fst i = sup s λ p → goal {ps* p} {curry s″ p} {curry s‴ p} .fst i
+    goal {sup s ps*} {s″} {s‴} .snd .fst i j = sup s λ p → goal {ps* p} {curry s″ p} {curry s‴ p} .snd .fst i j
+    goal {sup s ps*} {s″} {s‴} .snd .snd i j = sup s λ p → goal {ps* p} {curry s″ p} {curry s‴ p} .snd .snd i j
+  assoc-coh-σ {sup s ps*} {s′} {s″} {s‴} .fst i = sup s λ p → assoc-coh-σ {ps* p} {curry s′ p} {curry s″ p} {curry s‴ p} .fst i
+  assoc-coh-σ {sup s ps*} {s′} {s″} {s‴} .snd .fst i j = sup s λ p → assoc-coh-σ {ps* p} {curry s′ p} {curry s″ p} {curry s‴ p} .snd .fst i j
+  assoc-coh-σ {sup s ps*} {s′} {s″} {s‴} .snd .snd i j = sup s λ p → assoc-coh-σ {ps* p} {curry s′ p} {curry s″ p} {curry s‴ p} .snd .snd i j
+
 open PsMndCont
-
-T*Mnd-m : (s : S*) → (P* s → S*) → S*
-T*Mnd-m unit s′ = s′ _
-T*Mnd-m (sup s ps*) s′ = sup s λ p → T*Mnd-m (ps* p) (curry s′ p)
-
-T*Mnd-↖ : ∀ s s′ → P* (T*Mnd-m s s′) → P* s
-T*Mnd-↖ unit s′ p = _
-T*Mnd-↖ (sup s ps*) s′ (p , p*) = p , T*Mnd-↖ (ps* p) (curry s′ p) p*
-
-T*Mnd-↗ : ∀ s s′ → (p : P* (T*Mnd-m s s′)) → P* (s′ (T*Mnd-↖ s s′ p))
-T*Mnd-↗ unit s′ p = p
-T*Mnd-↗ (sup s ps*) s′ (p , p*) = T*Mnd-↗ (ps* p) (curry s′ p) p*
-
-T*Mnd-lUnit-σ : (s : S*) → T*Mnd-m s (λ _ → unit) ≡ s
-T*Mnd-lUnit-σ unit = refl
-T*Mnd-lUnit-σ (sup s ps*) = cong (sup s) (funExt λ p → T*Mnd-lUnit-σ (ps* p))
-
-T*Mnd-lUnit-π : (s : S*) 
-  → PathP (λ i → (p : P* (T*Mnd-lUnit-σ s i)) → P* s) 
-    (λ p → T*Mnd-↖ s (λ _ → unit) p) 
-    (λ x → x)
-T*Mnd-lUnit-π unit = refl
-T*Mnd-lUnit-π (sup s ps*) i (p , p*) = p , T*Mnd-lUnit-π (ps* p) i p*
-
-T*Mnd-assoc-σ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
-  → T*Mnd-m s (λ p → T*Mnd-m (s′ p) (s″ p)) 
-    ≡ T*Mnd-m (T*Mnd-m s s′) (λ p → s″ (T*Mnd-↖ s s′ p) (T*Mnd-↗ s s′ p))
-T*Mnd-assoc-σ unit s′ s″ = refl
-T*Mnd-assoc-σ (sup s ps*) s′ s″ = cong (sup s) (funExt λ p → T*Mnd-assoc-σ (ps* p) (curry s′ p) (curry s″ p))
-
-T*Mnd-assoc-π₁ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
-  → PathP (λ i → (p : P* (T*Mnd-assoc-σ s s′ s″ i)) → P* s)
-    (λ p → T*Mnd-↖ s (λ p₁ → T*Mnd-m (s′ p₁) (s″ p₁)) p)
-    (λ x →
-       T*Mnd-↖ s s′
-       (T*Mnd-↖ (T*Mnd-m s s′)
-        (λ p → s″ (T*Mnd-↖ s s′ p) (T*Mnd-↗ s s′ p)) x))
-T*Mnd-assoc-π₁ unit s′ s″ i p = _
-T*Mnd-assoc-π₁ (sup s ps*) s′ s″ i (p , p*) = p , T*Mnd-assoc-π₁ (ps* p) _ _ i p*
-
-T*Mnd-assoc-π₂ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
-  → PathP
-    (λ i →
-       (p : P* (T*Mnd-assoc-σ s s′ s″ i)) →
-       P* (s′ (T*Mnd-assoc-π₁ s s′ s″ i p)))
-    (λ p →
-       T*Mnd-↖ (s′ (T*Mnd-↖ s (λ v → T*Mnd-m (s′ v) (s″ v)) p))
-       (s″ (T*Mnd-↖ s (λ v → T*Mnd-m (s′ v) (s″ v)) p))
-       (T*Mnd-↗ s (λ p₁ → T*Mnd-m (s′ p₁) (s″ p₁)) p))
-    (λ x →
-       T*Mnd-↗ s s′
-       (T*Mnd-↖ (T*Mnd-m s s′)
-        (λ p → s″ (T*Mnd-↖ s s′ p) (T*Mnd-↗ s s′ p)) x))
-T*Mnd-assoc-π₂ unit s′ s″ i p = T*Mnd-↖ (s′ tt) (s″ tt) p
-T*Mnd-assoc-π₂ (sup s ps*) s′ s″ i (p , p*) = T*Mnd-assoc-π₂ (ps* p) _ _ i p*
-
-T*Mnd-assoc-π₃ : (s : S*) (s′ : P* s → S*) (s″ : (p : P* s) → P* (s′ p) → S*) 
-  → PathP
-    (λ i →
-       (p : P* (T*Mnd-assoc-σ s s′ s″ i)) →
-       P* (s″ (T*Mnd-assoc-π₁ s s′ s″ i p) (T*Mnd-assoc-π₂ s s′ s″ i p)))
-    (λ p →
-       T*Mnd-↗ (s′ (T*Mnd-↖ s (λ v → T*Mnd-m (s′ v) (s″ v)) p))
-       (s″ (T*Mnd-↖ s (λ v → T*Mnd-m (s′ v) (s″ v)) p))
-       (T*Mnd-↗ s (λ p₁ → T*Mnd-m (s′ p₁) (s″ p₁)) p))
-    (λ p →
-       T*Mnd-↗ (T*Mnd-m s s′)
-       (λ p₁ → s″ (T*Mnd-↖ s s′ p₁) (T*Mnd-↗ s s′ p₁)) p)
-T*Mnd-assoc-π₃ unit s′ s″ i p = T*Mnd-↗ (s′ tt) (s″ tt) p
-T*Mnd-assoc-π₃ (sup s ps*) s′ s″ i (p , p*) = T*Mnd-assoc-π₃ (ps* p) _ _ i p*
 
 T*Mnd : PsMndCont T*
 T*Mnd .e = unit
-T*Mnd .m = T*Mnd-m
-T*Mnd .↖ p = T*Mnd-↖ _ _ p
-T*Mnd .↗ p = T*Mnd-↗ _ _ p
-T*Mnd .lUnit-σ = T*Mnd-lUnit-σ
-T*Mnd .lUnit-π {s} = T*Mnd-lUnit-π s
-T*Mnd .rUnit-σ s = refl
-T*Mnd .rUnit-π = refl
-T*Mnd .assoc-σ = T*Mnd-assoc-σ
-T*Mnd .assoc-π₁ {s} {s′} {s″} = T*Mnd-assoc-π₁ s s′ s″
-T*Mnd .assoc-π₂ {s} {s′} {s″} = T*Mnd-assoc-π₂ s s′ s″
-T*Mnd .assoc-π₃ {s} {s′} {s″} = T*Mnd-assoc-π₃ s s′ s″
+T*Mnd .m = T*Mnd.m
+T*Mnd .↖ = T*Mnd.↖
+T*Mnd .↗ = T*Mnd.↗
+T*Mnd .lUnit-σ = T*Mnd.lUnit-σ
+T*Mnd .lUnit-π = T*Mnd.lUnit-π
+T*Mnd .rUnit-σ _ = refl
+T*Mnd .rUnit-π _ = refl
+T*Mnd .assoc-σ = T*Mnd.assoc-σ
+T*Mnd .assoc-π₁ = T*Mnd.assoc-π₁
+T*Mnd .assoc-π₂ = T*Mnd.assoc-π₂
+T*Mnd .assoc-π₃ = T*Mnd.assoc-π₃
+
+T*Mnd .lrUnit-coh-σ {(unit)} = refl
+T*Mnd .lrUnit-coh-σ {sup s ps*} {s′} i j = 
+  sup s 
+    λ p → T*Mnd .lrUnit-coh-σ {ps* p} {s′ = curry s′ p} i j
+T*Mnd .lrUnit-coh-π₁ {(unit)} = refl
+T*Mnd .lrUnit-coh-π₁ {sup s ps*} i j (p , p*) = 
+  p , T*Mnd .lrUnit-coh-π₁ {s = ps* p} i j p*
+T*Mnd .lrUnit-coh-π₂ {(unit)} = refl
+T*Mnd .lrUnit-coh-π₂ {sup s ps*} i j (p , p*) = 
+  T*Mnd .lrUnit-coh-π₂ {s = ps* p} i j p*
+
+T*Mnd .assoc-coh-σ = T*Mnd.assoc-coh-σ
+T*Mnd .assoc-coh-π₁  = {! !}
+T*Mnd .assoc-coh-π₂  = {! !}
+T*Mnd .assoc-coh-π₃  = {! !}
+T*Mnd .assoc-coh-π₄  = {! !}

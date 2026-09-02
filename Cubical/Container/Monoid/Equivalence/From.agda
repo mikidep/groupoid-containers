@@ -40,8 +40,6 @@ Pseudomonoid→PsMndCont .assoc-π₂ s s′ s″ i p =
   assoc i .π ((s , s′) , uncurry s″) p .fst .snd
 Pseudomonoid→PsMndCont .assoc-π₃ s s′ s″ i p = 
   assoc i .π ((s , s′) , uncurry s″) p .snd
--- Pseudomonoid→PsMndCont .lrUnit-coh-σ {s} {s′} i j = 
---   lrUnit-coh i j .σ ((s , const tt) , λ ptt → s′ (ptt .fst))
 Pseudomonoid→PsMndCont .lrUnit-coh-σ {s} {s′} i j = 
   lrUnit-coh i j .σ ((s , const tt) , λ ptt → s′ (ptt .fst))
 Pseudomonoid→PsMndCont .lrUnit-coh-π₁ {s} {s′} i j p = 
