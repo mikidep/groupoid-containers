@@ -24,6 +24,11 @@ module _ (F G : Container) where
       σ : S → S′
       π : (s : S) → P′ (σ s) → P s
 
+  -- Alt. definition
+  infixr 18 _⇒′_
+  _⇒′_ : Type
+  _⇒′_ = ∀ s → Σ S′ (λ s′ → P′ s′ → P s)
+
   is-Cartesian : _⇒_ → Type
   is-Cartesian (CMor σ π) = ∀ (s : S) → isEquiv (π s)
     where
@@ -41,10 +46,10 @@ module _ {F G : Container} where
     ; P to P′
     )
 
-  CMor′ : (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) → F ⇒ G
+  CMor′ : F ⇒′ G → F ⇒ G
   CMor′ σπ = CMor (σπ » fst) (σπ » snd)
   
-  CMor′⁻ : F ⇒ G → (∀ s → Σ S′ (λ s′ → P′ s′ → P s)) 
+  CMor′⁻ : F ⇒ G → F ⇒′ G 
   CMor′⁻ (CMor σ π) s = σ s , π s
 
   open import Cubical.Reflection.StrictEquiv

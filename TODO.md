@@ -1,3 +1,3 @@
- - Corrispondenza tra PsMndCont cart. e gen. operad adeguate
+- Corrispondenza tra PsMndCont cart. e gen. operad adeguate
 - check kleisli pres. of pseudomonads
 - check "coherence for tricategories", ask nathanael

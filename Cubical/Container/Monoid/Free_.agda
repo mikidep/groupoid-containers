@@ -18,7 +18,7 @@ module _
   (B : S* → Type ℓ)
   (unit′ : B unit)
   (sup′ : {s : S} {ps* : P s → S*} 
-    (ps*′ : (p : P s) → B (ps* p)) → B (sup s ps*))
+  (ps*′ : (p : P s) → B (ps* p)) → B (sup s ps*))
   where
 
   S*-elim : ∀ s* → B s*
@@ -48,9 +48,11 @@ open import Cubical.Container.Monoid.Definition T*
 
 private module Free where
   import Cubical.Container.Constructions as CC
+  open CC.Extent
   open CC.Morphisms using (id; _⋆_)
   open CC.Monoidal using (𝟙; _⊗₀_; _⊗₁_)
   open import Cubical.Container.Path
+  open import Prelude.Shapes
   
   η : 𝟙 ⇒ T*
   η = CMor′ λ _ → unit , _
@@ -82,21 +84,29 @@ private module Free where
       goal i .snd (p , p*) = (p , ind p i .snd p* .fst) , ind p i .snd p* .snd
 
   assoc : Assoc ⋆ μ ⊗₁ id ⋆ μ ≡ id ⊗₁ μ ⋆ μ
-  assoc = CMor≡′ (uncurry (uncurry assoc′))
+  assoc = CMor≡′ (uncurry (uncurry λ s s′ s″ → assoc′ s s′ s″))
     where
-    assoc′ : _
-    assoc′ unit s′ unc-s″ = assoc′-unit (s′ tt) (curry unc-s″ tt)
+    assoc′ :
+      (s  : S*)
+      (s′ : P* s → S*)
+      (s″ : Σ (P* s) (λ p → P* (s′ p)) → S*)
+      → _ ≡ _
+    assoc′ unit s′ s″ = refl 
+    assoc′ (sup s ps*) s′ s″ = goal
       where
-      assoc′-unit : (s′ : S*) (s″ : P* s′ → S*) 
-        → _
-      assoc′-unit s′ s″ = {! !}
-      
-    assoc′ (sup s ps*) s′ Σs″ = {! !}
-      where
-      s″ = curry Σs″
+      ind : (p : P s) → _
+      ind p = assoc′ (ps* p) 
+        (curry s′ p) 
+        (λ p* → s″ ((p , p* .fst) , p* .snd))
+      goal : _
+      goal i .fst = sup s λ p → ind p i .fst
+      goal i .snd p = 
+        ((p .fst , indp .fst .fst) , indp .fst .snd) , indp .snd
+        where
+        indp : Σ (Σ _ _) _
+        indp = ind (p .fst) i .snd (p .snd)
 
 open Pseudomonoid
-open _⇒_
 open import Cubical.Container.Path
 open import Cubical.Data.Sigma using (ΣPathP)
 
