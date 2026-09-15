@@ -29,6 +29,17 @@ module _ {F G : Container} {α β : F ⇒ G} where
   CMor≡′ htpy = equivFun (congEquiv CMor′≃CMor) (funExt htpy)
 
 module _ {F G : Container} {α β γ δ : F ⇒ G} 
+  (αβ : α ≡ β)
+  (γδ : γ ≡ δ)
+  (αγ : α ≡ γ)
+  (βδ : β ≡ δ) 
+  where
+  Square′ : Type
+  Square′ = ∀ s → 
+    let f = λ (ξ : F ⇒ G) → CMor′⁻ ξ s
+    in Square (cong f αβ) (cong f γδ) (cong f αγ) (cong f βδ)
+
+module _ {F G : Container} {α β γ δ : F ⇒ G} 
   {αβ : α ≡ β}
   {γδ : γ ≡ δ}
   {αγ : α ≡ γ}
@@ -38,26 +49,30 @@ module _ {F G : Container} {α β γ δ : F ⇒ G}
   private module F = Container F
   open _⇒_
 
-  CMor□′ :
-    ((s : F.S) 
-      → let f = λ (ξ : F ⇒ G) → CMor′⁻ ξ s
-      in Square (cong f αβ) (cong f γδ) (cong f αγ) (cong f βδ))
-    → Square αβ γδ αγ βδ
+  CMor□′ : Square′ αβ γδ αγ βδ → Square αβ γδ αγ βδ
   CMor□′ sq i j .σ s = sq s i j .fst
   CMor□′ sq i j .π s = sq s i j .snd
 
-  CMor□′⁻ :
-    Square αβ γδ αγ βδ
-    → (s : F.S) 
-    → let f = λ (ξ : F ⇒ G) → CMor′⁻ ξ s
-      in Square (cong f αβ) (cong f γδ) (cong f αγ) (cong f βδ)
+  CMor□′⁻ : Square αβ γδ αγ βδ → Square′ αβ γδ αγ βδ
   CMor□′⁻ sq s i j .fst = sq i j .σ s
   CMor□′⁻ sq s i j .snd p = sq i j .π s p
 
-
-
 module _ {F G : Container} {α β γ δ ζ θ : F ⇒ G} where
   open Container F
+
+  module _
+    (p : α ≡ β)
+    (q : β ≡ γ)
+    (r : γ ≡ δ)
+    (u : α ≡ ζ)
+    (v : ζ ≡ θ)
+    (w : θ ≡ δ)
+    where
+
+    Hex′ : Type
+    Hex′ = ∀ (s : S) → let f = λ (x : F ⇒ G) → CMor′⁻ x s
+        in Hex (cong f p) (cong f q) (cong f r) 
+          (cong f u) (cong f v) (cong f w)
 
   CMorHex′ :
     ∀ {p : α ≡ β}
@@ -66,9 +81,7 @@ module _ {F G : Container} {α β γ δ ζ θ : F ⇒ G} where
       {u : α ≡ ζ}
       {v : ζ ≡ θ}
       {w : θ ≡ δ}
-    → (∀ (s : S) → let f = λ (x : F ⇒ G) → CMor′⁻ x s
-      in Hex (cong f p) (cong f q) (cong f r) 
-        (cong f u) (cong f v) (cong f w))
+    → Hex′ p q r u v w
     → Hex p q r u v w
   CMorHex′ hexs = goal
     where
