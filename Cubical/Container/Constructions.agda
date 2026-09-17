@@ -22,14 +22,21 @@ module Extent where
 
   module _ {X Y : Type} where
     ⟦_⟧₁ : (F : Container) → (X → Y) → ⟦ F ⟧₀ X → ⟦ F ⟧₀ Y
-    ⟦ F ⟧₁ f (s , px) = s , px » f 
-      where open Container F
+    -- ⟦ F ⟧₁ f (s , px) = s , px » f 
+    ⟦ F ⟧₁ f = map-snd (_» f) 
+      where 
+      open Container F
+      open import Cubical.Data.Sigma
+
 
   module _ {F G : Container} (α : F ⇒ G) where
+    open import Cubical.Data.Sigma
     open _⇒_ α
 
     Ext₁ : ∀ X → ⟦ F ⟧₀ X → ⟦ G ⟧₀ X
-    Ext₁ X (s , px) = σ s , π s » px
+    -- Ext₁ X (s , px) = σ s , π s » px
+    Ext₁ X (s , px) = map-snd (_» px) 
+      (CMor′⁻ α s)
 
     -- what′s going on here?
     -- (S ⊲ P) ⇒ G ≃ Π(s : S) . ⟦G⟧ (P s)
