@@ -25,9 +25,15 @@ module _ (F G : Container) where
       π : (s : S) → P′ (σ s) → P s
 
   -- Alt. definition
+
+  -- (F ⇒ₛ G) s = ⟦ G ⟧ (P s)
+  infixr 18 _⇒ₛ_
+  _⇒ₛ_ : S → Type
+  _⇒ₛ_ s = Σ S′ (λ s′ → P′ s′ → P s)
+
   infixr 18 _⇒′_
   _⇒′_ : Type
-  _⇒′_ = ∀ s → Σ S′ (λ s′ → P′ s′ → P s)
+  _⇒′_ = ∀ s → _⇒ₛ_ s
 
   is-Cartesian : _⇒_ → Type
   is-Cartesian (CMor σ π) = ∀ (s : S) → isEquiv (π s)

@@ -13,7 +13,9 @@ module Morphisms where
   module _ {F G H : Container} where
     infixr 20 _⋆_
     _⋆_ : F ⇒ G → G ⇒ H → F ⇒ H
-    CMor σ π ⋆ CMor σ′ π′ = CMor (σ » σ′) (λ s → π′ (σ s) » π s)
+    CMor σ π ⋆ CMor σ′ π′ = CMor 
+      (σ » σ′) 
+      (λ s → π′ (σ s) » π s)
 
 module Extent where
   ⟦_⟧₀ : (F : Container) → Type → Type
@@ -59,8 +61,9 @@ module Monoidal where
     open Extent
 
     _⊗₀_ : Container
-    _⊗₀_ .Container.S = ⟦ G ⟧₀ S
-    _⊗₀_ .Container.P (s′ , v′) = Σ[ p′ ∈ P′ s′ ] P (v′ p′)
+    _⊗₀_ = record where
+      S = ⟦ G ⟧₀ S
+      P (s′ , v′) = Σ[ p′ ∈ P′ s′ ] P (v′ p′)
 
   module _ {F G H K : Container} (α : F ⇒ H) (β : G ⇒ K) where
     open Extent
@@ -76,12 +79,12 @@ module Monoidal where
 
     infixr 50 _⊗₁_
     _⊗₁_ : F ⊗₀ G ⇒ H ⊗₀ K
-    _⊗₁_ ._⇒_.σ = ⟦ G ⟧₁ σ » Ext₁ β Sᴴ
-      -- σ′ sᴳ , (π′ sᴳ » Pᴳ→Sꟳ » σ)
-    _⊗₁_ ._⇒_.π (sᴳ , Pᴳ→Sꟳ) (pᴷ , pᴴ) = goal
-      where
-      pᴳ = π′ sᴳ pᴷ
-      goal = pᴳ , π (Pᴳ→Sꟳ pᴳ) pᴴ
+    _⊗₁_ = record where
+      σ = ⟦ G ⟧₁ σ » Ext₁ β Sᴴ
+        -- σ′ sᴳ , (π′ sᴳ » Pᴳ→Sꟳ » σ)
+      π (sᴳ , Pᴳ→Sꟳ) (pᴷ , pᴴ) = 
+        let pᴳ = π′ sᴳ pᴷ
+        in pᴳ , π (Pᴳ→Sꟳ pᴳ) pᴴ
 
   module _ (F : Container) where
     lUnit : 𝟙 ⊗₀ F ⇒ F
@@ -98,11 +101,8 @@ module Monoidal where
 
   module _ (F G H : Container) where
     assoc : F ⊗₀ (G ⊗₀ H) ⇒ (F ⊗₀ G) ⊗₀ H
-    assoc = CMor σ π
-      where
-      σ : _
+    assoc = record where
       σ ((s″ , op″) , op′) = s″ , λ p″ → op″ p″ , λ p′ → op′ (p″ , p′)
-      π : _
       π ((s″ , op″) , op′) ((p″ , (p′ , p))) = (p″ , p′) , p
 
     assoc⁻ : (F ⊗₀ G) ⊗₀ H ⇒ F ⊗₀ (G ⊗₀ H)

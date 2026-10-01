@@ -10,14 +10,12 @@ module Cubical.Container.Path where
 module _ {F G : Container} {α β : F ⇒ G} where
   open Container F
   open Container G renaming
-    (
-      S to S′
+    ( S to S′
     ; P to P′
     )
   open _⇒_ α
   open _⇒_ β renaming
-    (
-      σ to σ′
+    ( σ to σ′
     ; π to π′
     )
 
