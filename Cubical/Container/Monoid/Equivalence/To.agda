@@ -15,36 +15,35 @@ module Cubical.Container.Monoid.Equivalence.To
   (T : Container) (pmc : PsMndCont T) where
 
 open CC.Morphisms using (_⋆_; id)
-open CC.Monoidal using (𝟙; _⊗₀_; _⊗₁_)
-private module MC = CC.Monoidal
+open CC.Monoidal
 
 open _⇒_
 
 open Container T
 
 open PsMndCont pmc
-open Pseudomonoid
-private
-  pm-η : 𝟙 ⇒ T
-  pm-η .σ _ = e
-  pm-η .π _ = _
 
-  pm-μ : T ⊗₀ T ⇒ T
-  pm-μ .σ = uncurry m
-  pm-μ .π _ pq = ↖ pq , ↗ pq
+private module pm where
+  η : 𝕀 ⇒ T
+  η .σ _ = e
+  η .π _ = _
 
-  pm-lUnit : pm-η ⊗₁ id ⋆ pm-μ ≡ MC.lUnit _
-  pm-lUnit = cong₂ CMor
+  μ : T ⨾₀ T ⇒ T
+  μ .σ = uncurry m
+  μ .π _ pq = ↖ pq , ↗ pq
+
+  lUnit : η ⨾₁ id ⋆ μ ≡ ⨾lUnit
+  lUnit = cong₂ CMor
     (funExt λ ks → lUnit-σ (ks .fst))
     (funExt λ ks → λ i p → lUnit-π (ks .fst) i p , _)
 
-  pm-rUnit : id ⊗₁ pm-η ⋆ pm-μ ≡ MC.rUnit _
-  pm-rUnit = cong₂ CMor 
+  rUnit : id ⨾₁ η ⋆ μ ≡ ⨾rUnit
+  rUnit = cong₂ CMor 
     (funExt λ ks → rUnit-σ (ks .snd tt)) 
     (funExt λ ks → λ i p → _ , rUnit-π (ks .snd tt) i p)
 
-  pm-assoc : MC.assoc _ _ _ ⋆ pm-μ ⊗₁ id ⋆ pm-μ ≡ id ⊗₁ pm-μ ⋆ pm-μ
-  pm-assoc = cong₂ CMor
+  assoc : ⨾assoc ⋆ μ ⨾₁ id ⋆ μ ≡ id ⨾₁ μ ⋆ μ
+  assoc = cong₂ CMor
     (funExt λ { ((s , s′), s″) → assoc-σ s s′ (curry s″) }) 
     (funExt λ { ((s , s′), s″) 
       → λ i p → 
@@ -52,12 +51,14 @@ private
         , assoc-π₂ s s′ (curry s″) i p) 
         , assoc-π₃ s s′ (curry s″) i p })
 
+open Pseudomonoid
+
 PsMndCont→Pseudomonoid : Pseudomonoid T
-PsMndCont→Pseudomonoid .η = pm-η
-PsMndCont→Pseudomonoid .μ = pm-μ
-PsMndCont→Pseudomonoid .lUnit = pm-lUnit
-PsMndCont→Pseudomonoid .rUnit = pm-rUnit
-PsMndCont→Pseudomonoid .assoc = pm-assoc
+PsMndCont→Pseudomonoid .η = pm.η
+PsMndCont→Pseudomonoid .μ = pm.μ
+PsMndCont→Pseudomonoid .lUnit = pm.lUnit
+PsMndCont→Pseudomonoid .rUnit = pm.rUnit
+PsMndCont→Pseudomonoid .assoc = pm.assoc
 PsMndCont→Pseudomonoid .assoc-coh = CMorHex′ aux
   where
   open import Prelude.Square

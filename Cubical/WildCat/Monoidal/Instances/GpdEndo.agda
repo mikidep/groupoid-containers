@@ -32,24 +32,13 @@ module _ where
   isMonoidalGpdEndo .⊗assoc = iMG-assoc
   isMonoidalGpdEndo .⊗lUnit = iMG-lUnit
   isMonoidalGpdEndo .⊗rUnit = iMG-rUnit
-  isMonoidalGpdEndo .triang F G = PseudonatTrans≡ $ makeNatTransPath refl 
-    λ f → 
+  isMonoidalGpdEndo .⊗triangle F G = PseudonatTrans≡ $ makeNatTransPath refl 
+    λ {x} {y} (f : GPD[ x , y ]) → 
       refl 
       ∙ (sym (G.F-seq (F₁ f) id) 
         ∙ refl ∙ G.F-seq id (F₁ f)) 
       ∙ refl
-    ≡⟨ reassoc 
-        ( refl′ 
-        ∙′ (↑ sym (G.F-seq (F₁ f) id) 
-          ∙′ refl′ 
-          ∙′ ↑ G.F-seq id (F₁ f)) 
-        ∙′ refl′ )
-        ( ((↑ sym (G.F-seq (F₁ f) id) 
-            ∙′ refl′) 
-          ∙′ refl′ ∙′ refl′ 
-          ∙′ ↑ G.F-seq id (F₁ f)) 
-        ∙′ refl′ )
-        refl ⟩
+    ≡⟨ reass₁ f ⟩
       ((sym (G.F-seq (F₁ f) id) ∙ refl) ∙ refl ∙ refl ∙ G.F-seq id (F₁ f)) 
       ∙ refl
     ≡⟨ ∙r ∙r sym (symDistr _ _) ⟩
@@ -60,6 +49,19 @@ module _ where
     module F = Copresheaf F
     module G = Copresheaf G
     open F using (F₁)
+    reass₁ : ∀ {x} {y} (f : GPD[ x , y ]) → _
+    reass₁ f = reassoc 
+      ( refl′ 
+      ∙′ (↑ sym (G.F-seq (F₁ f) id) 
+        ∙′ refl′ 
+        ∙′ ↑ G.F-seq id (F₁ f)) 
+      ∙′ refl′ )
+      ( ((↑ sym (G.F-seq (F₁ f) id) 
+          ∙′ refl′) 
+        ∙′ refl′ ∙′ refl′ 
+        ∙′ ↑ G.F-seq id (F₁ f)) 
+      ∙′ refl′ )
+      refl
   isMonoidalGpdEndo .⊗pentagon F G H K = PseudonatTrans≡ $ makeNatTransPath 
     (funExt λ X →
       _ ◃ K.F-id

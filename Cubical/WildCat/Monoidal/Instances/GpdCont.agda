@@ -3,6 +3,7 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Data.Unit
 
 open import Cubical.Container.Base as WC using (CMor)
+import Cubical.Container.Constructions as CC
 open import Cubical.Bicategory.Copresheaf ℓ-zero
 open import Cubical.Bicategory.Instances.Container
 
@@ -11,95 +12,83 @@ open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Product 
 open import Cubical.WildCat.Monoidal.Base
 
-open import Cubical.WildCat.Monoidal.Instances.Container as MW
-  using ()
+import Cubical.WildCat.Monoidal.Instances.Container as MW
 
 module Cubical.WildCat.Monoidal.Instances.GpdCont where
 
 open Container
 open IsGpdContainer
+open CC.Monoidal
 
-module _ where
-  iMC-𝟙 : Container
-  iMC-𝟙 .str = MW.iMC-𝟙
-  iMC-𝟙 .isGpdContainer .isGpdS = isSet→isGroupoid isSetUnit
-  iMC-𝟙 .isGpdContainer .isGpdP = isSet→isGroupoid isSetUnit
+module iMWC = isMonoidalWildCat MW.isMonoidalContainer
 
-open Extent using ()
-  renaming (Ext-ob to ⟦_⟧)
 
-module _ (F G : Container) where
-  open Copresheaf (⟦ G ⟧) using ()
-    renaming (F₀ to ⟦G⟧)
+private module iMC where
+  𝟙 : Container
+  𝟙 .str = 𝕀
+  𝟙 .isGpdContainer .isGpdS = isSet→isGroupoid isSetUnit
+  𝟙 .isGpdContainer .isGpdP = isSet→isGroupoid isSetUnit
 
-  iMC-⊗₀ : Container
-  iMC-⊗₀ .str = MW.iMC-⊗₀ (F .str) (G .str)
-  iMC-⊗₀ .isGpdContainer .isGpdS = ⟦G⟧ (F .S , F .isGpdS) .snd
-  iMC-⊗₀ .isGpdContainer .isGpdP = isGroupoidΣ 
-    (G .isGpdP) 
-    λ _ → F .isGpdP
+  open Extent using ()
+    renaming (Ext-ob to ⟦_⟧)
 
-open WildFunctor
-open import Cubical.Foundations.Function
+  module _ (F G : Container) where
+    open Copresheaf (⟦ G ⟧) using ()
+      renaming (F₀ to ⟦G⟧)
 
-iMC-⊗ : WildFunctor
-  (GpdContWildCat × GpdContWildCat)
-  GpdContWildCat
-iMC-⊗ .F-ob = uncurry iMC-⊗₀
-iMC-⊗ .F-hom = uncurry MW.iMC-⊗₁
-iMC-⊗ .F-id = refl
-iMC-⊗ .F-seq _ _ = refl
+    _⊗₀_ : Container
+    _⊗₀_ .str = F .str ⨾₀ G .str
+    _⊗₀_ .isGpdContainer .isGpdS = ⟦G⟧ (F .S , F .isGpdS) .snd
+    _⊗₀_ .isGpdContainer .isGpdP = isGroupoidΣ 
+      (G .isGpdP) 
+      λ _ → F .isGpdP
 
-open WildNatTrans
-open WildNatIso
-open wildIsIso
+  open WildFunctor
+  open import Cubical.Foundations.Function
 
-open import Prelude
+  _⊗_ : WildFunctor
+    (GpdContWildCat × GpdContWildCat)
+    GpdContWildCat
+  _⊗_ .F-ob = uncurry _⊗₀_
+  _⊗_ .F-hom = uncurry _⨾₁_
+  _⊗_ .F-id = refl
+  _⊗_ .F-seq _ _ = refl
 
-iMC-⊗lUnit : WildNatIso _ _ (restrFunctorₗ iMC-⊗ iMC-𝟙) (idWildFunctor GpdContWildCat)
-iMC-⊗lUnit .trans .N-ob _ = CMor fst λ _ p → p , _
-iMC-⊗lUnit .trans .N-hom f = refl
-iMC-⊗lUnit .isIs _ .inv' = CMor (λ s → s , _) λ _ → fst
-iMC-⊗lUnit .isIs _ .sect = refl
-iMC-⊗lUnit .isIs _ .retr = refl
+  open WildNatTrans
+  open WildNatIso
+  open wildIsIso
 
-iMC-⊗rUnit : WildNatIso _ _ (restrFunctorᵣ iMC-⊗ iMC-𝟙) (idWildFunctor GpdContWildCat)
-iMC-⊗rUnit .trans .N-ob _ = CMor (λ x → snd x _) λ _ p → _ , p
-iMC-⊗rUnit .trans .N-hom f = refl
-iMC-⊗rUnit .isIs _ .inv' = CMor (λ s → _ , (λ _ → s)) λ s p → p .snd
-iMC-⊗rUnit .isIs _ .sect = refl
-iMC-⊗rUnit .isIs _ .retr = refl
+  open import Prelude
 
-iMC-⊗assoc : WildNatIso _ _ (assocₗ iMC-⊗) (assocᵣ iMC-⊗)
-iMC-⊗assoc .trans .N-ob _ = CMor σ π
-  where
-  σ : _
-  σ ((s″ , op″) , op′) = s″ , λ p″ → op″ p″ , λ p′ → op′ (p″ , p′)
-  π : _
-  π ((s″ , op″) , op′) ((p″ , (p′ , p))) = (p″ , p′) , p
-iMC-⊗assoc .trans .N-hom f = refl
-iMC-⊗assoc .isIs _ .inv' = CMor σ π
-  where
-  σ : _
-  σ (s″ , op) .fst = (s″ , op » fst)
-  σ (s″ , op) .snd (p″ , p′) = op p″ .snd p′
-  π : _
-  π (s″ , op) ((p″ , p′) , p) = p″ , (p′ , p)
-iMC-⊗assoc .isIs _ .sect = refl
-iMC-⊗assoc .isIs _ .retr = refl
+  ⊗lUnit : WildNatIso _ _ (restrFunctorₗ _⊗_ 𝟙) (idWildFunctor _)
+  ⊗lUnit .trans .N-ob _ = ⨾lUnit
+  ⊗lUnit .trans .N-hom f = refl
+  ⊗lUnit .isIs _ .inv' = ⨾lUnit⁻
+  ⊗lUnit .isIs _ .sect = refl
+  ⊗lUnit .isIs _ .retr = refl
+
+  ⊗rUnit : WildNatIso _ _ (restrFunctorᵣ _⊗_ 𝟙) (idWildFunctor _)
+  ⊗rUnit .trans .N-ob _ = ⨾rUnit
+  ⊗rUnit .trans .N-hom f = refl
+  ⊗rUnit .isIs _ .inv' = ⨾rUnit⁻
+  ⊗rUnit .isIs _ .sect = refl
+  ⊗rUnit .isIs _ .retr = refl
+
+  ⊗assoc : WildNatIso _ _ (assocₗ _⊗_) (assocᵣ _⊗_)
+  ⊗assoc .trans .N-ob _ = ⨾assoc
+  ⊗assoc .trans .N-hom f = refl
+  ⊗assoc .isIs _ .inv' = ⨾assoc⁻
+  ⊗assoc .isIs _ .sect = refl
+  ⊗assoc .isIs _ .retr = refl
 
 open isMonoidalWildCat
 
 isMonoidalGpdCont : isMonoidalWildCat GpdContWildCat
-isMonoidalGpdCont ._⊗_ = iMC-⊗
-isMonoidalGpdCont .𝟙 = iMC-𝟙
-isMonoidalGpdCont .⊗assoc = iMC-⊗assoc
-isMonoidalGpdCont .⊗lUnit = iMC-⊗lUnit
-isMonoidalGpdCont .⊗rUnit = iMC-⊗rUnit
-isMonoidalGpdCont .triang _ _ = refl
-isMonoidalGpdCont .⊗pentagon _ _ _ _ = refl
+isMonoidalGpdCont = record where
+  open iMC using (_⊗_; 𝟙; ⊗assoc; ⊗lUnit; ⊗rUnit)
+  ⊗triangle _ _ = refl
+  ⊗pentagon _ _ _ _ = refl
 
-
-MonoidalContainer = MonoidalWildCat _ _
-MonoidalGpdCont = ContainerWildCat isMonoidalGpdCont
+MonoidalGpdCont : MonoidalWildCat _ _
+MonoidalGpdCont = GpdContWildCat , isMonoidalGpdCont
 

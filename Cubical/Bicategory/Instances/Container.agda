@@ -21,6 +21,7 @@ module _ (F : WC.Container) where
   isPropIsGpdContainer Fis Gis i .isGpdP {s} = isPropIsGroupoid (Fis .isGpdP {s}) (Gis .isGpdP {s}) i
 
 record Container : Type₁ where
+  constructor mkGpdCont
   field
     str : WC.Container
     isGpdContainer : IsGpdContainer str

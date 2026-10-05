@@ -15,21 +15,11 @@ open import Cubical.WildCat.Instances.Container
 module Cubical.WildCat.Monoidal.Instances.Container where
 
 open CC.Extent 
-
-iMC-𝟙 = CC.Monoidal.𝟙
-iMC-⊗₀ = CC.Monoidal._⊗₀_
-iMC-⊗₁ = CC.Monoidal._⊗₁_
+open CC.Monoidal
+open CC.Morphisms
 
 open WildFunctor
 open import Cubical.Foundations.Function
-
-iMC-⊗ : WildFunctor
-  (ContainerWildCat × ContainerWildCat)
-  ContainerWildCat
-iMC-⊗ .F-ob = uncurry iMC-⊗₀
-iMC-⊗ .F-hom = uncurry iMC-⊗₁
-iMC-⊗ .F-id = refl
-iMC-⊗ .F-seq _ _ = refl
 
 open WildNatTrans
 open WildNatIso
@@ -37,37 +27,42 @@ open wildIsIso
 
 open import Prelude
 
-iMC-⊗lUnit : WildNatIso _ _ (restrFunctorₗ iMC-⊗ iMC-𝟙) (idWildFunctor ContainerWildCat)
-iMC-⊗lUnit .trans .N-ob = CC.Monoidal.lUnit
-iMC-⊗lUnit .trans .N-hom f = refl
-iMC-⊗lUnit .isIs F .inv' = CC.Monoidal.lUnit⁻ F
-iMC-⊗lUnit .isIs _ .sect = refl
-iMC-⊗lUnit .isIs _ .retr = refl
+private module iMC where
+  _⊗_ : WildFunctor 
+    (ContainerWildCat × ContainerWildCat) 
+    ContainerWildCat
+  _⊗_ .F-ob = uncurry _⨾₀_
+  _⊗_ .F-hom = uncurry _⨾₁_
+  _⊗_ .F-id = refl
+  _⊗_ .F-seq _ _ = refl
 
-iMC-⊗rUnit : WildNatIso _ _ (restrFunctorᵣ iMC-⊗ iMC-𝟙) (idWildFunctor ContainerWildCat)
-iMC-⊗rUnit .trans .N-ob = CC.Monoidal.rUnit
-iMC-⊗rUnit .trans .N-hom f = refl
-iMC-⊗rUnit .isIs F .inv' = CC.Monoidal.rUnit⁻ F
-iMC-⊗rUnit .isIs _ .sect = refl
-iMC-⊗rUnit .isIs _ .retr = refl
+  𝟙 : Container
+  𝟙 = 𝕀
 
-iMC-⊗assoc : WildNatIso _ _ (assocₗ iMC-⊗) (assocᵣ iMC-⊗)
-iMC-⊗assoc .trans .N-ob (F , G , H) = CC.Monoidal.assoc F G H
-iMC-⊗assoc .trans .N-hom f = refl
-iMC-⊗assoc .isIs (F , G , H) .inv' = CC.Monoidal.assoc⁻ F G H
-iMC-⊗assoc .isIs _ .sect = refl
-iMC-⊗assoc .isIs _ .retr = refl
+  ⊗lUnit : WildNatIso _ _ (restrFunctorₗ _⊗_ 𝕀) (idWildFunctor _)
+  ⊗lUnit .trans .N-ob X = ⨾lUnit {X}
+  ⊗lUnit .trans .N-hom f = refl
+  ⊗lUnit .isIs F .inv' = ⨾lUnit⁻ {F}
+  ⊗lUnit .isIs _ .sect = refl
+  ⊗lUnit .isIs _ .retr = refl
 
-open isMonoidalWildCat
+  ⊗rUnit : WildNatIso _ _ (restrFunctorᵣ _⊗_ 𝕀) (idWildFunctor _)
+  ⊗rUnit .trans .N-ob X = ⨾rUnit {X}
+  ⊗rUnit .trans .N-hom f = refl
+  ⊗rUnit .isIs F .inv' = ⨾rUnit⁻ {F}
+  ⊗rUnit .isIs _ .sect = refl
+  ⊗rUnit .isIs _ .retr = refl
+
+  ⊗assoc : WildNatIso _ _ (assocₗ _⊗_) (assocᵣ _⊗_)
+  ⊗assoc .trans .N-ob (F , G , H) = ⨾assoc {F} {G} {H}
+  ⊗assoc .trans .N-hom f = refl
+  ⊗assoc .isIs (F , G , H) .inv' = ⨾assoc⁻ {F} {G} {H}
+  ⊗assoc .isIs _ .sect = refl
+  ⊗assoc .isIs _ .retr = refl
 
 isMonoidalContainer : isMonoidalWildCat ContainerWildCat
-isMonoidalContainer ._⊗_ = iMC-⊗
-isMonoidalContainer .𝟙 = iMC-𝟙
-isMonoidalContainer .⊗assoc = iMC-⊗assoc
-isMonoidalContainer .⊗lUnit = iMC-⊗lUnit
-isMonoidalContainer .⊗rUnit = iMC-⊗rUnit
-isMonoidalContainer .triang _ _ = refl
-isMonoidalContainer .⊗pentagon _ _ _ _ = refl
+isMonoidalContainer = record where
+  open iMC using (⊗assoc; ⊗lUnit; ⊗rUnit)
+  ⊗triangle _ _ = refl
+  ⊗pentagon _ _ _ _ = refl
 
-MonoidalContainer : MonoidalWildCat _ _
-MonoidalContainer = ContainerWildCat , isMonoidalContainer

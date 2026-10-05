@@ -47,7 +47,7 @@ isMonoidalTerminal .⊗rUnit .trans .N-hom _ = refl
 isMonoidalTerminal .⊗rUnit .isIs _ .inv' = _
 isMonoidalTerminal .⊗rUnit .isIs _ .sect = refl
 isMonoidalTerminal .⊗rUnit .isIs _ .retr = refl
-isMonoidalTerminal .triang _ _        = refl
+isMonoidalTerminal .⊗triangle _ _        = refl
 isMonoidalTerminal .⊗pentagon _ _ _ _ = refl
 
 MonoidalTerminal : MonoidalWildCat _ _

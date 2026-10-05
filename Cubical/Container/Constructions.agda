@@ -50,9 +50,9 @@ module Monoidal where
   module _ where
     open Container
 
-    𝟙 : Container
-    𝟙 .S = Unit
-    𝟙 .P _ = Unit
+    𝕀 : Container
+    𝕀 .S = Unit
+    𝕀 .P _ = Unit
 
   module _ (F G : Container) where
     open Container F
@@ -60,8 +60,8 @@ module Monoidal where
       renaming (S to S′; P to P′)
     open Extent
 
-    _⊗₀_ : Container
-    _⊗₀_ = record where
+    _⨾₀_ : Container
+    _⨾₀_ = record where
       S = ⟦ G ⟧₀ S
       P (s′ , v′) = Σ[ p′ ∈ P′ s′ ] P (v′ p′)
 
@@ -77,36 +77,36 @@ module Monoidal where
 
     open import Prelude
 
-    infixr 50 _⊗₁_
-    _⊗₁_ : F ⊗₀ G ⇒ H ⊗₀ K
-    _⊗₁_ = record where
+    infixr 50 _⨾₁_
+    _⨾₁_ : F ⨾₀ G ⇒ H ⨾₀ K
+    _⨾₁_ = record where
       σ = ⟦ G ⟧₁ σ » Ext₁ β Sᴴ
         -- σ′ sᴳ , (π′ sᴳ » Pᴳ→Sꟳ » σ)
       π (sᴳ , Pᴳ→Sꟳ) (pᴷ , pᴴ) = 
         let pᴳ = π′ sᴳ pᴷ
         in pᴳ , π (Pᴳ→Sꟳ pᴳ) pᴴ
 
-  module _ (F : Container) where
-    lUnit : 𝟙 ⊗₀ F ⇒ F
-    lUnit = CMor fst λ _ p → p , _
+  module _ {F : Container} where
+    ⨾lUnit : 𝕀 ⨾₀ F ⇒ F
+    ⨾lUnit = CMor fst λ _ p → p , _
 
-    lUnit⁻ : F ⇒ 𝟙 ⊗₀ F
-    lUnit⁻ = CMor (λ s → s , _) λ _ → fst
+    ⨾lUnit⁻ : F ⇒ 𝕀 ⨾₀ F
+    ⨾lUnit⁻ = CMor (λ s → s , _) λ _ → fst
 
-    rUnit : F ⊗₀ 𝟙 ⇒ F
-    rUnit = CMor (λ x → snd x _) λ _ p → _ , p
+    ⨾rUnit : F ⨾₀ 𝕀 ⇒ F
+    ⨾rUnit = CMor (λ x → snd x _) λ _ p → _ , p
 
-    rUnit⁻ : F ⇒ F ⊗₀ 𝟙
-    rUnit⁻ = CMor (λ s → _ , (λ _ → s)) λ s p → p .snd
+    ⨾rUnit⁻ : F ⇒ F ⨾₀ 𝕀
+    ⨾rUnit⁻ = CMor (λ s → _ , (λ _ → s)) λ s p → p .snd
 
-  module _ (F G H : Container) where
-    assoc : F ⊗₀ (G ⊗₀ H) ⇒ (F ⊗₀ G) ⊗₀ H
-    assoc = record where
+  module _ {F G H : Container} where
+    ⨾assoc : F ⨾₀ (G ⨾₀ H) ⇒ (F ⨾₀ G) ⨾₀ H
+    ⨾assoc = record where
       σ ((s″ , op″) , op′) = s″ , λ p″ → op″ p″ , λ p′ → op′ (p″ , p′)
       π ((s″ , op″) , op′) ((p″ , (p′ , p))) = (p″ , p′) , p
 
-    assoc⁻ : (F ⊗₀ G) ⊗₀ H ⇒ F ⊗₀ (G ⊗₀ H)
-    assoc⁻ = CMor σ π
+    ⨾assoc⁻ : (F ⨾₀ G) ⨾₀ H ⇒ F ⨾₀ (G ⨾₀ H)
+    ⨾assoc⁻ = CMor σ π
       where
       σ : _
       σ (s″ , op) .fst = (s″ , op » fst)

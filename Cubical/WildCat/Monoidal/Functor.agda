@@ -65,7 +65,7 @@ private
   _⊗ᵈ₀_ = curry (_⊗ᵈ_ .WildFunctor.F-ob)
   _⊗ᵈ₁_ = λ {x y} → curry (_⊗ᵈ_ .WildFunctor.F-hom {x} {y})
 
-module ⊗CohSides (F : WildFunctor C D) where
+private module ⊗CohSides (F : WildFunctor C D) where
   open WildFunctor
 
   F[-]⊗F[-] F[-⊗-] : WildFunctor (C × C) D
@@ -83,9 +83,8 @@ record IsMonoidal (F : WildFunctor C D)
     F-⊗ : WildNatTrans _ _ F[-]⊗F[-] F[-⊗-]
   private F-⊗₀ = F-⊗ .N-ob
   field
-    -- coherences here should be modifications, as should 
-    -- be triangle and pentagon in MonoidalWildCat, 
-    -- cf. Johnson Yau, Motivation 11.2.3.
+    -- TODO: change to paths between nat trans.
+    -- i.e. modifications in LU2C
     F-⊗lUnit : ∀ {x : C₀}
       → (F-𝟙 ⊗ᵈ₁ D.id) ⋆ᵈ (F-⊗₀ (𝟙ᶜ , x) ⋆ᵈ F₁ (⊗lUnitᶜ₀ x)) 
         ≡ ⊗lUnitᵈ₀ (F₀ x)

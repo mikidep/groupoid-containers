@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 module Cubical.WildCat.Instances.WildFunctor where
 
 open import Cubical.Foundations.Prelude

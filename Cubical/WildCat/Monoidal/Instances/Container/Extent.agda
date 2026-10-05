@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.Path
@@ -29,8 +30,8 @@ open GPD using (_▹_)
 open 2CellLaws GPD.str
 
 Extent : StrongMonoidalFunctor 
-  GpdContWildCat GpdEndoWildCat 
-  isMonoidalGpdCont isMonoidalGpdEndo
+  (GpdContWildCat , isMonoidalGpdCont) 
+  (GpdEndoWildCat , isMonoidalGpdEndo)
 Extent .fst = E.str 
 Extent .snd .isMonoidal .F-𝟙 .fst .N-ob (X , _) x = _ , λ _ → x
 Extent .snd .isMonoidal .F-𝟙 .fst .N-hom f = refl
