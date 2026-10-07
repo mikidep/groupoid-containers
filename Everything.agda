@@ -13,6 +13,7 @@ import Cubical.Bicategory.Copresheaf.Pseudonat.Base
 import Cubical.Bicategory.Copresheaf.Pseudonat.Constructions
 -- import Cubical.Bicategory.Copresheaf.Yoneda
 import Cubical.Bicategory.Functor
+import Cubical.Bicategory.Instances.Arrow
 import Cubical.Bicategory.Instances.Container
 import Cubical.Bicategory.Instances.Copresheaf
 import Cubical.Bicategory.Instances.Groupoids
