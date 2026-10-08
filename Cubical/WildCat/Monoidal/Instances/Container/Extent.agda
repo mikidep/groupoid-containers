@@ -8,7 +8,7 @@ module Cubical.WildCat.Monoidal.Instances.Container.Extent where
 open import Cubical.WildCat.Functor using (WildNatTrans)
 
 open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Functor using (Functor)
+open import Cubical.Bicategory.Pseudofunctor using (Pseudofunctor)
 open import Cubical.Bicategory.Copresheaf ℓ-zero
 open import Cubical.Bicategory.Instances.Container
 open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ-zero
@@ -24,10 +24,10 @@ open WildNatTrans
 open IsPseudonat
 open wildIsIso
 
-module E = Functor Extent.Extent
-module GPD = Bicategory GPD
-open GPD using (_▹_)
-open 2CellLaws GPD.str
+module E = Pseudofunctor Extent.Extent
+
+open BicatSyntax {{...}}
+open BicatSynInstBC GPD
 
 Extent : StrongMonoidalFunctor 
   (GpdContWildCat , isMonoidalGpdCont) 

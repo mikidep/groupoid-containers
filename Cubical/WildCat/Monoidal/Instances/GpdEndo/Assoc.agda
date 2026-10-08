@@ -6,7 +6,7 @@ open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.Path
 open import Cubical.Functions.FunExtEquiv
 
-open import Cubical.WildCat.Base
+open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor hiding (_$_)
 open import Cubical.WildCat.NaturalTransformation.Base
 
@@ -26,11 +26,15 @@ private
   _⊗₁_ = compEndo₁
   GpdEndoBicat = CopshBicat GPD
 
+open BicatSyntax {{...}}
+
+open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+open BicatSynInstBC GPD
+open BicatSynInstBC GpdEndoBicat
+  
 module _ (F G H : GpdEndo) where
   open WildNatTrans
   open IsPseudonat
-
-  open Bicategory GPD using (id; _◃_; _▹_)
 
   private 
     module F = Copresheaf F
@@ -67,11 +71,6 @@ module _ {F G H F′ G′ H′ : GpdEndo}
   (γ : PseudonatTrans H H′) 
   where
 
-  open Bicategory GpdEndoBicat using ()
-    renaming (_⋆_ to _⨾_)
-  open Bicategory GPD using (id; _◃_; _▹_)
-    renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
-  
   private
     module F = Copresheaf F
     module G = Copresheaf G
@@ -99,10 +98,8 @@ module _ {F G H F′ G′ H′ : GpdEndo}
   private
     asc₀ = iMG-assoc-ob
 
-  open 2CellLaws ⟨GPD⟩
-
-  iMG-assoc-hom : (α ⊗₁ (β ⊗₁ γ)) ⨾ asc₀ F′ G′ H′ 
-    ≡ asc₀ F G H ⨾ ((α ⊗₁ β) ⊗₁ γ)
+  iMG-assoc-hom : (α ⊗₁ (β ⊗₁ γ)) ⋆ asc₀ F′ G′ H′ 
+    ≡ asc₀ F G H ⋆ ((α ⊗₁ β) ⊗₁ γ)
   iMG-assoc-hom = PseudonatTrans≡ $ makeNatTransPath
     (funExt λ X → 
       cong (_» γ₀ (G′₀ (F′₀ X))) 
@@ -110,7 +107,7 @@ module _ {F G H F′ G′ H′ : GpdEndo}
     λ f → aux f
     where
     aux : 
-      ∀ {X Y} (f : GPD[ X , Y ])
+      ∀ {X Y} (f : GPD [ X , Y ])
       → Square {! !} {!  !} {! !} {! !}
     aux f = {! !}
 

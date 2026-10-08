@@ -9,20 +9,12 @@ open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Copresheaf.Base ℓ
 open import Cubical.Bicategory.Copresheaf.Pseudonat.Base ℓ
 
-open Bicategory GPD using ()
-  renaming (
-    str to ⟨GPD⟩;
-    Hom[_,_] to D[_,_];
-    _⋆_ to _⋆ᵈ_;
-    id to idᵈ;
-    isGpdHom to isGpdHomGPD;
-    ⋆IdL to D-⋆IdL;
-    ⋆IdR to D-⋆IdR;
-    ⋆Assoc to D-⋆Assoc
-  )
+open BicatSyntax {{...}}
 
-open Whiskering ⟨GPD⟩
-open 2CellLaws ⟨GPD⟩
+open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+
+open BicatSynInstBC GPD
+
 private
   variable
     ℓC ℓC' : Level
@@ -30,13 +22,7 @@ private
 module _ {C : Bicategory ℓC ℓC'} where
   private module C = Bicategory C
 
-  open C using ()
-    renaming (
-      str to ⟨C⟩;
-      Hom[_,_] to C[_,_];
-      id to idᶜ;
-      _⋆_ to _⋆ᶜ_
-    )
+  open BicatSynInstBC C
 
   module _ (F : Copresheaf C) where
     open Copresheaf F using (F₁; F₂; F-seq)
@@ -101,7 +87,7 @@ module _ {C : Bicategory ℓC ℓC'} where
     open WildNatTrans
 
     compWildNatTrans : WildNatTrans _ _ ⟨F⟩ ⟨H⟩
-    compWildNatTrans .N-ob X = α₀ X ⋆ᵈ β₀ X
+    compWildNatTrans .N-ob X = α₀ X ⋆ β₀ X
     compWildNatTrans .N-hom {x = X} {y = Y} f =
       α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f
     {-# INLINE compWildNatTrans #-}
@@ -109,44 +95,44 @@ module _ {C : Bicategory ℓC ℓC'} where
     compPseudonatTrans : PseudonatTrans F H
     compPseudonatTrans .fst = compWildNatTrans
     compPseudonatTrans .snd .N-hom-id {X} =
-        (α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ β□ idᶜ) ∙ α₀ X ◃ β₀ X ◃ H-id
+        (α□ id ▹ β₀ X ∙ α₀ X ◃ β□ id) ∙ α₀ X ◃ β₀ X ◃ H-id
       ≡⟨ reassoc 
-            ( (↑ α□ idᶜ ▹′ β₀ X ∙′ α₀ X ◃′ ↑ β□ idᶜ) ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-id )
-            ( ↑ α□ idᶜ ▹′ β₀ X ∙′ α₀ X ◃′ (↑ β□ idᶜ ∙′ β₀ X ◃′ ↑ H-id) )
+            ( (↑ α□ id ▹′ β₀ X ∙′ α₀ X ◃′ ↑ β□ id) ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-id )
+            ( ↑ α□ id ▹′ β₀ X ∙′ α₀ X ◃′ (↑ β□ id ∙′ β₀ X ◃′ ↑ H-id) )
             refl ⟩
-        α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ (β□ idᶜ ∙ β₀ X ◃ H-id)
-      ≡⟨ cong (λ x → α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ x) (β .snd .N-hom-id) ⟩
-        α□ idᶜ ▹ β₀ X ∙ α₀ X ◃ G-id ▹ β₀ X
-      ≡⟨ sym (▹-∙ (α□ idᶜ) (α₀ X ◃ G-id)) ⟩
-        (α□ idᶜ ∙ α₀ X ◃ G-id) ▹ β₀ X
+        α□ id ▹ β₀ X ∙ α₀ X ◃ (β□ id ∙ β₀ X ◃ H-id)
+      ≡⟨ cong (λ x → α□ id ▹ β₀ X ∙ α₀ X ◃ x) (β .snd .N-hom-id) ⟩
+        α□ id ▹ β₀ X ∙ α₀ X ◃ G-id ▹ β₀ X
+      ≡⟨ sym (▹-∙ (α□ id) (α₀ X ◃ G-id)) ⟩
+        (α□ id ∙ α₀ X ◃ G-id) ▹ β₀ X
       ≡⟨ cong (_▹ β₀ X) (α .snd .N-hom-id) ⟩
         F-id ▹ α₀ X ▹ β₀ X
       ∎
     compPseudonatTrans .snd .N-hom-seq {X} {Y} {Z} f g =
-        (α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ᶜ g))
+        (α□ (f ⋆ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ g))
         ∙ α₀ X ◃ β₀ X ◃ H-seq f g
       ≡⟨ reassoc 
-            ( (↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z ∙′ α₀ X ◃′ ↑ β□ (f ⋆ᶜ g))
+            ( (↑ α□ (f ⋆ g) ▹′ β₀ Z ∙′ α₀ X ◃′ ↑ β□ (f ⋆ g))
             ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-seq f g )
-            ( ↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z
-            ∙′ α₀ X ◃′ (↑ β□ (f ⋆ᶜ g) ∙′ β₀ X ◃′ ↑ H-seq f g) )
+            ( ↑ α□ (f ⋆ g) ▹′ β₀ Z
+            ∙′ α₀ X ◃′ (↑ β□ (f ⋆ g) ∙′ β₀ X ◃′ ↑ H-seq f g) )
             refl ⟩
-        α□ (f ⋆ᶜ g) ▹ β₀ Z
-        ∙ α₀ X ◃ (β□ (f ⋆ᶜ g) ∙ β₀ X ◃ H-seq f g)
-      ≡⟨ cong (λ x → α□ (f ⋆ᶜ g) ▹ β₀ Z ∙ α₀ X ◃ x)
+        α□ (f ⋆ g) ▹ β₀ Z
+        ∙ α₀ X ◃ (β□ (f ⋆ g) ∙ β₀ X ◃ H-seq f g)
+      ≡⟨ cong (λ x → α□ (f ⋆ g) ▹ β₀ Z ∙ α₀ X ◃ x)
           (β .snd .N-hom-seq f g) ⟩
-        α□ (f ⋆ᶜ g) ▹ β₀ Z
+        α□ (f ⋆ g) ▹ β₀ Z
         ∙ α₀ X ◃ (G-seq f g ▹ β₀ Z
           ∙ G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
       ≡⟨ reassoc
-            ( ↑ α□ (f ⋆ᶜ g) ▹′ β₀ Z
+            ( ↑ α□ (f ⋆ g) ▹′ β₀ Z
             ∙′ α₀ X ◃′ (↑ G-seq f g ▹′ β₀ Z
               ∙′ G₁ f ◃′ ↑ β□ g ∙′ ↑ β□ f ▹′ H₁ g) )
-            ( (↑ α□ (f ⋆ᶜ g) ∙′ α₀ X ◃′ ↑ G-seq f g) ▹′ β₀ Z
+            ( (↑ α□ (f ⋆ g) ∙′ α₀ X ◃′ ↑ G-seq f g) ▹′ β₀ Z
             ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g
             ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
             refl ⟩
-        (α□ (f ⋆ᶜ g) ∙ α₀ X ◃ G-seq f g) ▹ β₀ Z
+        (α□ (f ⋆ g) ∙ α₀ X ◃ G-seq f g) ▹ β₀ Z
         ∙ α₀ X ◃ G₁ f ◃ β□ g
         ∙ α₀ X ◃ β□ f ▹ H₁ g
       ≡⟨ cong (λ x → x ▹ β₀ Z

@@ -22,9 +22,6 @@ open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
 open Is2Copresheaf
 
-open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
-open 2CellLaws ⟨GPD⟩
-
 module _ where
   idEndo : GpdEndo
   idEndo .str .F-ob = idfun _

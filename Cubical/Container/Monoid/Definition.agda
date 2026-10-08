@@ -7,9 +7,11 @@ import Cubical.Bicategory.Base as BB
 
 module Cubical.Container.Monoid.Definition (T : Container) where
 
-open CC.Morphisms
+-- open CC.Morphisms
 open CC.Monoidal
-open BB.Whiskering WC.ContainerWildCat
+
+open BB.BicatSyntax {{...}}
+open BB.BicatSynInstWC WC.ContainerWildCat
 
 infixr 50 _⨾₂_
 _⨾₂_ : ∀ {F G H K : Container}
@@ -44,7 +46,7 @@ record Pseudomonoid : Type where
     -- 2-cells
     lUnit : η ⨾₁ id ⋆ μ ≡ ⨾lUnit
     rUnit : id ⨾₁ η ⋆ μ ≡ ⨾rUnit
-    assoc : ⨾assoc ⋆ μ ⨾₁ id ⋆ μ ≡ id ⨾₁ μ ⋆ μ
+    assoc : ⨾assoc ⋆ (μ ⨾₁ id ⋆ μ) ≡ id ⨾₁ μ ⋆ μ
 
     -- Equations on 2-cells
     -- Adapted from: Day & Street

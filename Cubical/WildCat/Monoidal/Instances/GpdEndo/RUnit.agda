@@ -24,6 +24,10 @@ private
   _⊗₁_ = compEndo₁
   GpdEndoBicat = CopshBicat GPD
 
+open BicatSyntax {{...}}
+
+open BicatSynInstBC GpdEndoBicat
+
 module _ (F : GpdEndo) where
   open WildNatTrans
   open IsPseudonat
@@ -41,11 +45,6 @@ module _ (F : GpdEndo) where
       refl
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
-  open Bicategory GpdEndoBicat using ()
-    renaming (_⋆_ to _⨾_)
-  open Bicategory GPD using (id; _◃_; _▹_)
-    renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
-  
   open WildNatTrans (α .fst) using ()
     renaming (N-ob to α₀; N-hom to α□)
 
@@ -54,9 +53,7 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
     module F = Copresheaf F
     module G = Copresheaf G
 
-  open 2CellLaws ⟨GPD⟩
-
-  iMG-rUnit-hom : (α ⊗₁ idPseudonatTrans idEndo) ⨾ ρ₀ G ≡ ρ₀ F ⨾ α
+  iMG-rUnit-hom : (α ⊗₁ idPseudonatTrans idEndo) ⋆ ρ₀ G ≡ ρ₀ F ⋆ α
   iMG-rUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
     refl 
     λ f → reassoc

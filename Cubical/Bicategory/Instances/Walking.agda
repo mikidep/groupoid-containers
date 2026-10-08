@@ -2,12 +2,12 @@ open import Cubical.Foundations.Prelude
 
 open import Cubical.Bicategory.Base
 
-module Cubical.Bicategory.Instances.Arrow where
+module Cubical.Bicategory.Instances.Walking where
 
 open import Cubical.Data.Unit
 open import Cubical.Data.Empty
 
-module Arrow where
+module Walking where
   data ob : Type where
     𝟘 𝟙 : ob
   
@@ -50,14 +50,14 @@ module Arrow where
 open Bicategory
 open IsBicategory
 
-open Arrow using (𝟘; 𝟙)
+open Walking using (𝟘; 𝟙) public
 
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.HLevels
 
-Arrow : Bicategory _ _
-Arrow .str = record where
-  open Arrow using 
+Walking : Bicategory _ _
+Walking .str = record where
+  open Walking using 
     ( ob
     ; Hom[_,_]
     ; id
@@ -66,16 +66,26 @@ Arrow .str = record where
     ; ⋆IdR
     ; ⋆Assoc
     )
-Arrow .isBicat .triangle {(𝟘)} {(𝟘)} {(𝟘)} _ _ = lUnit _
-Arrow .isBicat .triangle {(𝟘)} {(𝟘)} {(𝟙)} _ _ = lUnit _
-Arrow .isBicat .triangle {(𝟘)} {(𝟙)} {(𝟙)} _ _ = lUnit _
-Arrow .isBicat .triangle {(𝟙)} {(𝟙)} {(𝟙)} _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} _ _ _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} {(𝟙)} _ _ _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟘)} {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
-Arrow .isBicat .pentagon {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
-Arrow .isBicat .isGpdHom {(𝟘)} {(𝟘)} = isSet→isGroupoid isSetUnit
-Arrow .isBicat .isGpdHom {(𝟘)} {(𝟙)} = isSet→isGroupoid isSetUnit
-Arrow .isBicat .isGpdHom {(𝟙)} {(𝟙)} = isSet→isGroupoid isSetUnit
+Walking .isBicat .triangle {(𝟘)} {(𝟘)} {(𝟘)} _ _ = lUnit _
+Walking .isBicat .triangle {(𝟘)} {(𝟘)} {(𝟙)} _ _ = lUnit _
+Walking .isBicat .triangle {(𝟘)} {(𝟙)} {(𝟙)} _ _ = lUnit _
+Walking .isBicat .triangle {(𝟙)} {(𝟙)} {(𝟙)} _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} _ _ _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟘)} {(𝟙)} _ _ _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟘)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟘)} {(𝟘)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟘)} {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
+Walking .isBicat .pentagon {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} {(𝟙)} _ _ _ _ = lUnit _
+Walking .isBicat .isGpdHom {(𝟘)} {(𝟘)} = isSet→isGroupoid isSetUnit
+Walking .isBicat .isGpdHom {(𝟘)} {(𝟙)} = isSet→isGroupoid isSetUnit
+Walking .isBicat .isGpdHom {(𝟙)} {(𝟙)} = isSet→isGroupoid isSetUnit
+
+-- In a more convoluted way
+
+-- open import Cubical.Bicategory.Instances.FromSetCat
+
+-- open import Cubical.Categories.Instances.Free
+
+-- Walking′ : Bicategory _ _
+-- Walking′ = AsBicat ?
+

@@ -19,8 +19,9 @@ open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
 open Is2Copresheaf
 
-open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
-open 2CellLaws ⟨GPD⟩
+open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+open BicatSyntax {{...}}
+open BicatSynInstBC GPD
 
 module _ (F G : GpdEndo) where
   open import Prelude.Utils

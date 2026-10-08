@@ -1,7 +1,7 @@
 open import Cubical.Foundations.Prelude
 
 -- TODO: Prove these notions are equivalent
--- to those in Cubical.Bicategory.Functor
+-- to those in Cubical.Bicategory.Pseudofunctor
 
 module Cubical.Bicategory.Copresheaf.Pseudonat.Base (ℓ : Level) where
 
@@ -19,29 +19,21 @@ private
   variable
     ℓC ℓC' : Level
 
+open BicatSyntax {{...}}
+
+private module GPD = Bicategory GPD
+
 open Bicategory GPD using ()
-  renaming (
-    str to ⟨GPD⟩;
-    Hom[_,_] to D[_,_];
-    _⋆_ to _⋆ᵈ_;
-    id to idᵈ;
-    isGpdHom to isGpdHomGPD;
-    ⋆IdL to D-⋆IdL;
-    ⋆IdR to D-⋆IdR;
-    ⋆Assoc to D-⋆Assoc
-  )
-open Whiskering ⟨GPD⟩
-open 2CellLaws ⟨GPD⟩
+  renaming (str to ⟨GPD⟩)
+open BicatSynInstBC GPD
 
 module _ {C : Bicategory ℓC ℓC'} where
   private module C = Bicategory C
+
   open C using ()
-    renaming (
-      str to ⟨C⟩;
-      Hom[_,_] to C[_,_];
-      id to idᶜ;
-      _⋆_ to _⋆ᶜ_
-    )
+    renaming (str to ⟨C⟩)
+
+  open BicatSynInstBC C
 
   open Copresheaf using () renaming (str to ⟨_⟩)
 
@@ -65,12 +57,12 @@ module _ {C : Bicategory ℓC ℓC'} where
       field
         N-hom-id :
           ∀ {X}
-          →   α□ (idᶜ {X})
+          →   α□ (id {x = X})
               ∙ α₀ X ◃ G-id
             ≡ F-id ▹ α₀ X
         N-hom-seq :
-          ∀ {X} {Y} {Z} (f : C[ X , Y ]) (g : C[ Y , Z ])
-          →   α□ (f ⋆ᶜ g)
+          ∀ {X} {Y} {Z} (f : C [ X , Y ]) (g : C [ Y , Z ])
+          →   α□ (f ⋆ g)
               ∙ α₀ X ◃ G-seq f g
             ≡ F-seq f g ▹ α₀ Z
               ∙ F₁ f ◃ α□ g
@@ -82,11 +74,11 @@ module _ {C : Bicategory ℓC ℓC'} where
     isPropIsPseudonat αis βis i .N-hom-id {X} = aux i
       where
       aux : αis .N-hom-id {X} ≡ βis .N-hom-id
-      aux = isGpdHomGPD _ _ _ _ (αis .N-hom-id) (βis .N-hom-id)
+      aux = GPD.isGpdHom _ _ _ _ (αis .N-hom-id) (βis .N-hom-id)
     isPropIsPseudonat αis βis i .N-hom-seq f g = aux i
       where
       aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
-      aux = isGpdHomGPD _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
+      aux = GPD.isGpdHom _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
 
   module _ (F G : Copresheaf C) where
     open Copresheaf using () renaming (str to ⟨_⟩)
@@ -115,8 +107,8 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Prelude
       N₀ : PseudonatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C[ x , y ])
-        → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
+      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C [ x , y ])
+        → F₁ f ⋆ N₀ ξ y ≡ N₀ ξ x ⋆ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
     PseudonatTransPath≡ :
@@ -129,7 +121,7 @@ module _ {C : Bicategory ℓC ℓC'} where
       aux = makeNatTransSquare N₀≡
         (isSet→SquareP
           (λ i j → isSetImplicitΠ2 λ x y → isSetΠ
-            λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ N₀≡ i j y) (N₀≡ i j x ⋆ᵈ G₁ f))
+            λ (f : C [ x , y ]) → GPD.isGpdHom (F₁ f ⋆ N₀≡ i j y) (N₀≡ i j x ⋆ G₁ f))
           (cong N₁ p) (cong N₁ q) refl refl
         )
 
@@ -144,8 +136,8 @@ module _ {C : Bicategory ℓC ℓC'} where
       open import Prelude
       N₀ : PseudonatTrans F G → _
       N₀ = fst » N-ob
-      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C[ x , y ])
-        → F₁ f ⋆ᵈ N₀ ξ y ≡ N₀ ξ x ⋆ᵈ G₁ f
+      N₁ : ∀ (ξ : PseudonatTrans F G) {x y} (f : C [ x , y ])
+        → F₁ f ⋆ N₀ ξ y ≡ N₀ ξ x ⋆ G₁ f
       N₁ ξ f = ξ .fst .N-hom f
 
     open import Cubical.Foundations.HLevels
@@ -165,7 +157,7 @@ module _ {C : Bicategory ℓC ℓC'} where
         ob-□
         (isSet→SquareP
           (λ i j → isSetImplicitΠ2 λ x y → isSetΠ
-            λ (f : C[ x , y ]) → isGpdHomGPD (F₁ f ⋆ᵈ ob-□ i j y) (ob-□ i j x ⋆ᵈ G₁ f))
+            λ (f : C [ x , y ]) → GPD.isGpdHom (F₁ f ⋆ ob-□ i j y) (ob-□ i j x ⋆ G₁ f))
           (cong N₁ p) (cong N₁ q) (cong N₁ r) (cong N₁ s)
         )
 
@@ -179,9 +171,9 @@ module _ {C : Bicategory ℓC ℓC'} where
 
     isGroupoidWildNatTrans : isGroupoid (WildNatTrans _ _ ⟨F⟩ ⟨G⟩)
     isGroupoidWildNatTrans = isOfHLevelRespectEquiv 3 (invEquiv WildNatTransEquivΣ)
-      (isGroupoidΣ (isGroupoidΠ λ _ → isGpdHomGPD)
+      (isGroupoidΣ (isGroupoidΠ λ _ → GPD.isGpdHom)
         λ x → isSet→isGroupoid (isSetImplicitΠ2
-          λ _ _ → isSetΠ λ f → isGpdHomGPD _ _
+          λ _ _ → isSetΠ λ f → GPD.isGpdHom _ _
         )
       )
       where

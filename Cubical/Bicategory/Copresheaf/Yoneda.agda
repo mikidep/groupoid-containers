@@ -1,6 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Functor
+open import Cubical.Bicategory.Pseudofunctor
 
 module Cubical.Bicategory.Copresheaf.Yoneda (ℓ : Level)
   -- {ℓC ℓC' : Level}
@@ -13,7 +13,7 @@ open import Cubical.Bicategory.Instances.Copresheaf ℓ
 CopshC : Bicategory _ _
 CopshC = CopshBicat C
 
-module C = Bicategory C
+private module C = Bicategory C
 
 module _ (c : C.ob) where
   open import Cubical.WildCat.Functor

@@ -4,7 +4,7 @@ open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.Path
 open import Cubical.Functions.FunExtEquiv
 
-open import Cubical.WildCat.Base
+open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor hiding (_$_)
 open import Cubical.WildCat.NaturalTransformation.Base
 
@@ -18,6 +18,8 @@ open import Cubical.Bicategory.Instances.Copresheaf ℓ
 
 open import Prelude.Reassoc
 open import Prelude.ExtraGpdLaws
+
+open BicatSyntax {{...}}
 
 private
   _⊗₀_ = compEndo₀
@@ -41,10 +43,11 @@ module _ (F : GpdEndo) where
         refl
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
-  open Bicategory GpdEndoBicat using ()
-    renaming (_⋆_ to _⨾_)
-  open Bicategory GPD using (id; _◃_; _▹_)
-    renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
+
+  open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+
+  open BicatSynInstBC GPD
+  open BicatSynInstBC GpdEndoBicat
   
   open WildNatTrans (α .fst) using ()
     renaming (N-ob to α₀; N-hom to α□)
@@ -54,16 +57,15 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
     module F = Copresheaf F
     module G = Copresheaf G
 
-  open 2CellLaws ⟨GPD⟩
   open BicatReassoc ⟨GPD⟩
 
-  iMG-lUnit-hom : (idPseudonatTrans idEndo ⊗₁ α) ⨾ λ₀ G ≡ λ₀ F ⨾ α
+  iMG-lUnit-hom : (idPseudonatTrans idEndo ⊗₁ α) ⋆ λ₀ G ≡ λ₀ F ⋆ α
   iMG-lUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
     (funExt λ X → F.F-id ▹ α₀ X) 
     λ f → aux f
     where
     aux : 
-      ∀ {x y} (f : GPD[ x , y ])
+      ∀ {x y} (f : GPD [ x , y ])
       → Square
         (((sym (F.F-seq f id) ∙ refl ∙ F.F-seq id f) ▹ α₀ y
             ∙ F.F₁ id ◃ α□ f) 
@@ -83,51 +85,50 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
       aux' =
           F.F₁ f ◃ F.F-id ▹ α₀ y
           ∙ refl ∙ α□ f
-        ≡⟨ ∙l ∙r cong (_▹ α₀ y) (sym (F.F-IdL f)) ⟩ 
-          F.F₁ f ◃ F.F-id ▹ α₀ y 
+        ≡⟨ ∙r cong (_▹ α₀ y) (sym (invUniq (F.F-IdR f))) ⟩
+          sym (F.F-seq f id) ▹ α₀ y
+          ∙ refl ∙ α□ f
+        ≡⟨ ∙l ∙r cong (_▹ α₀ y) (sym (F.F-IdL f)) ⟩
+          sym (F.F-seq f id) ▹ α₀ y
           ∙ (F.F-seq id f
             ∙ F.F-id ▹ F.F₁ f) ▹ α₀ y
-          ∙ id ◃ α□ f
-        ≡⟨ ∙l ∙r ▹-∙ _ _ ⟩ 
-          F.F₁ f ◃ F.F-id ▹ α₀ y 
-          ∙ (F.F-seq id f ▹ α₀ y
-            ∙ F.F-id ▹ F.F₁ f ▹ α₀ y)
-          ∙ id ◃ α□ f
-        ≡⟨ ∙l sym assoc-inf ⟩ 
-          F.F₁ f ◃ F.F-id ▹ α₀ y 
+          ∙ α□ f
+        ≡⟨ reass₁ ⟩
+          sym (F.F-seq f id) ▹ α₀ y
           ∙ F.F-seq id f ▹ α₀ y
-          ∙ F.F-id ▹ F.F₁ f ▹ α₀ y
-          ∙ id ◃ α□ f
-        ≡⟨ ∙l ∙l sym (whisk-interchange F.F-id (α□ f)) ⟩
-          F.F₁ f ◃ F.F-id ▹ α₀ y 
+          ∙ (F.F-id ▹ F.F₁ f ▹ α₀ y
+            ∙ α□ f)
+        ≡⟨ ∙l ∙l sym (whisk-interchange (F.F-id {x = x}) (α□ f)) ⟩
+          sym (F.F-seq f id) ▹ α₀ y
           ∙ F.F-seq id f ▹ α₀ y
-          ∙ F.F₁ id ◃ α□ f 
-          ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
-        ≡⟨ ∙r cong (_▹ α₀ y) (sym (invUniq (F.F-IdR f))) ⟩ 
-          sym (F.F-seq f id) ▹ α₀ y 
-          ∙ F.F-seq id f ▹ α₀ y
-          ∙ F.F₁ id ◃ α□ f 
-          ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
-        ≡⟨ reassoc
-              ( ↑ sym (F.F-seq f id) ▹′ α₀ y 
-              ∙′ ↑ F.F-seq id f ▹′ α₀ y
-              ∙′ F.F₁ id ◃′ ↑ α□ f 
-              ∙′ ↑ F.F-id ▹′ α₀ x ▹′ G.F₁ f )
-              ((((↑ sym (F.F-seq f id) ∙′ ↑ F.F-seq id f) ▹′ α₀ y
-                  ∙′ F.F₁ id ◃′ ↑ α□ f) 
-                ∙′ refl′)
-              ∙′ ↑ F.F-id ▹′ α₀ x ▹′ G.F₁ f)
-              refl ⟩ 
-          (((sym (F.F-seq f id) ∙ F.F-seq id f) ▹ α₀ y
-              ∙ F.F₁ id ◃ α□ f) 
-            ∙ refl)
-          ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
-        ≡⟨ ∙r ∙r ∙r cong (_▹ α₀ y) (∙l lUnit (F.F-seq id f)) ⟩ 
+          ∙ (F.F₁ id ◃ α□ f
+            ∙ F.F-id ▹ α₀ x ▹ G.F₁ f)
+        ≡⟨ reass₂ ⟩
           (((sym (F.F-seq f id) ∙ refl ∙ F.F-seq id f) ▹ α₀ y
-              ∙ F.F₁ id ◃ α□ f) 
+              ∙ F.F₁ id ◃ α□ f)
             ∙ refl)
           ∙ F.F-id ▹ α₀ x ▹ G.F₁ f
         ∎
+        where
+        reass₁ = reassoc
+          ( ↑ sym (F.F-seq f id) ▹′ α₀ y
+          ∙′ (↑ F.F-seq id f ∙′ ↑ (F.F-id {x = x}) ▹′ F.F₁ f) ▹′ α₀ y
+          ∙′ ↑ α□ f )
+          ( ↑ sym (F.F-seq f id) ▹′ α₀ y
+          ∙′ ↑ F.F-seq id f ▹′ α₀ y
+          ∙′ (↑ (F.F-id {x = x}) ▹′ F.F₁ f ▹′ α₀ y
+            ∙′ ↑ α□ f) )
+          refl
+        reass₂ = reassoc
+          ( ↑ sym (F.F-seq f id) ▹′ α₀ y
+          ∙′ ↑ F.F-seq id f ▹′ α₀ y
+          ∙′ (F.F₁ id ◃′ ↑ α□ f
+            ∙′ ↑ (F.F-id {x = x}) ▹′ α₀ x ▹′ G.F₁ f) )
+          ( (((↑ sym (F.F-seq f id) ∙′ refl′ ∙′ ↑ F.F-seq id f) ▹′ α₀ y
+              ∙′ F.F₁ id ◃′ ↑ α□ f)
+            ∙′ refl′)
+          ∙′ ↑ (F.F-id {x = x}) ▹′ α₀ x ▹′ G.F₁ f )
+          refl
 
 module _ (F : GpdEndo) where
   open WildNatTrans

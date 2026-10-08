@@ -4,11 +4,11 @@ module Cubical.Bicategory.Copresheaf.Base (ℓ : Level) where
 
 open import Cubical.Bicategory.Base
 open import Cubical.Bicategory.Instances.Groupoids
-import Cubical.Bicategory.Functor
+import Cubical.Bicategory.Pseudofunctor
 
-module 2FunctNotation = Cubical.Bicategory.Functor.2FunctNotation
+module 2FunctNotation = Cubical.Bicategory.Pseudofunctor.2FunctNotation
 
-open import Cubical.WildCat.Base
+open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor
 
 private
@@ -22,49 +22,42 @@ GPD = GpdBicat ℓ
 -- f ⋆ g ◃ p ≡def f ◃ g ◃ p
 -- and viceversa
 
+open BicatSyntax {{...}}
+
 open Bicategory GPD using ()
-  renaming (
-    str to ⟨GPD⟩;
-    Hom[_,_] to D[_,_];
-    _⋆_ to _⋆ᵈ_;
-    _⋆₂_ to _⋆₂ᵈ_;
-    id to idᵈ
-  )
-open Whiskering ⟨GPD⟩
-open 2CellLaws ⟨GPD⟩
+  renaming (str to ⟨GPD⟩)
+
+open BicatSynInstBC GPD
 
 module _ (C : Bicategory ℓC ℓC') where
   private module C = Bicategory C
+
   open C using ()
-    renaming (
-      str to ⟨C⟩;
-      Hom[_,_] to C[_,_];
-      id to idᶜ;
-      _⋆_ to _⋆ᶜ_;
-      _⋆₂_ to _⋆₂ᶜ_
-    )
+    renaming (str to ⟨C⟩)
+
+  open BicatSynInstBC C
 
   record Is2Copresheaf
     (F : WildFunctor ⟨C⟩ ⟨GPD⟩)
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     open 2FunctNotation F
     field
-      F-IdL : ∀ {x y} (f : C[ x , y ])
-        → F-seq idᶜ f
+      F-IdL : ∀ {x y} (f : C [ x , y ])
+        → F-seq id f
           ∙ F-id ▹ F₁ f
-          ≡ F₂ (C.⋆IdL f)
-      F-IdR : ∀ {x y} (f : C[ x , y ])
-        → F-seq f idᶜ
+          ≡ F₂ (⋆IdL f)
+      F-IdR : ∀ {x y} (f : C [ x , y ])
+        → F-seq f id
           ∙ F₁ f ◃ F-id
-          ≡ F₂ (C.⋆IdR f)
+          ≡ F₂ (⋆IdR f)
       F-Assoc : ∀ {x y z w}
-        (f : C[ x , y ])
-        (g : C[ y , z ])
-        (h : C[ z , w ])
-        → F-seq (f ⋆ᶜ g) h
+        (f : C [ x , y ])
+        (g : C [ y , z ])
+        (h : C [ z , w ])
+        → F-seq (f ⋆ g) h
           ∙ F-seq f g ▹ F₁ h
-          ≡ F₂ (C.⋆Assoc f g h)
-          ∙ F-seq f (g ⋆ᶜ h)
+          ≡ F₂ (⋆Assoc f g h)
+          ∙ F-seq f (g ⋆ h)
           ∙ F₁ f ◃ F-seq g h
 
   record Copresheaf

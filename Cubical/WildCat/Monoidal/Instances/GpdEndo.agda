@@ -13,6 +13,10 @@ open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ-zero
 
 module Cubical.WildCat.Monoidal.Instances.GpdEndo where
 
+private module GPD = Bicategory GPD
+open BicatSyntax {{...}}
+open BicatSynInstBC GPD
+
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit ℓ-zero
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit ℓ-zero
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.Assoc ℓ-zero
@@ -23,8 +27,6 @@ module _ where
   open import Prelude.Reassoc
 
   open isMonoidalWildCat
-  open Bicategory GPD using (id; _◃_; _▹_)
-    renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
 
   isMonoidalGpdEndo : isMonoidalWildCat GpdEndoWildCat
   isMonoidalGpdEndo ._⊗_ = compEndo
@@ -33,7 +35,7 @@ module _ where
   isMonoidalGpdEndo .⊗lUnit = iMG-lUnit
   isMonoidalGpdEndo .⊗rUnit = iMG-rUnit
   isMonoidalGpdEndo .⊗triangle F G = PseudonatTrans≡ $ makeNatTransPath refl 
-    λ {x} {y} (f : GPD[ x , y ]) → 
+    λ {x y : GPD.ob} (f : GPD [ x , y ]) → 
       refl 
       ∙ (sym (G.F-seq (F₁ f) id) 
         ∙ refl ∙ G.F-seq id (F₁ f)) 
@@ -49,7 +51,7 @@ module _ where
     module F = Copresheaf F
     module G = Copresheaf G
     open F using (F₁)
-    reass₁ : ∀ {x} {y} (f : GPD[ x , y ]) → _
+    reass₁ : ∀ {x y : GPD.ob} (f : GPD [ x , y ]) → _
     reass₁ f = reassoc 
       ( refl′ 
       ∙′ (↑ sym (G.F-seq (F₁ f) id) 

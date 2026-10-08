@@ -45,7 +45,10 @@ open import Prelude.Square
 open import Prelude.ExtraGpdLaws
 open import Prelude.Reassoc
 
-open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
+open BicatSyntax {{...}}
+
+open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+open BicatSynInstBC GPD
 
 open BicatReassoc ⟨GPD⟩
 
@@ -68,7 +71,7 @@ compEndo .F-id {F , G} = PseudonatTrans≡ $ WNatTrans≡
       F-id to  G-id;
       F-seq to G-seq
     )
-  goal : ∀ {X Y} (f : GPD[ X , Y ]) → 
+  goal : ∀ {X Y} (f : GPD [ X , Y ]) → 
     Square
       ((sym (G-seq (F₁ f) id) ∙ refl ∙ G-seq id (F₁ f)) ∙ refl)
       refl
@@ -117,7 +120,7 @@ compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = PseudonatTran
   open WildNatTrans (β .fst) renaming (N-ob to β₀; N-hom to β□)
   open WildNatTrans (α' .fst) renaming (N-ob to α'₀; N-hom to α'□)
   open WildNatTrans (β' .fst) renaming (N-ob to β'₀; N-hom to β'□)
-  goal : ∀ {X Y} (f : GPD[ X , Y ]) → 
+  goal : ∀ {X Y} (f : GPD [ X , Y ]) → 
     Square
       {! _ !}
       ((({! _ !} 

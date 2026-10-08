@@ -47,9 +47,9 @@ module _ (C : Bicategory ℓC ℓC') where
 
   module _ where
     open IsBicategory
-
-    open WildCat CopshWildCat
-    open Whiskering CopshWildCat
+    
+    open BicatSyntax {{...}}
+    open BicatSynInstWC CopshWildCat
 
     open import Cubical.Foundations.Path
     open import Prelude.Square

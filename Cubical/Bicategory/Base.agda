@@ -1,19 +1,26 @@
 -- Adapted from:
 -- E. Finster, S. Mimram, M. Lucas, and T. Seiller,
--- “A Cartesian Bicategory of Polynomial Functors in Homotopy Type Theory,”
+-- “A Cartesian Bicategory of Polynomial Pseudofunctors in Homotopy Type Theory,”
 -- EPTCS 351, 2021, pp. 67-83, vol. 351, pp. 67–83, Dec. 2021, doi: 10.4204/eptcs.351.5.
 
 -- Shouldn't these be called Pre-2,1-categories?
 
 open import Prelude
-open import Cubical.WildCat.Base
+open import Cubical.WildCat.Base hiding (_[_,_])
 
 module Cubical.Bicategory.Base where
 
 open import Cubical.Foundations.GroupoidLaws
 
-module Whiskering {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
-  open WildCat WC
+record BicatSyntax {ℓ ℓ'} (WC : WildCat ℓ ℓ') : Type (ℓ-max ℓ ℓ') where
+  open WildCat WC using (ob; Hom[_,_])
+  open WildCat WC using 
+      ( id
+      ; _⋆_
+      ; ⋆IdL
+      ; ⋆IdR
+      ; ⋆Assoc
+      ) public
 
   infixr 41 _◃_
   infixl 40 _▹_
@@ -40,10 +47,6 @@ module Whiskering {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
     → (h : Hom[ b , c ])
     → f ⋆ h ≡ g ⋆ h
   f≡g ▹ h = cong (_⋆ h) f≡g
-
-module 2CellLaws {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
-  open WildCat WC
-  open Whiskering WC
 
   ◃-∙ : ∀ {a b c : ob}
     {f : Hom[ a , b ]}
@@ -79,9 +82,17 @@ module 2CellLaws {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
     aux₂ : cong₂ _⋆_ p q ≡ cong (_⋆ h) p ∙ cong (g ⋆_) q
     aux₂ = cong₂Funct' _⋆_ p q
 
+open BicatSyntax {{...}}
+
+module BicatSynInstWC {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
+  instance
+    bicatSynInstWC : BicatSyntax WC
+    bicatSynInstWC = record { }
+    
 module _ {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
-  open WildCat WC
-  open Whiskering WC
+  open WildCat WC using (ob; Hom[_,_])
+
+  open BicatSynInstWC WC
 
   record IsBicategory : Type (ℓ-max ℓC ℓC') where
     field
@@ -110,6 +121,18 @@ module _ (ℓC ℓC' : Level) where
       str : WildCat ℓC ℓC'
       isBicat : IsBicategory str
     open WildCat str public
-    open Whiskering str public
     open IsBicategory isBicat public
 
+open Bicategory
+
+module _ {ℓC ℓC' : Level} where
+  -- Helpful syntax/notation
+  _[_,_] : (C : Bicategory ℓC ℓC') → (x y : C .ob) → Type ℓC'
+  _[_,_] = Hom[_,_]
+
+module BicatSynInstBC {ℓC ℓC'} (C : Bicategory ℓC ℓC') where
+  private module C = Bicategory C
+
+  instance
+    bicatSynInstBC : BicatSyntax C.str
+    bicatSynInstBC = record { }

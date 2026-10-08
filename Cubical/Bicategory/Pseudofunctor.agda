@@ -1,40 +1,32 @@
 open import Prelude
 
-module Cubical.Bicategory.Functor where
+module Cubical.Bicategory.Pseudofunctor where
 
-open import Cubical.Bicategory.Base
-open import Cubical.WildCat.Base
+open import Cubical.Bicategory.Base hiding (_[_,_])
+open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor
 
 private
   variable
     ℓC ℓC' ℓD ℓD' : Level
 
+open BicatSyntax {{...}}
+
 module 2FunctNotation {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} (F : WildFunctor C D) where
 
+  open import Cubical.WildCat.Base using (_[_,_])
   open import Cubical.Foundations.GroupoidLaws
   open import Prelude.ExtraGpdLaws
+  
+  open BicatSynInstWC C
+  open BicatSynInstWC D
 
-  open WildCat C using ()
-    renaming (
-      Hom[_,_] to C[_,_];
-      _⋆_ to _⋆ᶜ_;
-      id to idᶜ
-    )
-  open WildCat D using ()
-    renaming (
-      _⋆_ to _⋆ᵈ_
-    )
-
-  open Whiskering C using ()
-    renaming (
-      _◃_ to _◃ᶜ_;
-      _▹_ to _▹ᶜ_;
-      _⋆₂_ to _⋆₂ᶜ_
-    )
-  open Whiskering D using (_◃_; _▹_)
-    renaming (_⋆₂_ to _⋆₂ᵈ_)
+  -- private instance
+  --   _ : BicatSyntax C
+  --   _ = record { }
+  --   _ : BicatSyntax D
+  --   _ = record { }
 
   open WildFunctor F using (
       F-id;
@@ -43,78 +35,78 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
       F-ob to F₀; F-hom to F₁
     ) public
 
-  F₂ : ∀ {X} {Y} {f g : C[ X , Y ]}
+  F₂ : ∀ {X} {Y} {f g : C [ X , Y ]}
     (f≡g : f ≡ g)
     → F₁ f ≡ F₁ g
   F₂ = cong F₁
 
   F₂-funct : ∀ {x y}
-    {f g h : C[ x , y ]}
+    {f g h : C [ x , y ]}
     (α : f ≡ g)
     (β : g ≡ h)
     → F₂ (α ∙ β) ≡ F₂ α ∙ F₂ β
   F₂-funct = congFunct F₁
 
   F□ : ∀ {x y z w}
-    {f : C[ x , y ]}
-    {g : C[ y , z ]}
-    {h : C[ x , w ]}
-    {k : C[ w , z ]}
-    → f ⋆ᶜ g ≡ h ⋆ᶜ k
-    → F₁ f ⋆ᵈ F₁ g ≡ F₁ h ⋆ᵈ F₁ k
+    {f : C [ x , y ]}
+    {g : C [ y , z ]}
+    {h : C [ x , w ]}
+    {k : C [ w , z ]}
+    → f ⋆ g ≡ h ⋆ k
+    → F₁ f ⋆ F₁ g ≡ F₁ h ⋆ F₁ k
   F□ {f} {g} {h} {k} sq =
     sym (F-seq f g)
     ∙ F₂ sq
     ∙ F-seq h k
 
   F-seq-nat : ∀ {x y z}
-      {f f′ : C[ x , y ]}
-      {g g′ : C[ y , z ]}
+      {f f′ : C [ x , y ]}
+      {g g′ : C [ y , z ]}
       (p : f ≡ f′)
       (q : g ≡ g′)
     → F-seq f g
-      ∙ F₂ p ⋆₂ᵈ F₂ q
-      ≡ F₂ (p ⋆₂ᶜ q)
+      ∙ F₂ p ⋆₂ F₂ q
+      ≡ F₂ (p ⋆₂ q)
       ∙ F-seq f′ g′
   F-seq-nat {x} {y} {z} {f} {g} p q = J2 Q r p q
     where
     Q :
-      (f' : C[ x , y ])
+      (f' : C [ x , y ])
       (p' : f ≡ f')
-      (g' : C[ y , z ])
+      (g' : C [ y , z ])
       (q' : g ≡ g')
       → Type ℓD'
     Q f' p' g' q' =
       F-seq f g
-      ∙ F₂ p' ⋆₂ᵈ F₂ q'
-      ≡ F₂ (p' ⋆₂ᶜ q')
+      ∙ F₂ p' ⋆₂ F₂ q'
+      ≡ F₂ (p' ⋆₂ q')
       ∙ F-seq f' g'
     r = sym (rUnit _) ∙ lUnit _
 
   F□-◃ : ∀ {x y z}
-    {f : C[ x , y ]}
-    {g h : C[ y , z ]}
+    {f : C [ x , y ]}
+    {g h : C [ y , z ]}
     (g≡h : g ≡ h)
-    → F□ (f ◃ᶜ g≡h)
+    → F□ (f ◃ g≡h)
       ≡ F₁ f ◃ F₂ g≡h
   F□-◃ g≡h =
     shuffleSymL (sym (F-seq-nat refl g≡h))
 
   F□-▹ : ∀ {x y z}
-    {f g : C[ x , y ]}
-    {h : C[ y , z ]}
+    {f g : C [ x , y ]}
+    {h : C [ y , z ]}
     (f≡g : f ≡ g)
-    → F□ (f≡g ▹ᶜ h)
+    → F□ (f≡g ▹ h)
       ≡ F₂ f≡g ▹ F₁ h
   F□-▹ f≡g =
     shuffleSymL (sym (F-seq-nat f≡g refl))
 
   -- In other words...
   F₂-◃ : ∀ {x y z}
-    {f : C[ x , y ]}
-    {g h : C[ y , z ]}
+    {f : C [ x , y ]}
+    {g h : C [ y , z ]}
     (g≡h : g ≡ h)
-    → F₂ (f ◃ᶜ g≡h)
+    → F₂ (f ◃ g≡h)
       ≡ F-seq f g
       ∙ F₁ f ◃ F₂ g≡h
       ∙ sym (F-seq f h)
@@ -123,10 +115,10 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
     ∙ sym assoc-inf
 
   F₂-▹ : ∀ {x y z}
-    {f g : C[ x , y ]}
-    {h : C[ y , z ]}
+    {f g : C [ x , y ]}
+    {h : C [ y , z ]}
     (f≡g : f ≡ g)
-    → F₂ (f≡g ▹ᶜ h)
+    → F₂ (f≡g ▹ h)
       ≡ F-seq f h
       ∙ F₂ f≡g ▹ F₁ h
       ∙ sym (F-seq g h)
@@ -136,7 +128,7 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
 
   -- reassoc helper
   open import Prelude.Reassoc
-  F₂′ : ∀ {X} {Y} {f g : C[ X , Y ]}
+  F₂′ : ∀ {X} {Y} {f g : C [ X , Y ]}
     (f≡g : Term f g)
     → Term (F₁ f) (F₁ g)
   F₂′ = cong′ F₁ 
@@ -146,27 +138,12 @@ module _ {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
   (α : WildNatTrans _ _ F G) where
 
+  open import Cubical.WildCat.Base using (_[_,_])
+
+  open BicatSynInstWC C
+  open BicatSynInstWC D
+
   open import Cubical.Foundations.GroupoidLaws
-
-  open WildCat C using ()
-    renaming (
-      Hom[_,_] to C[_,_];
-      _⋆_ to _⋆ᶜ_;
-      id to idᶜ
-    )
-  open WildCat D using ()
-    renaming (
-      _⋆_ to _⋆ᵈ_
-    )
-
-  open Whiskering C using ()
-    renaming (
-      _◃_ to _◃ᶜ_;
-      _▹_ to _▹ᶜ_;
-      _⋆₂_ to _⋆₂ᶜ_
-    )
-  open Whiskering D using (_◃_; _▹_)
-    renaming (_⋆₂_ to _⋆₂ᵈ_)
 
   open WildNatTrans α using ()
     renaming (N-ob to α₀; N-hom to α□)
@@ -179,7 +156,7 @@ module _ {C : WildCat ℓC ℓC'}
 
   N-hom-nat :
     ∀ {X} {Y}
-      {f g : C[ X , Y ]}
+      {f g : C [ X , Y ]}
       (f≡g : f ≡ g)
     →   α□ f ∙ α₀ X ◃ G₂ f≡g
       ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
@@ -195,14 +172,10 @@ module _ {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
   {α β : WildNatTrans _ _ F G} where
 
-  open Whiskering C using ()
-    renaming (
-      _◃_ to _◃ᶜ_;
-      _▹_ to _▹ᶜ_;
-      _⋆₂_ to _⋆₂ᶜ_
-    )
-  open Whiskering D using (_◃_; _▹_)
-    renaming (_⋆₂_ to _⋆₂ᵈ_)
+  open import Cubical.WildCat.Base using (_[_,_])
+
+  open BicatSynInstWC C
+  open BicatSynInstWC D
 
   open WildNatTrans α using ()
     renaming (N-ob to α₀; N-hom to α□)
@@ -247,54 +220,46 @@ module _ {C : WildCat ℓC ℓC'}
 module _ (C : Bicategory ℓC ℓC')
   (D : Bicategory ℓD ℓD') where
 
+  open import Cubical.Bicategory.Base using (_[_,_])
+
   private
     module C = Bicategory C
     module D = Bicategory D
 
-  open C using ()
-    renaming (
-      str to ⟨C⟩;
-      Hom[_,_] to C[_,_];
-      id to idᶜ;
-      _⋆_ to _⋆ᶜ_
-    )
-  open D using (_◃_; _▹_)
-    renaming (
-      str to ⟨D⟩;
-      _⋆_ to _⋆ᵈ_;
-      id to idᵈ
-    )
-
   record IsPseudofunctor
-    (F : WildFunctor ⟨C⟩ ⟨D⟩)
+    (F : WildFunctor C.str D.str)
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
+
+    open BicatSynInstBC C
+    open BicatSynInstBC D
     open 2FunctNotation F
+
     field
-      F-IdL : ∀ {x y} {f : C[ x , y ]}
-        → F-seq idᶜ f
+      F-IdL : ∀ {x y} {f : C [ x , y ]}
+        → F-seq id f
           ∙ F-id ▹ F₁ f
-          ∙ D.⋆IdL (F₁ f)
-          ≡ F₂ (C.⋆IdL f)
-      F-IdR : ∀ {x y} {f : C[ x , y ]}
-        → F-seq f idᶜ
+          ∙ ⋆IdL (F₁ f)
+          ≡ F₂ (⋆IdL f)
+      F-IdR : ∀ {x y} {f : C [ x , y ]}
+        → F-seq f id
           ∙ F₁ f ◃ F-id
-          ∙ D.⋆IdR (F₁ f)
-          ≡ F₂ (C.⋆IdR f)
+          ∙ ⋆IdR (F₁ f)
+          ≡ F₂ (⋆IdR f)
       F-Assoc : ∀ {x y z w}
-        {f : C[ x , y ]}
-        {g : C[ y , z ]}
-        {h : C[ z , w ]}
-        → F-seq (f ⋆ᶜ g) h
+        {f : C [ x , y ]}
+        {g : C [ y , z ]}
+        {h : C [ z , w ]}
+        → F-seq (f ⋆ g) h
           ∙ F-seq f g ▹ F₁ h
-          ∙ D.⋆Assoc (F₁ f) (F₁ g) (F₁ h)
-          ≡ F₂ (C.⋆Assoc f g h)
-          ∙ F-seq f (g ⋆ᶜ h)
+          ∙ ⋆Assoc (F₁ f) (F₁ g) (F₁ h)
+          ≡ F₂ (⋆Assoc f g h)
+          ∙ F-seq f (g ⋆ h)
           ∙ F₁ f ◃ F-seq g h
 
-  record Functor
+  record Pseudofunctor
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
     field
-      str : WildFunctor ⟨C⟩ ⟨D⟩
+      str : WildFunctor C.str D.str
       isPseudofunctor : IsPseudofunctor str
     open 2FunctNotation str public
     open IsPseudofunctor isPseudofunctor public
@@ -302,30 +267,26 @@ module _ (C : Bicategory ℓC ℓC')
 module _ {C : Bicategory ℓC ℓC'} {D : Bicategory ℓD ℓD'}
   where
 
+  open import Cubical.Bicategory.Base using (_[_,_])
+
   private
     module C = Bicategory C
     module D = Bicategory D
 
-  open C using ()
-    renaming (Hom[_,_] to C[_,_]; id to idᶜ; _⋆_ to _⋆ᶜ_)
-  open D using (_◃_; _▹_)
-    renaming (
-      str to ⟨D⟩;
-      _⋆_ to _⋆ᵈ_;
-      id to idᵈ
-    )
+  open BicatSynInstBC C
+  open BicatSynInstBC D
 
-  open Functor using () renaming (str to ⟨_⟩)
+  open Pseudofunctor using () renaming (str to ⟨_⟩)
 
-  module _ {F G : Functor C D}
+  module _ {F G : Pseudofunctor C D}
     (α : WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) where
 
     open import Cubical.Foundations.GroupoidLaws
 
     open WildNatTrans α using ()
       renaming (N-ob to α₀; N-hom to α□)
-    open Functor F using (F-id; F-seq; F₁; F₂)
-    open Functor G using ()
+    open Pseudofunctor F using (F-id; F-seq; F₁; F₂)
+    open Pseudofunctor G using ()
       renaming (
         F₁ to G₁;
         F-id to G-id;
@@ -336,22 +297,22 @@ module _ {C : Bicategory ℓC ℓC'} {D : Bicategory ℓD ℓD'}
     record IsPseudonat : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
       field
         N-hom-id :
-          ∀ {X}
-          →   α□ (idᶜ {X})
+          ∀ {X : C.ob}
+          →   α□ (id {x = X})
               ∙ α₀ X ◃ G-id
-              ∙ D.⋆IdR (α₀ X)
+              ∙ ⋆IdR (α₀ X)
             ≡ F-id ▹ α₀ X
-              ∙ D.⋆IdL (α₀ X)
+              ∙ ⋆IdL (α₀ X)
         N-hom-seq :
-          ∀ {X} {Y} {Z} (f : C[ X , Y ]) (g : C[ Y , Z ])
-          →   α□ (f ⋆ᶜ g)
+          ∀ {X} {Y} {Z} (f : C [ X , Y ]) (g : C [ Y , Z ])
+          →   α□ (f ⋆ g)
               ∙ α₀ X ◃ G-seq f g
             ≡ F-seq f g ▹ α₀ Z
-              ∙ D.⋆Assoc (F₁ f) (F₁ g) (α₀ Z)
+              ∙ ⋆Assoc (F₁ f) (F₁ g) (α₀ Z)
               ∙ F₁ f ◃ α□ g
-              ∙ sym (D.⋆Assoc (F₁ f) (α₀ Y) (G₁ g))
+              ∙ sym (⋆Assoc (F₁ f) (α₀ Y) (G₁ g))
               ∙ α□ f ▹ G₁ g
-              ∙ D.⋆Assoc (α₀ X) (G₁ f) (G₁ g)
+              ∙ ⋆Assoc (α₀ X) (G₁ f) (G₁ g)
 
     open import Cubical.Foundations.HLevels
     open IsPseudonat
@@ -365,5 +326,5 @@ module _ {C : Bicategory ℓC ℓC'} {D : Bicategory ℓD ℓD'}
       aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
       aux = D.isGpdHom _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
 
-  module _ (F G : Functor C D) where
+  module _ (F G : Pseudofunctor C D) where
     PseudonatTrans = Σ (WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) (IsPseudonat {F} {G})

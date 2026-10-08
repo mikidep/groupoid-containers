@@ -7,6 +7,8 @@ module Cubical.Bicategory.Instances.Container where
 
 open import Cubical.Foundations.GroupoidLaws
 
+open BicatSyntax {{...}}
+
 module _ (F : WC.Container) where
   record IsGpdContainer : Type₁ where
     open WC.Container F
@@ -90,6 +92,9 @@ module Extent where
     using (Copresheaf; GPD; Is2Copresheaf)
   open import Cubical.Bicategory.Instances.Copresheaf ℓ-zero
 
+  open BicatSynInstBC GPD
+  private module GPD = Bicategory GPD
+
   GpdEndoCat : Bicategory _ _
   GpdEndoCat = CopshBicat GPD
 
@@ -132,8 +137,8 @@ module Extent where
     Ext-hom .snd .N-hom-id = sym (lUnit _)
     Ext-hom .snd .N-hom-seq f g = cong (refl ∙_) (lUnit _)
 
-  open import Cubical.Bicategory.Functor
-  open Functor using (str; isPseudofunctor)
+  open import Cubical.Bicategory.Pseudofunctor
+  open Pseudofunctor using (str; isPseudofunctor)
   open import Cubical.WildCat.Functor using (WildFunctor)
   open import Cubical.WildCat.NaturalTransformation.Base
     using () renaming (makeNatTransPath to WNatTrans≡)
@@ -141,7 +146,7 @@ module Extent where
   open IsPseudofunctor
   open import Cubical.Foundations.Path
 
-  Extent : Functor ContainerBicat GpdEndoCat
+  Extent : Pseudofunctor ContainerBicat GpdEndoCat
   Extent .str .F-ob = Ext-ob
   Extent .str .F-hom = Ext-hom
   Extent .str .F-id = CPsh.PseudonatTrans≡ (WNatTrans≡ refl (λ _ → refl))
@@ -183,7 +188,6 @@ module Extent where
       → F ⇒ G
     Ext-hom-inv α = CMor σ π
       where
-      module GPD = Bicategory GPD
       米→ :
         (A : GPD.ob)
         → (∀ (X : GPD.ob) → (GPD.Hom[ A , X ]) → ⟨ ⟦G⟧ X ⟩)
@@ -226,7 +230,9 @@ module Extent where
                   ≡⟨ sym (lUnit _ ) ⟩
                     F₁v ◃ α□ f ∙ α□ v ▹ ⟦G⟧₁ f
                   ∎
-              in flipSquare (compPathR→PathP∙∙ (
+              in flipSquare 
+                {a₀₁ = α₀ Y (s , v » f)}
+                (compPathR→PathP∙∙ (
                 sym (α□ (v » f)) ≡$ (s , idfun (P s))
               ≡⟨ cong (λ p → sym p ≡$ (s , idfun (P s))) goal ⟩
                 sym (F₁v ◃ α□ f ∙ α□ v ▹ ⟦G⟧₁ f)
@@ -246,8 +252,6 @@ module Extent where
         )
       where
       open import Cubical.Foundations.Path
-      open Bicategory GPD
-        using (_◃_; _▹_)
       open CPsh.IsPseudonat
       α₀ = α .fst .N-ob
       α□ = α .fst .N-hom

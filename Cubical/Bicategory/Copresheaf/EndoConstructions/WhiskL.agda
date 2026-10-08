@@ -16,14 +16,14 @@ open import Cubical.Bicategory.Copresheaf ℓ
 open import Cubical.Bicategory.Instances.Copresheaf ℓ
 open import Cubical.Bicategory.Copresheaf.EndoConstructions.Base ℓ
 open import Cubical.Bicategory.Copresheaf.EndoConstructions.Composite ℓ
-import Cubical.Bicategory.Functor as PF
+import Cubical.Bicategory.Pseudofunctor as PF
 
 open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
 open Is2Copresheaf
 
-open Bicategory GPD renaming (str to ⟨GPD⟩; Hom[_,_] to GPD[_,_])
-open 2CellLaws ⟨GPD⟩
+open BicatSyntax {{...}}
+open BicatSynInstBC GPD
 
 module _ (F : GpdEndo) {G H : GpdEndo}
   (α : PseudonatTrans G H) where
