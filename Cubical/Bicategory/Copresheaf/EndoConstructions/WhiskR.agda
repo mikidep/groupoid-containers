@@ -57,7 +57,7 @@ module _ {F H : GpdEndo} (α : PseudonatTrans F H)
   open WildNatTrans (α .fst) using ()
     renaming (N-ob to α₀; N-hom to α□)
 
-  private _⊗₀_ = compEndo₀
+  private _⨾₀_ = compEndo₀
 
   open WildNatTrans
   open IsPseudonat
@@ -65,7 +65,7 @@ module _ {F H : GpdEndo} (α : PseudonatTrans F H)
   import Cubical.WildCat.Base
   {-# DISPLAY Cubical.WildCat.Base.WildCat._⋆_ f g = f ⋆ g #-}
 
-  whiskR-pseudonat : PseudonatTrans (F ⊗₀ G) (H ⊗₀ G)
+  whiskR-pseudonat : PseudonatTrans (F ⨾₀ G) (H ⨾₀ G)
   whiskR-pseudonat .fst .N-ob x = G₁ (α₀ x)
   whiskR-pseudonat .fst .N-hom {x} {y} f = goal
     where

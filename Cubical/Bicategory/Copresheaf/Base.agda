@@ -24,6 +24,8 @@ GPD = GpdBicat ℓ
 
 open BicatSyntax {{...}}
 
+private module GPD = Bicategory GPD
+
 open Bicategory GPD using ()
   renaming (str to ⟨GPD⟩)
 
@@ -60,6 +62,17 @@ module _ (C : Bicategory ℓC ℓC') where
           ∙ F-seq f (g ⋆ h)
           ∙ F₁ f ◃ F-seq g h
 
+  module _ {F : WildFunctor ⟨C⟩ ⟨GPD⟩} where
+    open import Cubical.Foundations.HLevels
+    open Is2Copresheaf
+    isPropIs2Copresheaf : isProp (Is2Copresheaf F)
+    isPropIs2Copresheaf is₁ is₂ i .F-IdL f = 
+      GPD.isGpdHom _ _ _ _ (is₁ .F-IdL f) (is₂ .F-IdL f) i
+    isPropIs2Copresheaf is₁ is₂ i .F-IdR f = 
+      GPD.isGpdHom _ _ _ _ (is₁ .F-IdR f) (is₂ .F-IdR f) i
+    isPropIs2Copresheaf is₁ is₂ i .F-Assoc f g h = 
+      GPD.isGpdHom _ _ _ _ (is₁ .F-Assoc f g h) (is₂ .F-Assoc f g h) i
+
   record Copresheaf
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
     field
@@ -68,3 +81,12 @@ module _ (C : Bicategory ℓC ℓC') where
     open 2FunctNotation str public
     open Is2Copresheaf is2Copresheaf public
 
+  -- module _ {F G : Copresheaf} where
+  --   open Copresheaf
+  --
+  --   Copresheaf≡ : F .str ≡ G .str → F ≡ G 
+  --   Copresheaf≡ str≡ i .str = str≡ i
+  --   Copresheaf≡ str≡ i .is2Copresheaf = isPropIs2Copresheaf
+  --     {! !}
+  --     {! !}
+  --     i

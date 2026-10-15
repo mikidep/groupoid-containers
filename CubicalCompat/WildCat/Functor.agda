@@ -16,12 +16,13 @@ idWildNatTrans : {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {F : WildFunc
 idWildNatTrans {D = D} .N-ob x = D .id
 idWildNatTrans {D = D} .N-hom f = D .⋆IdR _ ∙ sym (D .⋆IdL _)
 
--- open import CubicalCompat.Reflection.RecordEquiv
+open import CubicalCompat.Reflection.RecordEquiv
 open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.Equiv
 
--- unquoteDecl WildFunctorIsoΣ = declareRecordIsoΣ WildFunctorIsoΣ (quote WildFunctor)
--- WildFunctorEquivΣ = isoToEquiv WildFunctorIsoΣ
+module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
+  unquoteDecl WildFunctorIsoΣ = declareRecordIsoΣ WildFunctorIsoΣ (quote WildFunctor)
+  WildFunctorEquivΣ = isoToEquiv (WildFunctorIsoΣ {C₁ = C} {D₁ = D})
 
 module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {F G : WildFunctor C D} where
   open WildFunctor

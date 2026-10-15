@@ -4,6 +4,7 @@ open import Cubical.Data.Unit
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Functor
+open import Cubical.WildCat.NaturalTransformation.Base
 open import Cubical.WildCat.Product 
 open import Cubical.Data.Sigma hiding (_×_)
 
@@ -60,9 +61,23 @@ private module iMC where
   ⊗assoc .isIs _ .sect = refl
   ⊗assoc .isIs _ .retr = refl
 
+open isMonoidalWildCat
+
 isMonoidalContainer : isMonoidalWildCat ContainerWildCat
-isMonoidalContainer = record where
-  open iMC using (⊗assoc; ⊗lUnit; ⊗rUnit)
-  ⊗triangle _ _ = refl
-  ⊗pentagon _ _ _ _ = refl
+isMonoidalContainer ._⊗_ = iMC._⊗_ 
+isMonoidalContainer .𝟙 = iMC.𝟙
+isMonoidalContainer .⊗assoc = iMC.⊗assoc 
+isMonoidalContainer .⊗lUnit = iMC.⊗lUnit
+isMonoidalContainer .⊗rUnit = iMC.⊗rUnit
+isMonoidalContainer .⊗triangle = makeNatTransPath 
+  refl λ where 
+    -- cannot give this without proving
+    -- mon. str. is pseudo etc.
+    -- Actually yes this should be
+    -- a bunch of refl's.
+    {x} {y} (f , g) → let
+      open _⇒_ f 
+      open _⇒_ g renaming (σ to σ′; π to π′) 
+      in {! x .snd !} 
+isMonoidalContainer .⊗pentagon = ?
 

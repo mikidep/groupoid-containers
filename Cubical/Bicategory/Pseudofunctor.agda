@@ -22,12 +22,6 @@ module 2FunctNotation {C : WildCat ℓC ℓC'}
   open BicatSynInstWC C
   open BicatSynInstWC D
 
-  -- private instance
-  --   _ : BicatSyntax C
-  --   _ = record { }
-  --   _ : BicatSyntax D
-  --   _ = record { }
-
   open WildFunctor F using (
       F-id;
       F-seq

@@ -12,16 +12,7 @@ module Cubical.Bicategory.Product.Copresheaf (ℓ : Level) where
 
 open import Cubical.Bicategory.Copresheaf.Base ℓ
 
--- record BicatSyntax {ℓ ℓ'} (C : Bicategory ℓ ℓ') : Type (ℓ-max ℓ ℓ') where
---   open Bicategory C using 
---       ( id
---       ; _⋆_
---       ; ⋆IdL
---       ; ⋆IdR
---       ; ⋆Assoc
---       ) public
-
-open Bicategory {{...}} hiding (ob)
+open BicatSyntax {{...}} 
 
 open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
@@ -35,13 +26,9 @@ module _
   {D : Bicategory ℓD ℓD'}
   where
 
-  private instance
-    instC : Bicategory ℓC ℓC'
-    instC = C
-    instD : Bicategory ℓD ℓD'
-    instD = D
-    instG : Bicategory (ℓ-suc ℓ) ℓ
-    instG = GPD
+  open BicatSynInstBC C
+  open BicatSynInstBC D
+  open BicatSynInstBC GPD
 
   private 
     module C = Bicategory C
