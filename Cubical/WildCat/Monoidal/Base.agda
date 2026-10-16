@@ -37,11 +37,16 @@ module _ (M : WildCat ℓ ℓ') where
       idF = idWildFunctor
       _⨾_ = comp-WildFunctor
 
-      α = N-ob (trans ⊗assoc)
-      α⁻ : (c : ob ×' ob ×' ob) → M [ _ , _ ]
-      α⁻ c = wildIsIso.inv' (isIs ⊗assoc c)
-      rId = N-ob (trans ⊗rUnit)
-      lId = N-ob (trans ⊗lUnit)
+    open WildNatTrans (trans ⊗lUnit)
+      renaming (N-ob to ⊗lU₀; N-hom to ⊗lU□)
+    open WildNatTrans (trans ⊗rUnit)
+      renaming (N-ob to ⊗rU₀; N-hom to ⊗rU□)
+    open WildNatTrans (trans ⊗assoc)
+      renaming (N-ob to ⊗as₀; N-hom to ⊗as□)
+    
+    private
+      ⊗as₀⁻ : (c : ob ×' ob ×' ob) → M [ _ , _ ]
+      ⊗as₀⁻ c = wildIsIso.inv' (isIs ⊗assoc c)
 
       -- In the schematic composites below, 1_F is the identity natural transformation on F.
 
@@ -50,58 +55,34 @@ module _ (M : WildCat ℓ ℓ') where
       ⊗triangleₗ : WildNatTrans (M × M) M ((idF M ×₁ 𝟙⊗_) ⨾ _⊗_) _⊗_
       ⊗triangleₗ = record 
         { N-ob = λ where
-          (a , b) → α (a , 𝟙 , b) ⋆ (F-hom _⊗_ ((rId a) , id))
+          (a , b) → ⊗as₀ (a , 𝟙 , b) ⋆ (F-hom _⊗_ ((⊗rU₀ a) , id))
         ; N-hom = λ where
-          {(a , b)} {(a′ , b′)} (f , g) → 
-            ((F-hom _⊗_ (f , F-hom _⊗_ (id , g)))) 
-              ⋆ (α (a′ , 𝟙 , b′) ⋆ (F-hom _⊗_ ((rId a′) , id)))
-                ≡⟨ sym (⋆Assoc _ _ _) ⟩
-            (F-hom _⊗_ (f , F-hom _⊗_ (id , g))
-              ⋆ α (a′ , 𝟙 , b′))
-              ⋆ F-hom _⊗_ (rId a′ , id)
-                ≡⟨ cong (λ h → h ⋆ F-hom _⊗_ (rId a′ , id))
-                    (N-hom (trans ⊗assoc) (f , id , g)) ⟩
-            (α (a , 𝟙 , b) ⋆ F-hom _⊗_ (F-hom _⊗_ (f , id) , g))
-              ⋆ F-hom _⊗_ (rId a′ , id)
-                ≡⟨ ⋆Assoc _ _ _ ⟩
-            α (a , 𝟙 , b) ⋆
-              (F-hom _⊗_ (F-hom _⊗_ (f , id) , g)
-                ⋆ F-hom _⊗_ (rId a′ , id))
-                ≡⟨ cong (λ h → α (a , 𝟙 , b) ⋆ h)
-                    (sym (F-seq _⊗_ (F-hom _⊗_ (f , id) , g) (rId a′ , id))) ⟩
-            α (a , 𝟙 , b) ⋆
-              F-hom _⊗_ (F-hom _⊗_ (f , id) ⋆ rId a′ , g ⋆ id)
-                ≡⟨ cong (λ h → α (a , 𝟙 , b) ⋆ F-hom _⊗_ h)
-                    (≡-× (N-hom (trans ⊗rUnit) f) (⋆IdR g ∙ sym (⋆IdL g))) ⟩
-            α (a , 𝟙 , b) ⋆
-              F-hom _⊗_ (rId a ⋆ f , id ⋆ g)
-                ≡⟨ cong (λ h → α (a , 𝟙 , b) ⋆ h)
-                    (F-seq _⊗_ (rId a , id) (f , g)) ⟩
-            α (a , 𝟙 , b) ⋆
-              (F-hom _⊗_ (rId a , id) ⋆ F-hom _⊗_ (f , g))
-                ≡⟨ sym (⋆Assoc _ _ _) ⟩
-            (α (a , 𝟙 , b) ⋆ (F-hom _⊗_ ((rId a) , id))) 
-              ⋆ (F-hom _⊗_ (f , g))
-                ∎
+          {(a , b)} {(a′ , b′)} (f , g) →
+            sym (⋆Assoc _ _ _)
+            ∙ cong (λ h → h ⋆ F-hom _⊗_ (⊗rU₀ a′ , id)) (⊗as□ (f , id , g))
+            ∙ ⋆Assoc _ _ _
+            ∙ cong (λ h → ⊗as₀ (a , 𝟙 , b) ⋆ h)
+              (sym (F-seq _⊗_ (F-hom _⊗_ (f , id) , g) (⊗rU₀ a′ , id)))
+            ∙ cong (λ h → ⊗as₀ (a , 𝟙 , b) ⋆ F-hom _⊗_ h)
+              (≡-× refl (⋆IdR g))
+            ∙ cong (λ h → ⊗as₀ (a , 𝟙 , b) ⋆ F-hom _⊗_ h)
+              (≡-× (⊗rU□ f) (sym (⋆IdL g)))
+            ∙ cong (λ h → ⊗as₀ (a , 𝟙 , b) ⋆ h)
+              (F-seq _⊗_ (⊗rU₀ a , id) (f , g))
+            ∙ sym (⋆Assoc _ _ _)
         }
 
       -- (1_(idF M) ×₂ ⊗lUnit) ▹ _⊗_
       ⊗triangleᵣ : WildNatTrans (M × M) M ((idF M ×₁ 𝟙⊗_) ⨾ _⊗_) _⊗_
       ⊗triangleᵣ = record
         { N-ob = λ where
-          (a , b) → F-hom _⊗_ (id , lId b)
+          (a , b) → F-hom _⊗_ (id , ⊗lU₀ b)
         ; N-hom = λ where
           {(a , b)} {(a′ , b′)} (f , g) →
-            F-hom _⊗_ (f , F-hom _⊗_ (id , g))
-              ⋆ F-hom _⊗_ (id , lId b′)
-                ≡⟨ sym (F-seq _⊗_ (f , F-hom _⊗_ (id , g)) (id , lId b′)) ⟩
-            F-hom _⊗_ (f ⋆ id , F-hom _⊗_ (id , g) ⋆ lId b′)
-                ≡⟨ cong (F-hom _⊗_)
-                    (≡-× (⋆IdR f ∙ sym (⋆IdL f)) (N-hom (trans ⊗lUnit) g)) ⟩
-            F-hom _⊗_ (id ⋆ f , lId b ⋆ g)
-                ≡⟨ F-seq _⊗_ (id , lId b) (f , g) ⟩
-            F-hom _⊗_ (id , lId b) ⋆ F-hom _⊗_ (f , g)
-                ∎
+            sym (F-seq _⊗_ (f , F-hom _⊗_ (id , g)) (id , ⊗lU₀ b′))
+            ∙ cong (F-hom _⊗_) (≡-× (⋆IdR f) refl) 
+            ∙ cong (F-hom _⊗_) (≡-× (sym (⋆IdL f)) (⊗lU□ g))
+            ∙ F-seq _⊗_ (id , ⊗lU₀ b) (f , g)
         }
 
       M⁴ = M × (M × (M × M))
@@ -122,35 +103,54 @@ module _ (M : WildCat ℓ ℓ') where
       ⊗pentagonₗ = record
         { N-ob = λ where
           (a , b , c , d) →
-            F-hom _⊗_ (id , α (b , c , d)) ⋆
-              (α (a , F-ob _⊗_ (b , c) , d) ⋆
-                F-hom _⊗_ (α (a , b , c) , id))
+            F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+              (⊗as₀ (a , F-ob _⊗_ (b , c) , d) ⋆
+                F-hom _⊗_ (⊗as₀ (a , b , c) , id))
         ; N-hom = λ where
           {(a , b , c , d)} {(a′ , b′ , c′ , d′)} (f , g , h , k) →
             sym (⋆Assoc _ _ _)
             ∙ cong (λ q → q ⋆
-                (α (a′ , F-ob _⊗_ (b′ , c′) , d′) ⋆
-                  F-hom _⊗_ (α (a′ , b′ , c′) , id)))
+                (⊗as₀ (a′ , F-ob _⊗_ (b′ , c′) , d′) ⋆
+                  F-hom _⊗_ (⊗as₀ (a′ , b′ , c′) , id)))
               (sym (F-seq _⊗_ (f , F-hom _⊗_ (g , F-hom _⊗_ (h , k)))
-                  (id , α (b′ , c′ , d′)))
-                ∙ cong (F-hom _⊗_)
-                  (≡-× (⋆IdR f ∙ sym (⋆IdL f)) (N-hom (trans ⊗assoc) (g , h , k)))
-                ∙ F-seq _⊗_ (id , α (b , c , d))
-                  (f , F-hom _⊗_ (F-hom _⊗_ (g , h) , k)))
+                (id , ⊗as₀ (b′ , c′ , d′))))
+            ∙ cong (λ q → F-hom _⊗_ q ⋆
+                (⊗as₀ (a′ , F-ob _⊗_ (b′ , c′) , d′) ⋆
+                  F-hom _⊗_ (⊗as₀ (a′ , b′ , c′) , id)))
+              (≡-× (⋆IdR f) refl)
+            ∙ cong (λ q → F-hom _⊗_ q ⋆
+                (⊗as₀ (a′ , F-ob _⊗_ (b′ , c′) , d′) ⋆
+                  F-hom _⊗_ (⊗as₀ (a′ , b′ , c′) , id)))
+              (≡-× (sym (⋆IdL f)) (⊗as□ (g , h , k)))
+            ∙ cong (λ q → q ⋆
+                (⊗as₀ (a′ , F-ob _⊗_ (b′ , c′) , d′) ⋆
+                  F-hom _⊗_ (⊗as₀ (a′ , b′ , c′) , id)))
+              (F-seq _⊗_ (id , ⊗as₀ (b , c , d))
+                (f , F-hom _⊗_ (F-hom _⊗_ (g , h) , k)))
             ∙ ⋆Assoc _ _ _
-            ∙ cong (λ q → F-hom _⊗_ (id , α (b , c , d)) ⋆ q)
-              (sym (⋆Assoc _ _ _)
-                ∙ cong (λ q → q ⋆ F-hom _⊗_ (α (a′ , b′ , c′) , id))
-                  (N-hom (trans ⊗assoc) (f , F-hom _⊗_ (g , h) , k))
-                ∙ ⋆Assoc _ _ _
-                ∙ cong (λ q → α (a , F-ob _⊗_ (b , c) , d) ⋆ q)
-                  (sym (F-seq _⊗_ (F-hom _⊗_ (f , F-hom _⊗_ (g , h)) , k)
-                      (α (a′ , b′ , c′) , id))
-                    ∙ cong (F-hom _⊗_)
-                      (≡-× (N-hom (trans ⊗assoc) (f , g , h)) (⋆IdR k ∙ sym (⋆IdL k)))
-                    ∙ F-seq _⊗_ (α (a , b , c) , id)
-                      (F-hom _⊗_ (F-hom _⊗_ (f , g) , h) , k))
-                ∙ sym (⋆Assoc _ _ _))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆ q)
+              (sym (⋆Assoc _ _ _))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+                (q ⋆ F-hom _⊗_ (⊗as₀ (a′ , b′ , c′) , id)))
+              (⊗as□ (f , F-hom _⊗_ (g , h) , k))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆ q)
+              (⋆Assoc _ _ _)
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+                (⊗as₀ (a , F-ob _⊗_ (b , c) , d) ⋆ q))
+              (sym (F-seq _⊗_ (F-hom _⊗_ (f , F-hom _⊗_ (g , h)) , k)
+                (⊗as₀ (a′ , b′ , c′) , id)))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+                (⊗as₀ (a , F-ob _⊗_ (b , c) , d) ⋆ F-hom _⊗_ q))
+              (≡-× refl (⋆IdR k))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+                (⊗as₀ (a , F-ob _⊗_ (b , c) , d) ⋆ F-hom _⊗_ q))
+              (≡-× (⊗as□ (f , g , h)) (sym (⋆IdL k)))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆
+                (⊗as₀ (a , F-ob _⊗_ (b , c) , d) ⋆ q))
+              (F-seq _⊗_ (⊗as₀ (a , b , c) , id)
+                (F-hom _⊗_ (F-hom _⊗_ (f , g) , h) , k))
+            ∙ cong (λ q → F-hom _⊗_ (id , ⊗as₀ (b , c , d)) ⋆ q)
+              (sym (⋆Assoc _ _ _))
             ∙ sym (⋆Assoc _ _ _)
         }
 
@@ -160,31 +160,22 @@ module _ (M : WildCat ℓ ℓ') where
       ⊗pentagonᵣ = record
         { N-ob = λ where
           (a , b , c , d) →
-            α (a , b , F-ob _⊗_ (c , d)) ⋆
-              α (F-ob _⊗_ (a , b) , c , d)
+            ⊗as₀ (a , b , F-ob _⊗_ (c , d)) ⋆
+              ⊗as₀ (F-ob _⊗_ (a , b) , c , d)
         ; N-hom = λ where
           {(a , b , c , d)} {(a′ , b′ , c′ , d′)} (f , g , h , k) →
             sym (⋆Assoc _ _ _)
-            ∙ cong (λ q → q ⋆ α (F-ob _⊗_ (a′ , b′) , c′ , d′))
-              (N-hom (trans ⊗assoc) (f , g , F-hom _⊗_ (h , k)))
+            ∙ cong (λ q → q ⋆ ⊗as₀ (F-ob _⊗_ (a′ , b′) , c′ , d′))
+              (⊗as□ (f , g , F-hom _⊗_ (h , k)))
             ∙ ⋆Assoc _ _ _
-            ∙ cong (λ q → α (a , b , F-ob _⊗_ (c , d)) ⋆ q)
-              (N-hom (trans ⊗assoc) (F-hom _⊗_ (f , g) , h , k))
+            ∙ cong (λ q → ⊗as₀ (a , b , F-ob _⊗_ (c , d)) ⋆ q)
+              (⊗as□ (F-hom _⊗_ (f , g) , h , k))
             ∙ sym (⋆Assoc _ _ _)
         }
 
     field
-      -- Note: associators are on the form x ⊗ (y ⊗ z) → (x ⊗ y) ⊗ z
-      -- TODO: change to paths between nat trans.
       ⊗triangle : ⊗triangleₗ ≡ ⊗triangleᵣ
-
-      ⊗pentagon : (a b c d : ob)
-        → (F-hom _⊗_ (id , α (b , c , d)))
-           ⋆ ((α (a , (_⊗_ .F-ob (b , c)) , d))
-           ⋆ (F-hom _⊗_ (α (a , b , c) , id)))
-          ≡ (α (a , b , (F-ob _⊗_ (c , d))))
-             ⋆ (α((F-ob _⊗_ (a , b)) , c , d))
-
+      ⊗pentagon : ⊗pentagonₗ ≡ ⊗pentagonᵣ
 
 MonoidalWildCat : (ℓ ℓ' : Level) → Type (ℓ-suc (ℓ-max ℓ ℓ'))
 MonoidalWildCat ℓ ℓ' =

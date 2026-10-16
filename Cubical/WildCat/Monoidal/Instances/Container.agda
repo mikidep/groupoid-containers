@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.Data.Unit
+open import Cubical.Foundations.GroupoidLaws
 
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Monoidal.Base
@@ -70,14 +71,23 @@ isMonoidalContainer .⊗assoc = iMC.⊗assoc
 isMonoidalContainer .⊗lUnit = iMC.⊗lUnit
 isMonoidalContainer .⊗rUnit = iMC.⊗rUnit
 isMonoidalContainer .⊗triangle = makeNatTransPath 
-  refl λ where 
-    -- cannot give this without proving
-    -- mon. str. is pseudo etc.
-    -- Actually yes this should be
-    -- a bunch of refl's.
-    {x} {y} (f , g) → let
-      open _⇒_ f 
-      open _⇒_ g renaming (σ to σ′; π to π′) 
-      in {! x .snd !} 
-isMonoidalContainer .⊗pentagon = ?
+  refl λ _ → reassoc
+      (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
+        ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
+      (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
+      refl
+  where
+  open import Prelude.Reassoc
+isMonoidalContainer .⊗pentagon = makeNatTransPath 
+  refl λ _ → reassoc
+    (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
+      ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
+      ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
+      ∙′ refl′ ∙′ refl′ ∙′ refl′)
+    (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
+    refl
+  where
+  open import Prelude.Reassoc
 
+MonContainer : MonoidalWildCat _ _
+MonContainer = ContainerWildCat , isMonoidalContainer

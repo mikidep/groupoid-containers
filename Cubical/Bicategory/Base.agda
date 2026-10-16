@@ -3,7 +3,7 @@
 -- “A Cartesian Bicategory of Polynomial Pseudofunctors in Homotopy Type Theory,”
 -- EPTCS 351, 2021, pp. 67-83, vol. 351, pp. 67–83, Dec. 2021, doi: 10.4204/eptcs.351.5.
 
--- Shouldn't these be called Pre-2,1-categories?
+-- TODO: Rename to Locally Univalent (2,1)-categories
 
 open import Prelude
 open import Cubical.WildCat.Base hiding (_[_,_])
@@ -39,14 +39,14 @@ record BicatSyntax {ℓ ℓ'} (WC : WildCat ℓ ℓ') : Type (ℓ-max ℓ ℓ') 
     {g h : Hom[ b , c ]}
     → g ≡ h
     → f ⋆ g ≡ f ⋆ h
-  f ◃ g≡h = cong (f ⋆_) g≡h
+  f ◃ g≡h = refl {x = f} ⋆₂ g≡h
 
   _▹_ : ∀ {a b c : ob}
     {f g : Hom[ a , b ]}
     → f ≡ g
     → (h : Hom[ b , c ])
     → f ⋆ h ≡ g ⋆ h
-  f≡g ▹ h = cong (_⋆ h) f≡g
+  f≡g ▹ h = f≡g ⋆₂ refl {x = h}
 
   ◃-∙ : ∀ {a b c : ob}
     {f : Hom[ a , b ]}
