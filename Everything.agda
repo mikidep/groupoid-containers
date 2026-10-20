@@ -1,22 +1,22 @@
 module Everything where
 
-import Cubical.Bicategory.Base
-import Cubical.Bicategory.Copresheaf
-import Cubical.Bicategory.Copresheaf.Base
-import Cubical.Bicategory.Copresheaf.EndoConstructions
-import Cubical.Bicategory.Copresheaf.EndoConstructions.Base
-import Cubical.Bicategory.Copresheaf.EndoConstructions.Composite
-import Cubical.Bicategory.Copresheaf.EndoConstructions.WhiskL
-import Cubical.Bicategory.Copresheaf.EndoConstructions.WhiskR
-import Cubical.Bicategory.Copresheaf.Pseudonat
-import Cubical.Bicategory.Copresheaf.Pseudonat.Base
-import Cubical.Bicategory.Copresheaf.Pseudonat.Constructions
--- import Cubical.Bicategory.Copresheaf.Yoneda
-import Cubical.Bicategory.Pseudofunctor
-import Cubical.Bicategory.Instances.Walking
-import Cubical.Bicategory.Instances.Container
-import Cubical.Bicategory.Instances.Copresheaf
-import Cubical.Bicategory.Instances.Groupoids
+import Cubical.LU2C.Base
+import Cubical.LU2C.Copresheaf
+import Cubical.LU2C.Copresheaf.Base
+import Cubical.LU2C.Copresheaf.EndoConstructions
+import Cubical.LU2C.Copresheaf.EndoConstructions.Base
+import Cubical.LU2C.Copresheaf.EndoConstructions.Composite
+import Cubical.LU2C.Copresheaf.EndoConstructions.WhiskL
+import Cubical.LU2C.Copresheaf.EndoConstructions.WhiskR
+import Cubical.LU2C.Copresheaf.Pseudonat
+import Cubical.LU2C.Copresheaf.Pseudonat.Base
+import Cubical.LU2C.Copresheaf.Pseudonat.Constructions
+-- import Cubical.LU2C.Copresheaf.Yoneda
+import Cubical.LU2C.Pseudofunctor
+import Cubical.LU2C.Instances.Walking
+-- import Cubical.LU2C.Instances.GpdCont
+import Cubical.LU2C.Instances.Copresheaf
+import Cubical.LU2C.Instances.Groupoids
 import Cubical.Container.Base
 import Cubical.Container.Constructions
 -- import Cubical.Container.GenOperad

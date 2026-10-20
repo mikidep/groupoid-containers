@@ -11,20 +11,20 @@ open import Cubical.WildCat.NaturalTransformation.Base
 module Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit 
   (ℓ : Level) where
 
-open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ
-open import Cubical.Bicategory.Copresheaf ℓ
-open import Cubical.Bicategory.Instances.Copresheaf ℓ
+open import Cubical.LU2C.Base
+open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ
+open import Cubical.LU2C.Copresheaf ℓ
+open import Cubical.LU2C.Instances.Copresheaf ℓ
 
 open import Prelude.Reassoc
 open import Prelude.ExtraGpdLaws
 
-open BicatSyntax {{...}}
+open LU2CSyntax {{...}}
 
 private
   _⊗₀_ = compEndo₀
   _⊗₁_ = compEndo₁
-  GpdEndoBicat = CopshBicat GPD
+  GpdEndoLU2C = CopshLU2C HGpd
 
 module _ (F : GpdEndo) where
   open WildNatTrans
@@ -44,10 +44,10 @@ module _ (F : GpdEndo) where
 
 module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
 
-  open Bicategory GPD using () renaming (str to ⟨GPD⟩)
+  open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
 
-  open BicatSynInstBC GPD
-  open BicatSynInstBC GpdEndoBicat
+  open LU2CSyn2C HGpd
+  open LU2CSyn2C GpdEndoLU2C
   
   open WildNatTrans (α .fst) using ()
     renaming (N-ob to α₀; N-hom to α□)
@@ -57,7 +57,7 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
     module F = Copresheaf F
     module G = Copresheaf G
 
-  open BicatReassoc ⟨GPD⟩
+  open LU2CReassoc ⟨HGpd⟩
 
   iMG-lUnit-hom : (idPseudonatTrans idEndo ⊗₁ α) ⋆ λ₀ G ≡ λ₀ F ⋆ α
   iMG-lUnit-hom = PseudonatTrans≡ $ makeNatTransPath 
@@ -65,7 +65,7 @@ module _ {F G : GpdEndo} (α : PseudonatTrans F G) where
     λ f → aux f
     where
     aux : 
-      ∀ {x y} (f : GPD [ x , y ])
+      ∀ {x y} (f : HGpd [ x , y ])
       → Square
         (((sym (F.F-seq f id) ∙ refl ∙ F.F-seq id f) ▹ α₀ y
             ∙ F.F₁ id ◃ α□ f) 

@@ -3,15 +3,15 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Container.Base
 import Cubical.Container.Constructions as CC
 import Cubical.WildCat.Instances.Container as WC
-import Cubical.Bicategory.Base as BB
+import Cubical.LU2C.Base as BB
 
 module Cubical.Container.Monoid.Definition (T : Container) where
 
 -- open CC.Morphisms
 open CC.Monoidal
 
-open BB.BicatSyntax {{...}}
-open BB.BicatSynInstWC WC.ContainerWildCat
+open BB.LU2CSyntax {{...}}
+open BB.LU2CSynWC WC.ContainerWildCat
 
 infixr 50 _⨾₂_
 _⨾₂_ : ∀ {F G H K : Container}
@@ -50,7 +50,7 @@ record Pseudomonoid : Type where
 
     -- Equations on 2-cells
     -- Adapted from: Day & Street
-    -- Monoidal Bicategories and Hopf Algebroids
+    -- Monoidal LU2Cegories and Hopf Algebroids
     -- DOI: 10.1006/aima.1997.1649
     -- Sect. 3, though those equations are for a
     -- Gray-monoid, where ̰̰_⨾_ is strictly associative.

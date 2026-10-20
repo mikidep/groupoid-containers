@@ -12,7 +12,6 @@ private
 
 module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
   module _ {F G : WildFunctor C D} where
-
     open WildCat
     open WildFunctor
     open WildNatTrans
@@ -82,6 +81,32 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
       → Square p q r s
     makeNatTransSquare ob-□ hom-□ i j .N-ob = ob-□ i j
     makeNatTransSquare ob-□ hom-□ i j .N-hom = hom-□ i j
+
+    open WildFunctor F renaming 
+      ( F-ob to F₀
+      ; F-hom to F₁
+      )
+    open WildFunctor G renaming 
+      ( F-ob to G₀
+      ; F-hom to G₁
+      ; F-id to G-id
+      ; F-seq to G-seq
+      )
+    natTransSquareGpdHom : 
+      ∀ {p : α ≡ β}
+      → {q : γ ≡ δ}
+      → {r : α ≡ γ}
+      → {s : β ≡ δ}
+      → (∀ {a b} → isGroupoid (D [ a , b ]))
+      → (ob□ : Square (cong N-ob p) (cong N-ob q) (cong N-ob r) (cong N-ob s))
+      → Square p q r s
+    natTransSquareGpdHom {p} {q} {r} {s} isGpdHom ob□ = makeNatTransSquare
+        ob□
+        (isSet→SquareP
+          (λ i j → isSetImplicitΠ2 λ x y → isSetΠ
+            λ (f : C [ x , y ]) → isGpdHom (F₁ f ⋆⟨ D ⟩ ob□ i j y) (ob□ i j x ⋆⟨ D ⟩ G₁ f))
+          (cong N-hom p) (cong N-hom q) (cong N-hom r) (cong N-hom s)
+        )
 
 module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓE'} where
   module _ {F G : WildFunctor C D} 

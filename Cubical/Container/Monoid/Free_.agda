@@ -412,7 +412,7 @@ private module Free where
 --     assoc′ = S*-elim B unit′ sup′
 --
 --   import Cubical.WildCat.Instances.Container as WC
---   import Cubical.Bicategory.Base as BB
+--   import Cubical.LU2C.Base as BB
 --   open BB.Whiskering WC.ContainerWildCat
 --
 --   lrUnit-coh :

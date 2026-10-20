@@ -11,10 +11,10 @@ open import Cubical.WildCat.NaturalTransformation.Base
 module Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit 
   (ℓ : Level) where
 
-open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ
-open import Cubical.Bicategory.Copresheaf ℓ
-open import Cubical.Bicategory.Instances.Copresheaf ℓ
+open import Cubical.LU2C.Base
+open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ
+open import Cubical.LU2C.Copresheaf ℓ
+open import Cubical.LU2C.Instances.Copresheaf ℓ
 
 open import Prelude.Reassoc
 open import Prelude.ExtraGpdLaws
@@ -22,11 +22,11 @@ open import Prelude.ExtraGpdLaws
 private
   _⊗₀_ = compEndo₀
   _⊗₁_ = compEndo₁
-  GpdEndoBicat = CopshBicat GPD
+  GpdEndoLU2C = CopshLU2C HGpd
 
-open BicatSyntax {{...}}
+open LU2CSyntax {{...}}
 
-open BicatSynInstBC GpdEndoBicat
+open LU2CSyn2C GpdEndoLU2C
 
 module _ (F : GpdEndo) where
   open WildNatTrans

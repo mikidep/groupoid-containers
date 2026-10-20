@@ -70,7 +70,7 @@ private module ⊗CohSides (F : WildFunctor C D) where
 
   F[-]⊗F[-] F[-⊗-] : WildFunctor (C × C) D
   
-  F[-]⊗F[-] = comp-WildFunctor (ProdFunctor F F) _⊗ᵈ_
+  F[-]⊗F[-] = comp-WildFunctor (F ×₁ F) _⊗ᵈ_
   F[-⊗-] = comp-WildFunctor _⊗ᶜ_ F
 
 record IsMonoidal (F : WildFunctor C D) 

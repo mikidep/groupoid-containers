@@ -13,10 +13,10 @@ open import Cubical.WildCat.NaturalTransformation.Base
 module Cubical.WildCat.Monoidal.Instances.GpdEndo.Assoc
   (ℓ : Level) where
 
-open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ
-open import Cubical.Bicategory.Copresheaf ℓ
-open import Cubical.Bicategory.Instances.Copresheaf ℓ
+open import Cubical.LU2C.Base
+open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ
+open import Cubical.LU2C.Copresheaf ℓ
+open import Cubical.LU2C.Instances.Copresheaf ℓ
 
 open import Prelude.Reassoc
 open import Prelude.ExtraGpdLaws
@@ -24,13 +24,13 @@ open import Prelude.ExtraGpdLaws
 private
   _⊗₀_ = compEndo₀
   _⊗₁_ = compEndo₁
-  GpdEndoBicat = CopshBicat GPD
+  GpdEndoLU2C = CopshLU2C HGpd
 
-open BicatSyntax {{...}}
+open LU2CSyntax {{...}}
 
-open Bicategory GPD using () renaming (str to ⟨GPD⟩)
-open BicatSynInstBC GPD
-open BicatSynInstBC GpdEndoBicat
+open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
+open LU2CSyn2C HGpd
+open LU2CSyn2C GpdEndoLU2C
   
 module _ (F G H : GpdEndo) where
   open WildNatTrans
@@ -107,7 +107,7 @@ module _ {F G H F′ G′ H′ : GpdEndo}
     λ f → aux f
     where
     aux : 
-      ∀ {X Y} (f : GPD [ X , Y ])
+      ∀ {X Y} (f : HGpd [ X , Y ])
       → Square {! !} {!  !} {! !} {! !}
     aux f = {! !}
 

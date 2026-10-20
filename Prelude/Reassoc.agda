@@ -97,7 +97,7 @@ abstract
 
 open import Cubical.WildCat.Base
 
-module BicatReassoc {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
+module LU2CReassoc {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
 
   infixr 41 _◃′_

@@ -1,0 +1,86 @@
+open import Cubical.Foundations.Prelude
+
+module Cubical.LU2C.Instances.Copresheaf (ℓ : Level) where
+
+open import Cubical.LU2C.Base
+open import Cubical.LU2C.Copresheaf ℓ
+open import Cubical.Foundations.GroupoidLaws
+open import Prelude.ExtraGpdLaws
+
+private
+  variable
+    ℓC ℓC' : Level
+
+module _ (C : LU2C ℓC ℓC') where
+  open import Cubical.WildCat.Base
+  open import Cubical.WildCat.NaturalTransformation.Base
+    using () renaming (makeNatTransPath to WNatTrans≡)
+  open import Cubical.WildCat.Functor
+
+  module _ where
+    open WildCat
+    open WildNatTrans
+
+    CopshWildCat : WildCat _ _
+    CopshWildCat .ob = Copresheaf C
+    CopshWildCat .Hom[_,_] F G = PseudonatTrans F G
+    CopshWildCat .id = idPseudonatTrans _
+    CopshWildCat ._⋆_ = compPseudonatTrans
+    CopshWildCat .⋆IdL (α , _) = PseudonatTrans≡
+      (WNatTrans≡
+        refl
+        λ f → sym (lUnit (α .N-hom f))
+      )
+    CopshWildCat .⋆IdR (α , _) = PseudonatTrans≡
+      (WNatTrans≡
+        refl
+        λ f → sym (rUnit (α .N-hom f))
+      )
+    CopshWildCat .⋆Assoc (α , _) (β , _) (γ , _) = PseudonatTrans≡
+      (WNatTrans≡
+        refl
+        λ f →
+          cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
+          ∙ sym assoc-inf
+      )
+      where open import Prelude
+
+  module _ where
+    open IsLU2C
+    
+    open LU2CSyntax {{...}}
+    open LU2CSynWC CopshWildCat
+
+    open import Cubical.Foundations.Path
+    open import Prelude.Square
+
+    isLU2CCopsh : IsLU2C CopshWildCat
+    isLU2CCopsh .triangle α β = sym (PathP→compPathR∙∙
+        (PseudonatTrans□ (funExtSquare λ X → funExtSquare λ x → refl)) )
+    isLU2CCopsh .pentagon α β γ δ = PseudonatTrans□ goal
+      where
+      open WildNatTrans
+      open import Prelude
+      N₀ : ∀ {a b : Copresheaf C} → PseudonatTrans a b → _
+      N₀ = fst » N-ob
+      midpath : N₀ (((α ⋆ β) ⋆ γ) ⋆ δ) ≡ N₀ (α ⋆ (β ⋆ (γ ⋆ δ)))
+      midpath = refl
+      goal =
+          cong N₀ (⋆Assoc α β γ ▹ δ ∙ ⋆Assoc α (β ⋆ γ) δ ∙ α ◃ ⋆Assoc β γ δ)
+        ≡⟨ congFunct N₀ (⋆Assoc α β γ ▹ δ) _ ⟩
+          cong N₀ (⋆Assoc α β γ ▹ δ) ∙ cong N₀ (⋆Assoc α (β ⋆ γ) δ ∙ α ◃ ⋆Assoc β γ δ)
+        ≡⟨ cong (cong N₀ (⋆Assoc α β γ ▹ δ) ∙_) (congFunct N₀ (⋆Assoc α (β ⋆ γ) δ) _) ⟩
+          cong N₀ (⋆Assoc α β γ ▹ δ) ∙ cong N₀ (⋆Assoc α (β ⋆ γ) δ) ∙ cong N₀ (α ◃ ⋆Assoc β γ δ)
+        ≡⟨ PathP→compPathL refl ⟩
+          midpath
+        ≡⟨ PathP→compPathR∙∙ refl ⟩
+          cong N₀ (⋆Assoc (α ⋆ β) γ δ) ∙ cong N₀ (⋆Assoc α β (γ ⋆ δ))
+        ≡⟨ sym (congFunct N₀ (⋆Assoc (α ⋆ β) γ δ) _) ⟩
+          cong N₀ (⋆Assoc (α ⋆ β) γ δ ∙ ⋆Assoc α β (γ ⋆ δ))
+        ∎
+    isLU2CCopsh .isGpdHom = isGroupoidPseudonatTrans
+
+  open LU2C
+  CopshLU2C : LU2C _ _
+  CopshLU2C .str = CopshWildCat
+  CopshLU2C .isLU2C = isLU2CCopsh

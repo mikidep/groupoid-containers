@@ -7,11 +7,11 @@ module Cubical.WildCat.Monoidal.Instances.Container.Extent where
 
 open import Cubical.WildCat.Functor using (WildNatTrans)
 
-open import Cubical.Bicategory.Base
-open import Cubical.Bicategory.Pseudofunctor using (Pseudofunctor)
-open import Cubical.Bicategory.Copresheaf ℓ-zero
-open import Cubical.Bicategory.Instances.Container
-open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ-zero
+open import Cubical.LU2C.Base
+open import Cubical.LU2C.Pseudofunctor using (Pseudofunctor)
+open import Cubical.LU2C.Copresheaf ℓ-zero
+open import Cubical.LU2C.Instances.GpdCont
+open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ-zero
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.NaturalTransformation.Base
 open import Cubical.WildCat.Monoidal.Functor
@@ -26,8 +26,8 @@ open wildIsIso
 
 module E = Pseudofunctor Extent.Extent
 
-open BicatSyntax {{...}}
-open BicatSynInstBC GPD
+open LU2CSyntax {{...}}
+open LU2CSyn2C HGpd
 
 Extent : StrongMonoidalFunctor 
   (GpdContWildCat , isMonoidalGpdCont) 

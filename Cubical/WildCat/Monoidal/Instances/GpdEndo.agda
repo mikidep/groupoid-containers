@@ -6,16 +6,16 @@ open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 open import Cubical.WildCat.NaturalTransformation.Base
 
-open import Cubical.Bicategory.Base 
-open import Cubical.Bicategory.Copresheaf ℓ-zero
-open import Cubical.Bicategory.Instances.Copresheaf ℓ-zero
-open import Cubical.Bicategory.Copresheaf.EndoConstructions ℓ-zero
+open import Cubical.LU2C.Base 
+open import Cubical.LU2C.Copresheaf ℓ-zero
+open import Cubical.LU2C.Instances.Copresheaf ℓ-zero
+open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ-zero
 
 module Cubical.WildCat.Monoidal.Instances.GpdEndo where
 
-private module GPD = Bicategory GPD
-open BicatSyntax {{...}}
-open BicatSynInstBC GPD
+private module HGpd = LU2C HGpd
+open LU2CSyntax {{...}}
+open LU2CSyn2C HGpd
 
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit ℓ-zero
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit ℓ-zero
@@ -35,7 +35,7 @@ module _ where
   isMonoidalGpdEndo .⊗lUnit = iMG-lUnit
   isMonoidalGpdEndo .⊗rUnit = iMG-rUnit
   isMonoidalGpdEndo .⊗triangle F G = PseudonatTrans≡ $ makeNatTransPath refl 
-    λ {x y : GPD.ob} (f : GPD [ x , y ]) → 
+    λ {x y : HGpd.ob} (f : HGpd [ x , y ]) → 
       refl 
       ∙ (sym (G.F-seq (F₁ f) id) 
         ∙ refl ∙ G.F-seq id (F₁ f)) 
@@ -51,7 +51,7 @@ module _ where
     module F = Copresheaf F
     module G = Copresheaf G
     open F using (F₁)
-    reass₁ : ∀ {x y : GPD.ob} (f : GPD [ x , y ]) → _
+    reass₁ : ∀ {x y : HGpd.ob} (f : HGpd [ x , y ]) → _
     reass₁ f = reassoc 
       ( refl′ 
       ∙′ (↑ sym (G.F-seq (F₁ f) id) 
