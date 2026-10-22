@@ -28,6 +28,7 @@ open WildNatIso
 open wildIsIso
 
 open import Prelude
+open import CubicalCompat.Reflection.Reassoc
 
 private module iMC where
   _⊗_ : WildFunctor 
@@ -70,24 +71,10 @@ isMonoidalContainer .𝟙 = iMC.𝟙
 isMonoidalContainer .⊗assoc = iMC.⊗assoc 
 isMonoidalContainer .⊗lUnit = iMC.⊗lUnit
 isMonoidalContainer .⊗rUnit = iMC.⊗rUnit
-isMonoidalContainer .⊗triangle = makeNatTransPath 
-  refl λ _ → reassoc
-      (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
-        ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
-      (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
-      refl
-  where
-  open import Prelude.Reassoc
-isMonoidalContainer .⊗pentagon = makeNatTransPath 
-  refl λ _ → reassoc
-    (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
-      ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
-      ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ 
-      ∙′ refl′ ∙′ refl′ ∙′ refl′)
-    (refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′ ∙′ refl′)
-    refl
-  where
-  open import Prelude.Reassoc
+isMonoidalContainer .⊗triangle = makeNatTransPath
+  refl λ _ → reassoc!
+isMonoidalContainer .⊗pentagon = makeNatTransPath
+  refl λ _ → reassoc!
 
 MonContainer : MonoidalWildCat _ _
 MonContainer = ContainerWildCat , isMonoidalContainer

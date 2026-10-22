@@ -1,5 +1,6 @@
 open import Cubical.Foundations.Prelude
 open import Cubical.WildCat.Base hiding (_[_,_])
+open import Cubical.WildCat.AsLU2C.Instances
 open import Cubical.LU2C.Base
 
 open import Cubical.Foundations.HLevels
@@ -11,8 +12,6 @@ open import Prelude.Reassoc
 
 module Cubical.LU2C.Properties {ℓ ℓ′ : Level} where 
   
-open LU2CSyntax {{...}}
-
 module _ (C : WildCat ℓ ℓ′) where
   open IsLU2C
   isPropIsLU2C : isProp (IsLU2C C)
@@ -24,7 +23,7 @@ module _ (C : LU2C ℓ ℓ′) where
   open LU2C C using (triangle; pentagon) 
     renaming (ob to C₀)
 
-  open LU2CSyn2C C
+  open Not2C C
   open LU2CReassoc (LU2C.str C)
 
   private variable

@@ -1,4 +1,5 @@
-open import Prelude
+open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.GroupoidLaws
 
 module Cubical.LU2C.Pseudofunctor where
 
@@ -6,127 +7,12 @@ open import Cubical.LU2C.Base hiding (_[_,_])
 open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor
 
+open import Cubical.WildCat.AsLU2C.Instances
+import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
+
 private
   variable
     ℓC ℓC' ℓD ℓD' : Level
-
-open LU2CSyntax {{...}}
-
-module 2FunctNotation {C : WildCat ℓC ℓC'}
-  {D : WildCat ℓD ℓD'} (F : WildFunctor C D) where
-
-  open import Cubical.WildCat.Base using (_[_,_])
-  open import Cubical.Foundations.GroupoidLaws
-  open import Prelude.ExtraGpdLaws
-  
-  open LU2CSynWC C
-  open LU2CSynWC D
-
-  open WildFunctor F using (
-      F-id;
-      F-seq
-    ) renaming (
-      F-ob to F₀; F-hom to F₁
-    ) public
-
-  F₂ : ∀ {X} {Y} {f g : C [ X , Y ]}
-    (f≡g : f ≡ g)
-    → F₁ f ≡ F₁ g
-  F₂ = cong F₁
-
-  F₂-funct : ∀ {x y}
-    {f g h : C [ x , y ]}
-    (α : f ≡ g)
-    (β : g ≡ h)
-    → F₂ (α ∙ β) ≡ F₂ α ∙ F₂ β
-  F₂-funct = congFunct F₁
-
-  F□ : ∀ {x y z w}
-    {f : C [ x , y ]}
-    {g : C [ y , z ]}
-    {h : C [ x , w ]}
-    {k : C [ w , z ]}
-    → f ⋆ g ≡ h ⋆ k
-    → F₁ f ⋆ F₁ g ≡ F₁ h ⋆ F₁ k
-  F□ {f} {g} {h} {k} sq =
-    sym (F-seq f g)
-    ∙ F₂ sq
-    ∙ F-seq h k
-
-  F-seq-nat : ∀ {x y z}
-      {f f′ : C [ x , y ]}
-      {g g′ : C [ y , z ]}
-      (p : f ≡ f′)
-      (q : g ≡ g′)
-    → F-seq f g
-      ∙ F₂ p ⋆₂ F₂ q
-      ≡ F₂ (p ⋆₂ q)
-      ∙ F-seq f′ g′
-  F-seq-nat {x} {y} {z} {f} {g} p q = J2 Q r p q
-    where
-    Q :
-      (f' : C [ x , y ])
-      (p' : f ≡ f')
-      (g' : C [ y , z ])
-      (q' : g ≡ g')
-      → Type ℓD'
-    Q f' p' g' q' =
-      F-seq f g
-      ∙ F₂ p' ⋆₂ F₂ q'
-      ≡ F₂ (p' ⋆₂ q')
-      ∙ F-seq f' g'
-    r = sym (rUnit _) ∙ lUnit _
-
-  F□-◃ : ∀ {x y z}
-    {f : C [ x , y ]}
-    {g h : C [ y , z ]}
-    (g≡h : g ≡ h)
-    → F□ (f ◃ g≡h)
-      ≡ F₁ f ◃ F₂ g≡h
-  F□-◃ g≡h =
-    shuffleSymL (sym (F-seq-nat refl g≡h))
-
-  F□-▹ : ∀ {x y z}
-    {f g : C [ x , y ]}
-    {h : C [ y , z ]}
-    (f≡g : f ≡ g)
-    → F□ (f≡g ▹ h)
-      ≡ F₂ f≡g ▹ F₁ h
-  F□-▹ f≡g =
-    shuffleSymL (sym (F-seq-nat f≡g refl))
-
-  -- In other words...
-  F₂-◃ : ∀ {x y z}
-    {f : C [ x , y ]}
-    {g h : C [ y , z ]}
-    (g≡h : g ≡ h)
-    → F₂ (f ◃ g≡h)
-      ≡ F-seq f g
-      ∙ F₁ f ◃ F₂ g≡h
-      ∙ sym (F-seq f h)
-  F₂-◃ g≡h =
-    shuffleSymR (sym (shuffleSymL (sym (F□-◃ g≡h))))
-    ∙ sym assoc-inf
-
-  F₂-▹ : ∀ {x y z}
-    {f g : C [ x , y ]}
-    {h : C [ y , z ]}
-    (f≡g : f ≡ g)
-    → F₂ (f≡g ▹ h)
-      ≡ F-seq f h
-      ∙ F₂ f≡g ▹ F₁ h
-      ∙ sym (F-seq g h)
-  F₂-▹ f≡g =
-    shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
-    ∙ sym assoc-inf
-
-  -- reassoc helper
-  open import Prelude.Reassoc
-  F₂′ : ∀ {X} {Y} {f g : C [ X , Y ]}
-    (f≡g : Term f g)
-    → Term (F₁ f) (F₁ g)
-  F₂′ = cong′ F₁ 
-
 
 module _ {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
@@ -134,15 +20,13 @@ module _ {C : WildCat ℓC ℓC'}
 
   open import Cubical.WildCat.Base using (_[_,_])
 
-  open LU2CSynWC C
-  open LU2CSynWC D
-
-  open import Cubical.Foundations.GroupoidLaws
+  open NotWC C
+  open NotWC D
 
   open WildNatTrans α using ()
     renaming (N-ob to α₀; N-hom to α□)
-  open 2FunctNotation F using (F₁; F₂)
-  open 2FunctNotation G using ()
+  open NotF F using (F₁; F₂)
+  open NotF G using ()
     renaming (
       F₁ to G₁;
       F₂ to G₂
@@ -168,15 +52,15 @@ module _ {C : WildCat ℓC ℓC'}
 
   open import Cubical.WildCat.Base using (_[_,_])
 
-  open LU2CSynWC C
-  open LU2CSynWC D
+  open NotWC C
+  open NotWC D
 
   open WildNatTrans α using ()
     renaming (N-ob to α₀; N-hom to α□)
   open WildNatTrans β using ()
     renaming (N-ob to β₀; N-hom to β□)
-  open 2FunctNotation F using (F₁; F₂)
-  open 2FunctNotation G using ()
+  open NotF F using (F₁; F₂)
+  open NotF G using ()
     renaming (
       F₁ to G₁;
       F₂ to G₂
@@ -224,9 +108,9 @@ module _ (C : LU2C ℓC ℓC')
     (F : WildFunctor C.str D.str)
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
 
-    open LU2CSyn2C C
-    open LU2CSyn2C D
-    open 2FunctNotation F
+    open NotWC C.str
+    open NotWC D.str
+    open NotF F
 
     field
       F-IdL : ∀ {x y} {f : C [ x , y ]}
@@ -255,7 +139,7 @@ module _ (C : LU2C ℓC ℓC')
     field
       str : WildFunctor C.str D.str
       isPseudofunctor : IsPseudofunctor str
-    open 2FunctNotation str public
+    open NotF str public
     open IsPseudofunctor isPseudofunctor public
 
 module _ {C : LU2C ℓC ℓC'} {D : LU2C ℓD ℓD'}
@@ -267,8 +151,8 @@ module _ {C : LU2C ℓC ℓC'} {D : LU2C ℓD ℓD'}
     module C = LU2C C
     module D = LU2C D
 
-  open LU2CSyn2C C
-  open LU2CSyn2C D
+  open Not2C C
+  open Not2C D
 
   open Pseudofunctor using () renaming (str to ⟨_⟩)
 

@@ -5,11 +5,11 @@ open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
 open import Cubical.WildCat.Product
 
-open import Cubical.WildCat.WithPred 
-  -- hiding (ℙ)
 open import Cubical.LU2C.Base
 
 module Cubical.LU2C.PropRestricts where
+
+open import Cubical.WildCat.WithPred 
 
 private
   variable

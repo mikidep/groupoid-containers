@@ -1,9 +1,12 @@
-open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.Prelude 
+  -- hiding (Σ; _,_)
 open import Cubical.LU2C.Base
 open import Cubical.LU2C.PropRestricts
 open import Cubical.WildCat.Instances.Types
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Foundations.HLevels
+
+-- open Σ
 
 module Cubical.LU2C.Instances.Groupoids (ℓ : Level) where
 

@@ -108,6 +108,20 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
           (cong N-hom p) (cong N-hom q) (cong N-hom r) (cong N-hom s)
         )
 
+  module _ {F G : WildFunctor C D} where
+    isGroupoidWildNatTransGpdHom : 
+      (∀ {a b} → isGroupoid (D [ a , b ]))
+      → isGroupoid (WildNatTrans _ _ F G)
+    isGroupoidWildNatTransGpdHom isGpdHom = isOfHLevelRespectEquiv 3 
+      (invEquiv WildNatTransEquivΣ)
+      (isGroupoidΣ (isGroupoidΠ λ _ → isGpdHom)
+        λ x → isSet→isGroupoid (isSetImplicitΠ2
+          λ _ _ → isSetΠ λ f → isGpdHom _ _
+        )
+      )
+      where
+      open import Cubical.Foundations.Equiv
+
 module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓE'} where
   module _ {F G : WildFunctor C D} 
       (α : WildNatTrans _ _ F G) (H : WildFunctor D E) where

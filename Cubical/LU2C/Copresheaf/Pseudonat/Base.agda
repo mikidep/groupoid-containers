@@ -13,13 +13,11 @@ open import Cubical.WildCat.Instances.WildCopresheaf as WC
 open import Cubical.LU2C.Base
 open import Cubical.LU2C.Copresheaf.Base ℓ
 open import Cubical.WildCat.NaturalTransformation.Base
-  using (makeNatTransSquare)
+  using (makeNatTransSquare; isGroupoidWildNatTransGpdHom)
 
 private
   variable
     ℓC ℓC' : Level
-
-open LU2CSyntax {{...}}
 
 private module HGpd = LU2C HGpd
 
@@ -163,19 +161,8 @@ module _ {C : LU2C ℓC ℓC'} where
 
     open import Cubical.Foundations.HLevels
 
-    isGroupoidWildNatTrans : isGroupoid (WildNatTrans _ _ ⟨F⟩ ⟨G⟩)
-    isGroupoidWildNatTrans = isOfHLevelRespectEquiv 3 (invEquiv WildNatTransEquivΣ)
-      (isGroupoidΣ (isGroupoidΠ λ _ → HGpd.isGpdHom)
-        λ x → isSet→isGroupoid (isSetImplicitΠ2
-          λ _ _ → isSetΠ λ f → HGpd.isGpdHom _ _
-        )
-      )
-      where
-      open import Cubical.Foundations.Equiv
-      open import Cubical.WildCat.NaturalTransformation.Base
-
     isGroupoidPseudonatTrans : isGroupoid (PseudonatTrans F G)
     isGroupoidPseudonatTrans = isGroupoidΣ
-      isGroupoidWildNatTrans
+      (isGroupoidWildNatTransGpdHom HGpd.isGpdHom)
       λ _ → isProp→isOfHLevelSuc 2 (isPropIsPseudonat _)
 

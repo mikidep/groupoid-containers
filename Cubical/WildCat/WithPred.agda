@@ -1,5 +1,5 @@
-open import Cubical.Foundations.Prelude
--- open import Cubical.Foundations.Powerset
+open import Cubical.Foundations.Prelude 
+  -- hiding (Σ; fst; snd; _,_)
 open import Cubical.Foundations.HLevels
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
@@ -12,6 +12,18 @@ private
     ℓC ℓC' ℓD ℓD' : Level
 
 open WildCat
+
+-- record Σ {ℓ ℓ'} (A : Type ℓ) (B : A → Type ℓ') : Type (ℓ-max ℓ ℓ') where
+--   no-eta-equality
+--   constructor _,_
+--   pattern
+--   field
+--     fst : A
+--     snd : B fst
+--
+-- open Σ 
+--
+-- infixr 4 _,_
 
 ℙ : Type ℓC → Type (ℓ-suc ℓC)
 ℙ X = X → Type _
@@ -34,6 +46,6 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'}
                → (∀ c → P c → Q (F .F-ob c))
                → WildFunctor (ΣPredWildCat C P) (ΣPredWildCat D Q)
   ΣPredWildFunct F FPres .F-ob (c , c∈P) = F .F-ob c , FPres c c∈P
-  ΣPredWildFunct F FPres .F-hom = F .F-hom
-  ΣPredWildFunct F FPres .F-id = F .F-id
-  ΣPredWildFunct F FPres .F-seq = F .F-seq
+  ΣPredWildFunct F FPres .F-hom {(x , _)} {(y , _)} = F .F-hom
+  ΣPredWildFunct F FPres .F-id {(x , _)} = F .F-id
+  ΣPredWildFunct F FPres .F-seq {(x , _)} {(y , _)} {(z , _)}= F .F-seq

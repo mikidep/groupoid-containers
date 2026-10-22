@@ -2,13 +2,13 @@ open import Cubical.Foundations.Prelude
 
 module Cubical.LU2C.Copresheaf.Base (ℓ : Level) where
 
-open import Cubical.LU2C.Base
+open import Cubical.LU2C.Base hiding (_[_,_])
 open import Cubical.LU2C.Instances.Groupoids ℓ
 import Cubical.LU2C.Pseudofunctor
 
-module 2FunctNotation = Cubical.LU2C.Pseudofunctor.2FunctNotation
-
-open import Cubical.WildCat.Base hiding (_[_,_])
+open import Cubical.WildCat.Base
+open import Cubical.WildCat.AsLU2C.Instances
+import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
 open import Cubical.WildCat.Functor
 
 private
@@ -21,14 +21,12 @@ private
 -- f ⋆ g ◃ p ≡def f ◃ g ◃ p
 -- and viceversa
 
-open LU2CSyntax {{...}}
-
 private module HGpd = LU2C HGpd
 
 open LU2C HGpd using ()
   renaming (str to ⟨HGpd⟩)
 
-open LU2CSyn2C HGpd
+open Not2C HGpd
 
 module _ (C : LU2C ℓC ℓC') where
   private module C = LU2C C
@@ -36,39 +34,52 @@ module _ (C : LU2C ℓC ℓC') where
   open C using ()
     renaming (str to ⟨C⟩)
 
-  open LU2CSyn2C C
+  open Not2C C
 
   record Is2Copresheaf
     (F : WildFunctor ⟨C⟩ ⟨HGpd⟩)
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-suc ℓ)) where
-    open 2FunctNotation F
+    open NotF F
     field
-      F-IdL : ∀ {x y} (f : C [ x , y ])
+      F-IdL : ∀ {x y} (f : ⟨C⟩ [ x , y ])
         → F-seq id f
-          ∙ F-id ▹ F₁ f
+          ∙ _▹_ 
+            {a = F₀ x} {b = F₀ x} {c = F₀ y} 
+            F-id 
+            (F₁ f)
           ≡ F₂ (⋆IdL f)
-      F-IdR : ∀ {x y} (f : C [ x , y ])
+      F-IdR : ∀ {x y} (f : ⟨C⟩ [ x , y ])
         → F-seq f id
-          ∙ F₁ f ◃ F-id
+          ∙ _◃_ 
+            {a = F₀ x} {b = F₀ y} {c = F₀ y} 
+            (F₁ f)
+            F-id
           ≡ F₂ (⋆IdR f)
       F-Assoc : ∀ {x y z w}
-        (f : C [ x , y ])
-        (g : C [ y , z ])
-        (h : C [ z , w ])
+        (f : ⟨C⟩ [ x , y ])
+        (g : ⟨C⟩ [ y , z ])
+        (h : ⟨C⟩ [ z , w ])
         → F-seq (f ⋆ g) h
-          ∙ F-seq f g ▹ F₁ h
+          ∙ _▹_ 
+            {a = F₀ x} {b = F₀ z} {c = F₀ w} 
+            (F-seq f g) 
+            (F₁ h)
           ≡ F₂ (⋆Assoc f g h)
           ∙ F-seq f (g ⋆ h)
-          ∙ F₁ f ◃ F-seq g h
+          ∙ _◃_ 
+            {a = F₀ x} {b = F₀ y} {c = F₀ w} 
+            (F₁ f)
+            (F-seq g h)
 
   module _ {F : WildFunctor ⟨C⟩ ⟨HGpd⟩} where
+    open NotF F
     open import Cubical.Foundations.HLevels
     open Is2Copresheaf
     isPropIs2Copresheaf : isProp (Is2Copresheaf F)
     isPropIs2Copresheaf is₁ is₂ i = record where
-      F-IdL f = HGpd.isGpdHom _ _ _ _ (is₁ .F-IdL f) (is₂ .F-IdL f) i
-      F-IdR f = HGpd.isGpdHom _ _ _ _ (is₁ .F-IdR f) (is₂ .F-IdR f) i
-      F-Assoc f g h = HGpd.isGpdHom _ _ _ _ 
+      F-IdL {x} {y} f = HGpd.isGpdHom {a = F₀ x} {b = F₀ y} _ _ _ _ (is₁ .F-IdL f) (is₂ .F-IdL f) i
+      F-IdR {x} {y} f = HGpd.isGpdHom {a = F₀ x} {b = F₀ y} _ _ _ _ (is₁ .F-IdR f) (is₂ .F-IdR f) i
+      F-Assoc {x} {y} {z} {w} f g h = HGpd.isGpdHom {a = F₀ x} {b = F₀ w} _ _ _ _ 
         (is₁ .F-Assoc f g h) (is₂ .F-Assoc f g h) i
 
   record Copresheaf
@@ -76,7 +87,7 @@ module _ (C : LU2C ℓC ℓC') where
     field
       str : WildFunctor ⟨C⟩ ⟨HGpd⟩
       is2Copresheaf : Is2Copresheaf str
-    open 2FunctNotation str public
+    open NotF str public
     open Is2Copresheaf is2Copresheaf public
 
   -- module _ {F G : Copresheaf} where
