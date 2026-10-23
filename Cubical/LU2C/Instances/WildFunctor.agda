@@ -17,7 +17,6 @@ private
   variable
     ℓC ℓC' ℓD ℓD' : Level
 
-
 module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
   private 
     module W = WildCat
@@ -26,7 +25,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
 
   open Not2C D
 
-  open import Cubical.LU2C.Instances.WildFunctor.WildCat
+  open import Cubical.WildCat.Instances.WildFunctLU2C
   open IsLU2C
 
   WildFunctLU2C : LU2C _ _ 

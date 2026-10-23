@@ -12,12 +12,10 @@ open import Cubical.WildCat.AsLU2C.Notation C
 
 open WildCat C using (ob)
 
-private variable
-  a b c : ob
-  f f′ f″ : C [ a , b ]
-  g g′ g″ : C [ b , c ]
-
 ◃-∙ : 
+  {a b c : ob}
+  {f : C [ a , b ]}
+  {g g′ g″ : C [ b , c ]}
   (p : g ≡ g′)
   (q : g′ ≡ g″)
   → f ◃ (p ∙ q)
@@ -25,6 +23,9 @@ private variable
 ◃-∙ {f} p q = congFunct (f ⋆_) p q
 
 ▹-∙ : 
+  {a b c : ob}
+  {f f′ f″ : C [ a , b ]}
+  {g : C [ b , c ]}
   (p : f ≡ f′)
   (q : f′ ≡ f″)
   → (p ∙ q) ▹ g
@@ -32,6 +33,9 @@ private variable
 ▹-∙ {g} p q = congFunct (_⋆ g) p q
 
 whisk-interchange : 
+  {a b c : ob}
+  {f f′ : C [ a , b ]}
+  {g g′ : C [ b , c ]}
   (p : f ≡ f′)
   (q : g ≡ g′)
   → f ◃ q ∙ p ▹ g′

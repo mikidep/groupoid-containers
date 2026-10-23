@@ -9,7 +9,7 @@ private
   variable
     ℓC ℓC' ℓD ℓD' : Level
 
-open WildCat
+  open WildCat
 open WildNatTrans
 
 idWildNatTrans : {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {F : WildFunctor C D} → WildNatTrans _ _ F F

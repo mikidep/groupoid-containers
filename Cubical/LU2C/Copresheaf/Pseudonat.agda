@@ -1,6 +1,6 @@
 open import Cubical.Foundations.Prelude
 
-module Cubical.LU2C.Copresheaf.Pseudonat (ℓ : Level) where
+module Cubical.LU2C.Copresheaf.Pseudonat where
 
-open import Cubical.LU2C.Copresheaf.Pseudonat.Base ℓ public
-open import Cubical.LU2C.Copresheaf.Pseudonat.Constructions ℓ public
+open import Cubical.LU2C.Copresheaf.Pseudonat.Base public
+open import Cubical.LU2C.Copresheaf.Pseudonat.Constructions public

@@ -10,7 +10,7 @@ import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
 open import Prelude.ExtraGpdLaws
 open import Cubical.Foundations.GroupoidLaws
 
-module Cubical.LU2C.Instances.WildFunctor.WildCat where
+module Cubical.WildCat.Instances.WildFunctLU2C where
 
 private
   variable

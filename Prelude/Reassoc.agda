@@ -99,18 +99,19 @@ open import Cubical.WildCat.Base
 
 module LU2CReassoc {ℓC ℓC'} (WC : WildCat ℓC ℓC') where
   open WildCat WC
+  open import CubicalCompat.Reflection.InferSigma using (inferΣ)
 
   infixr 41 _◃′_
   infixl 40 _▹′_
 
-  _◃′_ : ∀ {a b c : ob}
+  _◃′_ : ∀ {@(tactic inferΣ ob) a b c : ob}
     (f : Hom[ a , b ])
     {g h : Hom[ b , c ]}
     → Term g h
     → Term (f ⋆ g) (f ⋆ h)
   f ◃′ g≡h = cong′ (f ⋆_) g≡h
 
-  _▹′_ : ∀ {a b c : ob}
+  _▹′_ : ∀ {@(tactic inferΣ ob) a b c : ob}
     {f g : Hom[ a , b ]}
     → Term f g
     → (h : Hom[ b , c ])

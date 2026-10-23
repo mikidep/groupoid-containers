@@ -6,15 +6,17 @@ open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 open import Cubical.WildCat.NaturalTransformation.Base
 
+open import Cubical.WildCat.FullSub.Notation
+
 open import Cubical.LU2C.Base 
 open import Cubical.LU2C.Copresheaf ℓ-zero
+open import Cubical.LU2C.Instances.Groupoids ℓ-zero
 open import Cubical.LU2C.Instances.Copresheaf ℓ-zero
 open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ-zero
 
 module Cubical.WildCat.Monoidal.Instances.GpdEndo where
 
 private module HGpd = LU2C HGpd
-open LU2CSyntax {{...}}
 open LU2CSyn2C HGpd
 
 open import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit ℓ-zero

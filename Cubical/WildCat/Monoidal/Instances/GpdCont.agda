@@ -10,7 +10,7 @@ open CC.Monoidal
 
 open import Cubical.WildCat.Instances.GpdCont
 open import Cubical.WildCat.Monoidal.Base
-open import Cubical.WildCat.Monoidal.WithPred
+open import Cubical.WildCat.Monoidal.FullSub
 
 open import Cubical.WildCat.Monoidal.Instances.Container
 
@@ -18,7 +18,7 @@ module Cubical.WildCat.Monoidal.Instances.GpdCont where
 
 MonGpdCont : MonoidalWildCat _ _
 MonGpdCont .fst = GpdContWildCat
-MonGpdCont .snd = isMonΣPred 
+MonGpdCont .snd = isMonFullSub 
   MonContainer 
   IsGpdCont
   record where

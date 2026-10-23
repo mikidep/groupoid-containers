@@ -46,4 +46,4 @@ import Cubical.WildCat.Monoidal.Instances.Terminal
 import Cubical.WildCat.Monoidal.Monoid
 import Cubical.WildCat.NaturalTransformation.Base
 import Cubical.WildCat.Product.Functor
-import Cubical.WildCat.WithPred
+import Cubical.WildCat.FullSub

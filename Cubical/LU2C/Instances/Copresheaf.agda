@@ -3,9 +3,14 @@ open import Cubical.Foundations.Prelude
 module Cubical.LU2C.Instances.Copresheaf (ℓ : Level) where
 
 open import Cubical.LU2C.Base
+open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.LU2C.Copresheaf ℓ
 open import Cubical.Foundations.GroupoidLaws
 open import Prelude.ExtraGpdLaws
+
+open import Cubical.WildCat.FullSub.Notation
+
+open Not2C HGpd
 
 private
   variable
@@ -18,39 +23,53 @@ module _ (C : LU2C ℓC ℓC') where
   open import Cubical.WildCat.Functor
 
   module _ where
-    open WildCat
+    private module W = WildCat
     open WildNatTrans
+    open import Prelude.Reassoc
+    open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
+    open LU2CReassoc ⟨HGpd⟩
 
     CopshWildCat : WildCat _ _
-    CopshWildCat .ob = Copresheaf C
-    CopshWildCat .Hom[_,_] F G = PseudonatTrans F G
-    CopshWildCat .id = idPseudonatTrans _
-    CopshWildCat ._⋆_ = compPseudonatTrans
-    CopshWildCat .⋆IdL (α , _) = PseudonatTrans≡
+    CopshWildCat .W.ob = Copresheaf C
+    CopshWildCat .W.Hom[_,_] F G = PseudonatTrans F G
+    CopshWildCat .W.id = idPseudonatTrans _
+    CopshWildCat .W._⋆_ = compPseudonatTrans
+    CopshWildCat .W.⋆IdL (α , _) = PseudonatTrans≡
       (WNatTrans≡
         refl
         λ f → sym (lUnit (α .N-hom f))
       )
-    CopshWildCat .⋆IdR (α , _) = PseudonatTrans≡
+    CopshWildCat .W.⋆IdR (α , _) = PseudonatTrans≡
       (WNatTrans≡
         refl
         λ f → sym (rUnit (α .N-hom f))
       )
-    CopshWildCat .⋆Assoc (α , _) (β , _) (γ , _) = PseudonatTrans≡
+    CopshWildCat .W.⋆Assoc α β γ = PseudonatTrans≡
       (WNatTrans≡
         refl
-        λ f →
-          cong (_∙ cong (α .N-ob _ » β .N-ob _ »_) (γ .N-hom f)) (cong-∙ (_» γ .N-ob _) _ _)
-          ∙ sym assoc-inf
+        λ {x} {y} f → 
+          let
+            α₀ = α .fst .N-ob
+            β₀ = β .fst .N-ob
+            γ₀ = γ .fst .N-ob
+            α□ = α .fst .N-hom
+            β□ = β .fst .N-hom
+            γ□ = γ .fst .N-hom
+          in reassoc
+            ((↑ α□ f ▹′ β₀ y 
+              ∙′ α₀ x ◃′ ↑ β□ f) ▹′ γ₀ y 
+            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ γ□ f)
+            (↑ α□ f ▹′ β₀ y ▹′ γ₀ y
+            ∙′ α₀ x ◃′ ↑ β□ f ▹′ γ₀ y
+            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ γ□ f)
+            refl
       )
-      where open import Prelude
 
   module _ where
     open IsLU2C
     
-    open LU2CSyntax {{...}}
-    open LU2CSynWC CopshWildCat
-
+    open NotWC CopshWildCat
+    
     open import Cubical.Foundations.Path
     open import Prelude.Square
 

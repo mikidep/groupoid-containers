@@ -12,22 +12,22 @@ module Cubical.LU2C.Copresheaf.EndoConstructions.Base
 
 open import Cubical.LU2C.Base
 open import Cubical.LU2C.Copresheaf ℓ
-  using (Copresheaf; HGpd; Is2Copresheaf; PseudonatTrans; IsPseudonat)
+  using (Copresheaf; Is2Copresheaf)
+open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.LU2C.Instances.Copresheaf ℓ
 
 GpdEndo = Copresheaf HGpd
 GpdEndoWildCat = CopshWildCat HGpd
 
-open Copresheaf using (str; is2Copresheaf)
 open WildFunctor
 open Is2Copresheaf
 
 module _ where
   idEndo : GpdEndo
-  idEndo .str .F-ob = idfun _
-  idEndo .str .F-hom = idfun _
-  idEndo .str .F-id = refl
-  idEndo .str .F-seq _ _ = refl
-  idEndo .is2Copresheaf .F-IdL _ = sym (lUnit _)
-  idEndo .is2Copresheaf .F-IdR _ = sym (rUnit _)
-  idEndo .is2Copresheaf .F-Assoc _ _ _ = lUnit _
+  idEndo .fst .F-ob = idfun _
+  idEndo .fst .F-hom = idfun _
+  idEndo .fst .F-id = refl
+  idEndo .fst .F-seq _ _ = refl
+  idEndo .snd .F-IdL _ = sym (lUnit _)
+  idEndo .snd .F-IdR _ = sym (rUnit _)
+  idEndo .snd .F-Assoc _ _ _ = lUnit _
