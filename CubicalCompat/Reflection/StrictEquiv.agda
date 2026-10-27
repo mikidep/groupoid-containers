@@ -9,7 +9,7 @@ open import Cubical.Data.List.Base
 open import Cubical.Data.Unit.Base
 
 import Agda.Builtin.Reflection as R
-open import CubicalCompat.Reflection.Base
+open import Reflection.Base
 
 strictEquivClauses : R.Term → R.Term → List R.Clause
 strictEquivClauses f g =

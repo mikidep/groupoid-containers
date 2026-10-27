@@ -8,6 +8,8 @@ open import Cubical.WildCat.Product
 open import Cubical.Data.Sigma renaming (_×_ to _×'_)
 open import Cubical.WildCat.Product.Functor
 
+open import Cubical.WildCat.AsLU2C.Instances
+
 module Cubical.WildCat.Monoidal.Functor
   {ℓC ℓC' ℓD ℓD' : Level} 
   (MC : MonoidalWildCat ℓC ℓC')
@@ -19,14 +21,14 @@ private
   D = MD .fst
 
   module C = WildCat C
-  module D = WildCat D
   module iMC = isMonoidalWildCat (MC .snd)
   module iMD = isMonoidalWildCat (MD .snd)
 
-open C using ()
-  renaming (ob to C₀; Hom[_,_] to C[_,_]; _⋆_ to _⋆ᶜ_)
-open D using ()
-  renaming (Hom[_,_] to D[_,_]; _⋆_ to _⋆ᵈ_)
+open NotWC C
+open NotWC D
+
+open C using () renaming (ob to C₀)
+
 open iMC using ()
   renaming (
     𝟙 to 𝟙ᶜ; 
@@ -79,25 +81,25 @@ record IsMonoidal (F : WildFunctor C D)
     renaming (F-ob to F₀; F-hom to F₁)
   open ⊗CohSides F
   field
-    F-𝟙 : D[ 𝟙ᵈ , F₀ 𝟙ᶜ ]
+    F-𝟙 : D [ 𝟙ᵈ , F₀ 𝟙ᶜ ]
     F-⊗ : WildNatTrans _ _ F[-]⊗F[-] F[-⊗-]
   private F-⊗₀ = F-⊗ .N-ob
   field
     -- TODO: change to paths between nat trans.
     -- i.e. modifications in LU2C
     F-⊗lUnit : ∀ {x : C₀}
-      → (F-𝟙 ⊗ᵈ₁ D.id) ⋆ᵈ (F-⊗₀ (𝟙ᶜ , x) ⋆ᵈ F₁ (⊗lUnitᶜ₀ x)) 
+      → (F-𝟙 ⊗ᵈ₁ id) ⋆ (F-⊗₀ (𝟙ᶜ , x) ⋆ F₁ (⊗lUnitᶜ₀ x)) 
         ≡ ⊗lUnitᵈ₀ (F₀ x)
     F-⊗rUnit : ∀ {x : C₀}
-      → (D.id ⊗ᵈ₁ F-𝟙) ⋆ᵈ (F-⊗₀ (x , 𝟙ᶜ) ⋆ᵈ F₁ (⊗rUnitᶜ₀ x)) 
+      → (id ⊗ᵈ₁ F-𝟙) ⋆ (F-⊗₀ (x , 𝟙ᶜ) ⋆ F₁ (⊗rUnitᶜ₀ x)) 
         ≡ ⊗rUnitᵈ₀ (F₀ x)
     F-⊗assoc : ∀ {x y z : C₀}
       → ⊗assocᵈ₀ (F₀ x , F₀ y , F₀ z)
-        ⋆ᵈ ((F-⊗₀ (x , y) ⊗ᵈ₁ D.id)
-          ⋆ᵈ F-⊗₀ (x ⊗ᶜ₀ y , z))
-        ≡ (D.id ⊗ᵈ₁ F-⊗₀ (y , z))
-        ⋆ᵈ (F-⊗₀ (x , y ⊗ᶜ₀ z)
-          ⋆ᵈ F₁ (⊗assocᶜ₀ (x , y , z)))
+        ⋆ ((F-⊗₀ (x , y) ⊗ᵈ₁ id)
+          ⋆ F-⊗₀ (x ⊗ᶜ₀ y , z))
+        ≡ (id ⊗ᵈ₁ F-⊗₀ (y , z))
+        ⋆ (F-⊗₀ (x , y ⊗ᶜ₀ z)
+          ⋆ F₁ (⊗assocᶜ₀ (x , y , z)))
 
 record IsStrongMonoidal (F : WildFunctor C D) 
   : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where

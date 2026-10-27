@@ -1,5 +1,5 @@
 -- Recover implicit Σ arguments from their inferred first projections.
-module CubicalCompat.Reflection.InferSigma where
+module Reflection.InferSigma where
 
 open import Cubical.Foundations.Prelude
 
@@ -7,7 +7,7 @@ private
   open import Cubical.Data.List.Base using (List; []; _∷_; [_])
   open import Cubical.Data.Unit.Base using (Unit; tt)
   open import Cubical.Data.Bool using (true; false)
-  open import CubicalCompat.Reflection.Base
+  open import Reflection.Base
   import Agda.Builtin.Reflection as R
 
   typed : ∀ {ℓ} (A : Type ℓ) → A → A

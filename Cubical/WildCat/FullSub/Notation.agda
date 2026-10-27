@@ -3,64 +3,98 @@
 -- is the usual Notation, only the exported operations carry tactics.
 open import Cubical.Foundations.Prelude
 open import Cubical.WildCat.Base
-open import CubicalCompat.Reflection.InferSigma using (inferΣ)
+open import Reflection.InferSigma using (inferΣ)
+
+import Cubical.WildCat.AsLU2C.Instances as LI
 
 module Cubical.WildCat.FullSub.Notation
-  {ℓC ℓC' : Level}
+  {ℓC ℓC' : Level} {C : WildCat ℓC ℓC'} {{_ : LI.Notation C}}
   where
 
-open import Cubical.WildCat.AsLU2C.Instances public
-  using (Notation; module NotWC)
+open LI public using (Notation; module NotWC)
 
-module _ {C : WildCat ℓC ℓC'} {{_ : Notation C}} where
-  private module C = WildCat C
-  open C using (ob; Hom[_,_])
+open WildCat C using (ob; Hom[_,_])
 
-  id : {@(tactic inferΣ C.ob) x : C.ob} → C.Hom[ x , x ]
-  id {x} = C.id {x}
+import Cubical.WildCat.AsLU2C.Notation C as LN
+import Cubical.WildCat.AsLU2C.Properties {C = C} as LP
 
-  _⋆_ : {@(tactic inferΣ C.ob) x y z : C.ob}
-    → C.Hom[ x , y ] → C.Hom[ y , z ] → C.Hom[ x , z ]
-  _⋆_ {x} {y} {z} = C._⋆_ {x} {y} {z}
+id : {@(tactic inferΣ ob) x : ob} → _
+id {x} = LN.id {x}
 
-  ⋆IdL : {@(tactic inferΣ ob) x y : ob}
-    (f : Hom[ x , y ]) → id ⋆ f ≡ f
-  ⋆IdL {x} {y} = C.⋆IdL {x} {y}
+_⋆_ : {@(tactic inferΣ ob) x y z : ob} → _
+_⋆_ {x} {y} {z} = LN._⋆_ {x} {y} {z}
 
-  ⋆IdR : {@(tactic inferΣ ob) x y : ob}
-    (f : Hom[ x , y ]) → f ⋆ id ≡ f
-  ⋆IdR {x} {y} = C.⋆IdR {x} {y}
+⋆IdL : {@(tactic inferΣ ob) x y : ob} → _
+⋆IdL {x} {y} = LN.⋆IdL {x} {y}
 
-  ⋆Assoc : {@(tactic inferΣ ob) u v w x : ob}
-    (f : Hom[ u , v ]) (g : Hom[ v , w ]) (h : Hom[ w , x ])
-    → (f ⋆ g) ⋆ h ≡ f ⋆ (g ⋆ h)
-  ⋆Assoc {u} {v} {w} {x} = C.⋆Assoc {u} {v} {w} {x}
+⋆IdR : {@(tactic inferΣ ob) x y : ob} → _
+⋆IdR {x} {y} = LN.⋆IdR {x} {y}
 
-  infixr 41 _◃_
-  infixl 40 _▹_
-  infixr 42 _⋆₂_
+⋆Assoc : {@(tactic inferΣ ob) u v w x : ob} → _ 
+⋆Assoc {u} {v} {w} {x} = LN.⋆Assoc {u} {v} {w} {x}
 
-  _⋆₂_ :
-    {@(tactic inferΣ ob) a b c : ob}
-    {f f′ : Hom[ a , b ]}
-    {g g′ : Hom[ b , c ]}
-    → f ≡ f′
-    → g ≡ g′
-    → f ⋆ g ≡ f′ ⋆ g′
-  _⋆₂_ p q = cong₂ _⋆_ p q
+infixr 41 _◃_
+infixl 40 _▹_
+infixr 42 _⋆₂_
 
-  _◃_ :
-    {@(tactic inferΣ ob) a b c : ob}
-    {g g′ : Hom[ b , c ]}
-    (f : Hom[ a , b ])
-    → g ≡ g′
-    → f ⋆ g ≡ f ⋆ g′
-  f ◃ g≡g′ = refl {x = f} ⋆₂ g≡g′
+_⋆₂_ :
+  {@(tactic inferΣ ob) a b c : ob}
+  {f f′ : Hom[ a , b ]}
+  {g g′ : Hom[ b , c ]} 
+  → _
+_⋆₂_ {a} {b} {c} {f} {f′} {g} {g′} 
+  = LN._⋆₂_ {a = a} {b} {c} {f} {f′} {g} {g′}
 
-  _▹_ :
-    {@(tactic inferΣ ob) a b c : ob}
-    {f f′ : Hom[ a , b ]}
-    → f ≡ f′
-    → (g : Hom[ b , c ])
-    → f ⋆ g ≡ f′ ⋆ g
-  f≡f′ ▹ g = f≡f′ ⋆₂ refl {x = g}
+_◃_ :
+  {@(tactic inferΣ ob) a b c : ob}
+  {g g′ : Hom[ b , c ]} 
+  → _
+_◃_ {a} {b} {c} {g} {g′} = LN._◃_ {a = a} {b} {c} {g} {g′} 
+
+_▹_ :
+  {@(tactic inferΣ ob) a b c : ob}
+  {f f′ : Hom[ a , b ]}
+  → _
+_▹_ {a} {b} {c} {f} {f′} = LN._▹_ {a = a} {b} {c} {f} {f′} 
+
+◃-∙ : 
+  {@(tactic inferΣ ob) a b c : ob}
+  {f : Hom[ a , b ]}
+  {g g′ g″ : C [ b , c ]}
+  → _
+◃-∙ {a} {b} {c} {f} {g} {g′} {g″} = 
+  LP.◃-∙ {a = a} {b} {c} {f} {g} {g′} {g″}
+
+▹-∙ : 
+  {@(tactic inferΣ ob) a b c : ob}
+  {f f′ f″ : Hom[ a , b ]}
+  {g : Hom[ b , c ]}
+  → _
+▹-∙ {a} {b} {c} {f} {f′} {f″} {g} = 
+  LP.▹-∙ {a = a} {b} {c} {f} {f′} {f″} {g}
+
+whisk-interchange : 
+  {@(tactic inferΣ ob) a b c : ob}
+  {f f′ : Hom[ a , b ]}
+  {g g′ : Hom[ b , c ]}
+  → _
+whisk-interchange 
+  {a} {b} {c} {f} {f′} {g} {g′} = 
+  LP.whisk-interchange {a = a} {b} {c} {f} {f′} {g} {g′} 
+
+-- reassoc
+
+infixr 41 _◃′_
+infixl 40 _▹′_
+
+_◃′_ :
+  {@(tactic inferΣ ob) a b c : ob}
+  {g g′ : Hom[ b , c ]} 
+  → _
+_◃′_ {a} {b} {c} {g} {g′} = LN._◃′_ {a = a} {b} {c} {g} {g′} 
+
+_▹′_ :
+  {@(tactic inferΣ ob) a b c : ob}
+  {f f′ : Hom[ a , b ]}
+  → _
+_▹′_ {a} {b} {c} {f} {f′} = LN._▹′_ {a = a} {b} {c} {f} {f′} 

@@ -12,237 +12,137 @@ module Cubical.LU2C.Copresheaf.EndoConstructions.Composite
 
 open import Cubical.LU2C.Base
 open import Cubical.LU2C.Copresheaf ℓ
-  using (Copresheaf; HGpd; Is2Copresheaf; PseudonatTrans; IsPseudonat)
+open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.LU2C.Copresheaf.EndoConstructions.Base ℓ
 
-open Copresheaf using (str; is2Copresheaf)
+open import Cubical.WildCat.FullSub.Notation
+
 open WildFunctor
 open Is2Copresheaf
 
 open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
-open LU2CSyntax {{...}}
-open LU2CSyn2C HGpd
+open Not2C HGpd
 
 module _ (F G : GpdEndo) where
   open import Prelude.Utils
-  open import Prelude.Reassoc
-  open LU2CReassoc ⟨HGpd⟩
+  open import Reflection.Reassoc
 
-  open Copresheaf F using (F₀; F₁; F₂)
-  private module F = Copresheaf F
-  open Copresheaf G using ()
+  private module F = Not2P F
+  open F using (F₀; F₁; F₂)
+  private module G = Not2P G
+  open G using ()
     renaming (
       F₀ to    G₀;
       F₁ to    G₁;
       F₂ to    G₂;
-      F-id to  G-id;
-      F-seq to G-seq;
-      F-IdL to G-IdL;
-      F-IdR to G-IdR;
-      F-Assoc to G-Assoc;
-      F-seq-nat to G-seq-nat;
-      F₂-funct to G₂-funct;
       F₂′ to G₂′
     )
   compEndo₀ : GpdEndo
-  compEndo₀ .str .F-ob = F₀ » G₀
-  compEndo₀ .str .F-hom = F₁ » G₁
-  compEndo₀ .str .F-id = G₂ F.F-id ∙ G-id
-  compEndo₀ .str .F-seq f g = G₂ (F.F-seq f g) ∙ G-seq (F₁ f) (F₁ g)
-  compEndo₀ .is2Copresheaf .F-IdL f =
-      (G₂ (F.F-seq id f) ∙ G-seq (F₁ id) (F₁ f))
-      ∙ (G₂ F.F-id ∙ G-id) ▹ G₁ (F₁ f)
-    ≡⟨ reass₁ ⟩
+  compEndo₀ .fst .F-ob = F₀ » G₀
+  compEndo₀ .fst .F-hom = F₁ » G₁
+  compEndo₀ .fst .F-id = G₂ F.F-id ∙ G.F-id
+  compEndo₀ .fst .F-seq f g = G₂ (F.F-seq f g) ∙ G.F-seq (F₁ f) (F₁ g)
+  compEndo₀ .snd .F-IdL f =
+      (G₂ (F.F-seq id f) ∙ G.F-seq (F₁ id) (F₁ f))
+      ∙ (G₂ F.F-id ∙ G.F-id) ▹ G₁ (F₁ f)
+    ≡⟨ reassoc! ⟩
       G₂ (F.F-seq id f)
-      ∙ (G-seq (F₁ id) (F₁ f) ∙ G₂ F.F-id ▹ G₁ (F₁ f))
-      ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ ∙l ∙r G-seq-nat F.F-id refl ⟩
+      ∙ (G.F-seq (F₁ id) (F₁ f) ∙ G₂ F.F-id ▹ G₁ (F₁ f))
+      ∙ G.F-id ▹ G₁ (F₁ f)
+    ≡⟨ ∙l ∙r G.F-seq-nat F.F-id refl ⟩
       G₂ (F.F-seq id f)
-      ∙ (G₂ (F.F-id ▹ F₁ f) ∙ G-seq id (F₁ f))
-      ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ reass₂ ⟩
+      ∙ (G₂ (F.F-id ▹ F₁ f) ∙ G.F-seq id (F₁ f))
+      ∙ G.F-id ▹ G₁ (F₁ f)
+    ≡⟨ reassoc! ⟩
       (G₂ (F.F-seq id f ∙ F.F-id ▹ F₁ f)
-        ∙ G-seq id (F₁ f))
-      ∙ G-id ▹ G₁ (F₁ f)
+        ∙ G.F-seq id (F₁ f))
+      ∙ G.F-id ▹ G₁ (F₁ f)
     ≡⟨ ∙r ∙r cong G₂ (F.F-IdL f) ⟩
-      (refl ∙ G-seq id (F₁ f))
-      ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ sym assoc-inf ⟩
-      refl
-      ∙ G-seq id (F₁ f)
-      ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ sym (lUnit _) ⟩
-      G-seq id (F₁ f) ∙ G-id ▹ G₁ (F₁ f)
-    ≡⟨ G-IdL (F₁ f) ⟩
+      (refl ∙ G.F-seq id (F₁ f))
+      ∙ G.F-id ▹ G₁ (F₁ f)
+    ≡⟨ reassoc! ⟩
+      G.F-seq id (F₁ f) ∙ G.F-id ▹ G₁ (F₁ f)
+    ≡⟨ G.F-IdL (F₁ f) ⟩
       refl
     ∎
-    where
-    reass₁ = reassoc
-          ( (↑ G₂ (F.F-seq id f) ∙′ ↑ G-seq (F₁ id) (F₁ f))
-          ∙′ (↑ G₂ F.F-id ∙′ ↑ G-id) ▹′ G₁ (F₁ f) )
-          ( ↑ G₂ (F.F-seq id f)
-          ∙′ (↑ G-seq (F₁ id) (F₁ f) ∙′ ↑ G₂ F.F-id ▹′ G₁ (F₁ f))
-          ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
-          refl
-    reass₂ = reassoc
-          ( G₂′ (↑ F.F-seq id f)
-          ∙′ (G₂′ (↑ F.F-id ▹′ F₁ f) ∙′ ↑ G-seq id (F₁ f))
-          ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
-          ( (G₂′ (↑ F.F-seq id f ∙′ ↑ F.F-id ▹′ F₁ f)
-            ∙′ ↑ G-seq id (F₁ f))
-          ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
-          refl
-  compEndo₀ .is2Copresheaf .F-IdR f =
-      (G₂ (F.F-seq f id) ∙ G-seq (F₁ f) (F₁ id))
-      ∙ G₁ (F₁ f) ◃ (G₂ F.F-id ∙ G-id)
-    ≡⟨ reass₁ ⟩
+  compEndo₀ .snd .F-IdR f =
+      (G₂ (F.F-seq f id) ∙ G.F-seq (F₁ f) (F₁ id))
+      ∙ G₁ (F₁ f) ◃ (G₂ F.F-id ∙ G.F-id)
+    ≡⟨ reassoc! ⟩
       (G₂ (F.F-seq f id)
-        ∙ G-seq (F₁ f) (F₁ id)
+        ∙ G.F-seq (F₁ f) (F₁ id)
         ∙ G₁ (F₁ f) ◃ G₂ F.F-id)
-      ∙ G₁ (F₁ f) ◃ G-id
-    ≡⟨ ∙r ∙l G-seq-nat refl F.F-id ⟩
+      ∙ G₁ (F₁ f) ◃ G.F-id
+    ≡⟨ ∙r ∙l G.F-seq-nat refl F.F-id ⟩
       (G₂ (F.F-seq f id)
         ∙ G₂ (F₁ f ◃ F.F-id)
-        ∙ G-seq (F₁ f) id)
-      ∙ G₁ (F₁ f) ◃ G-id
-    ≡⟨ reass₂ ⟩
+        ∙ G.F-seq (F₁ f) id)
+      ∙ G₁ (F₁ f) ◃ G.F-id
+    ≡⟨ reassoc! ⟩
       ((G₂ (F.F-seq f id ∙ F₁ f ◃ F.F-id))
-        ∙ G-seq (F₁ f) id)
-      ∙ G₁ (F₁ f) ◃ G-id
+        ∙ G.F-seq (F₁ f) id)
+      ∙ G₁ (F₁ f) ◃ G.F-id
     ≡⟨ ∙r ∙r cong G₂ (F.F-IdR f) ⟩
-      (refl ∙ G-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G-id
+      (refl ∙ G.F-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G.F-id
     ≡⟨ sym assoc-inf ⟩
-      refl ∙ G-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G-id
+      refl ∙ G.F-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G.F-id
     ≡⟨ sym (lUnit _) ⟩
-      G-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G-id
-    ≡⟨ G-IdR (F₁ f) ⟩
+      G.F-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G.F-id
+    ≡⟨ G.F-IdR (F₁ f) ⟩
       refl
     ∎
-    where
-    reass₁ = reassoc
-      ( (G₂′ (↑ F.F-seq f id) ∙′ ↑ G-seq (F₁ f) (F₁ id))
-      ∙′ G₁ (F₁ f) ◃′ (G₂′ (↑ F.F-id) ∙′ ↑ G-id) )
-      ( (G₂′ (↑ F.F-seq f id)
-        ∙′ ↑ G-seq (F₁ f) (F₁ id)
-        ∙′ G₁ (F₁ f) ◃′ G₂′ (↑ F.F-id))
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-id )
-      refl
-    reass₂ = reassoc
-      ( (G₂′ (↑ F.F-seq f id)
-        ∙′ G₂′ (F₁ f ◃′ ↑ F.F-id)
-        ∙′ ↑ G-seq (F₁ f) id)
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-id )
-      ( ((G₂′ (↑ F.F-seq f id ∙′ F₁ f ◃′ ↑ F.F-id))
-        ∙′ ↑ G-seq (F₁ f) id)
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-id )
-      refl
-  compEndo₀ .is2Copresheaf .F-Assoc f g h =
+  compEndo₀ .snd .F-Assoc f g h =
       (G₂ (F.F-seq (f ⋆ g) h)
-        ∙ G-seq (F₁ (f ⋆ g)) (F₁ h))
+        ∙ G.F-seq (F₁ (f ⋆ g)) (F₁ h))
       ∙ (G₂ (F.F-seq f g)
-        ∙ G-seq (F₁ f) (F₁ g)) ▹ G₁ (F₁ h)
-    ≡⟨ reass₁ ⟩
+        ∙ G.F-seq (F₁ f) (F₁ g)) ▹ G₁ (F₁ h)
+    ≡⟨ reassoc! ⟩
       G₂ (F.F-seq (f ⋆ g) h)
-      ∙ (G-seq (F₁ (f ⋆ g)) (F₁ h)
+      ∙ (G.F-seq (F₁ (f ⋆ g)) (F₁ h)
         ∙ G₂ (F.F-seq f g) ▹ G₁ (F₁ h))
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ ∙l ∙r G-seq-nat _ refl ⟩
+      ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ ∙l ∙r G.F-seq-nat _ refl ⟩
       G₂ (F.F-seq (f ⋆ g) h)
       ∙ (G₂ (F.F-seq f g ▹ F₁ h)
-        ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h))
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ reass₂ ⟩
+        ∙ G.F-seq (F₁ f ⋆ F₁ g) (F₁ h))
+      ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ reassoc! ⟩
       G₂ (F.F-seq (f ⋆ g) h
         ∙ F.F-seq f g ▹ F₁ h)
-      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+      ∙ G.F-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
     ≡⟨ ∙r cong G₂ (F.F-Assoc _ _ _) ⟩
       G₂ (refl ∙ F.F-seq f (g ⋆ h)
           ∙ F₁ f ◃ F.F-seq g h)
-      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ reass₃ ⟩
+      ∙ G.F-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ reassoc! ⟩
       refl ∙ (G₂ (F.F-seq f (g ⋆ h)
         ∙ F₁ f ◃ F.F-seq g h))
-      ∙ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙ G-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
-    ≡⟨ ∙l ∙l G-Assoc _ _ _ ⟩
+      ∙ G.F-seq (F₁ f ⋆ F₁ g) (F₁ h)
+      ∙ G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)
+    ≡⟨ ∙l ∙l G.F-Assoc _ _ _ ⟩
       refl ∙ (G₂ (F.F-seq f (g ⋆ h)
         ∙ F₁ f ◃ F.F-seq g h))
       ∙ refl
-      ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
-      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ reass₄ ⟩
+      ∙ G.F-seq (F₁ f) (F₁ g ⋆ F₁ h)
+      ∙ G₁ (F₁ f) ◃ G.F-seq (F₁ g) (F₁ h)
+    ≡⟨ reassoc! ⟩
       refl
       ∙ G₂ (F.F-seq f (g ⋆ h))
       ∙ (G₂ (F₁ f ◃ F.F-seq g h)
-        ∙ G-seq (F₁ f) (F₁ g ⋆ F₁ h))
-      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ ∙l ∙l ∙r sym (G-seq-nat refl (F.F-seq g h)) ⟩
+        ∙ G.F-seq (F₁ f) (F₁ g ⋆ F₁ h))
+      ∙ G₁ (F₁ f) ◃ G.F-seq (F₁ g) (F₁ h)
+    ≡⟨ ∙l ∙l ∙r sym (G.F-seq-nat refl (F.F-seq g h)) ⟩
       refl
       ∙ G₂ (F.F-seq f (g ⋆ h))
-      ∙ (G-seq (F₁ f) (F₁ (g ⋆ h))
+      ∙ (G.F-seq (F₁ f) (F₁ (g ⋆ h))
         ∙ G₁ (F₁ f) ◃ G₂ (F.F-seq g h))
-      ∙ G₁ (F₁ f) ◃ G-seq (F₁ g) (F₁ h)
-    ≡⟨ reass₅ ⟩
+      ∙ G₁ (F₁ f) ◃ G.F-seq (F₁ g) (F₁ h)
+    ≡⟨ reassoc! ⟩
       refl
       ∙ (G₂ (F.F-seq f (g ⋆ h))
-        ∙ G-seq (F₁ f) (F₁ (g ⋆ h)))
+        ∙ G.F-seq (F₁ f) (F₁ (g ⋆ h)))
       ∙ G₁ (F₁ f) ◃ (G₂ (F.F-seq g h)
-        ∙ G-seq (F₁ g) (F₁ h))
+        ∙ G.F-seq (F₁ g) (F₁ h))
     ∎
-    where
-    reass₁ = reassoc
-      ( (↑ G₂ (F.F-seq (f ⋆ g) h)
-        ∙′ ↑ G-seq (F₁ (f ⋆ g)) (F₁ h))
-      ∙′ (↑ G₂ (F.F-seq f g)
-        ∙′ ↑ G-seq (F₁ f) (F₁ g)) ▹′ G₁ (F₁ h) )
-      ( ↑ G₂ (F.F-seq (f ⋆ g) h)
-      ∙′ (↑ G-seq (F₁ (f ⋆ g)) (F₁ h)
-        ∙′ ↑ G₂ (F.F-seq f g) ▹′ G₁ (F₁ h))
-      ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
-      refl
-    reass₂ = reassoc
-      ( G₂′ (↑ F.F-seq (f ⋆ g) h)
-      ∙′ (G₂′ (↑ F.F-seq f g ▹′ F₁ h)
-        ∙′ ↑ G-seq (F₁ f ⋆ F₁ g) (F₁ h))
-      ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
-      ( G₂′ (↑ F.F-seq (f ⋆ g) h
-        ∙′ ↑ F.F-seq f g ▹′ F₁ h)
-      ∙′ ↑ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
-      refl
-    reass₃ = reassoc
-      ( G₂′ (refl′ ∙′ ↑ F.F-seq f (g ⋆ h)
-          ∙′ F₁ f ◃′ ↑ F.F-seq g h)
-      ∙′ ↑ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
-      ( refl′ ∙′ (G₂′ (↑ F.F-seq f (g ⋆ h)
-        ∙′ F₁ f ◃′ ↑ F.F-seq g h))
-      ∙′ ↑ G-seq (F₁ f ⋆ F₁ g) (F₁ h)
-      ∙′ ↑ G-seq (F₁ f) (F₁ g) ▹′ G₁ (F₁ h) )
-      refl
-    reass₄ = reassoc
-      ( refl′ ∙′ (G₂′ (↑ F.F-seq f (g ⋆ h)
-        ∙′ F₁ f ◃′ ↑ F.F-seq g h))
-      ∙′ refl′
-      ∙′ ↑ G-seq (F₁ f) (F₁ g ⋆ F₁ h)
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-seq (F₁ g) (F₁ h) )
-      ( refl′
-      ∙′ G₂′ (↑ F.F-seq f (g ⋆ h))
-      ∙′ (G₂′ (F₁ f ◃′ ↑ F.F-seq g h)
-        ∙′ ↑ G-seq (F₁ f) (F₁ g ⋆ F₁ h))
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-seq (F₁ g) (F₁ h) )
-      refl
-    reass₅ = reassoc 
-      ( refl′
-      ∙′ ↑ G₂ (F.F-seq f (g ⋆ h))
-      ∙′ (↑ G-seq (F₁ f) (F₁ (g ⋆ h))
-        ∙′ G₁ (F₁ f) ◃′ ↑ G₂ (F.F-seq g h))
-      ∙′ G₁ (F₁ f) ◃′ ↑ G-seq (F₁ g) (F₁ h) )
-      ( refl′
-      ∙′ (↑ G₂ (F.F-seq f (g ⋆ h))
-        ∙′ ↑ G-seq (F₁ f) (F₁ (g ⋆ h)))
-      ∙′ G₁ (F₁ f) ◃′ (↑ G₂ (F.F-seq g h)
-        ∙′ ↑ G-seq (F₁ g) (F₁ h)) )
-      refl

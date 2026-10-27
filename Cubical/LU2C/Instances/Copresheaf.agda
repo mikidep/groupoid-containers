@@ -25,9 +25,7 @@ module _ (C : LU2C ℓC ℓC') where
   module _ where
     private module W = WildCat
     open WildNatTrans
-    open import Prelude.Reassoc
-    open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
-    open LU2CReassoc ⟨HGpd⟩
+    open import Reflection.Reassoc
 
     CopshWildCat : WildCat _ _
     CopshWildCat .W.ob = Copresheaf C
@@ -45,25 +43,7 @@ module _ (C : LU2C ℓC ℓC') where
         λ f → sym (rUnit (α .N-hom f))
       )
     CopshWildCat .W.⋆Assoc α β γ = PseudonatTrans≡
-      (WNatTrans≡
-        refl
-        λ {x} {y} f → 
-          let
-            α₀ = α .fst .N-ob
-            β₀ = β .fst .N-ob
-            γ₀ = γ .fst .N-ob
-            α□ = α .fst .N-hom
-            β□ = β .fst .N-hom
-            γ□ = γ .fst .N-hom
-          in reassoc
-            ((↑ α□ f ▹′ β₀ y 
-              ∙′ α₀ x ◃′ ↑ β□ f) ▹′ γ₀ y 
-            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ γ□ f)
-            (↑ α□ f ▹′ β₀ y ▹′ γ₀ y
-            ∙′ α₀ x ◃′ ↑ β□ f ▹′ γ₀ y
-            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ γ□ f)
-            refl
-      )
+      (WNatTrans≡ refl λ {x} {y} f → reassoc!)
 
   module _ where
     open IsLU2C

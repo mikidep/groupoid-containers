@@ -13,7 +13,7 @@ private
   WC = FullSubWildCat (TypeCat ℓ) (λ X → Lift (isGroupoid X)) 
   module WC = WildCat WC
 
-open import CubicalCompat.Reflection.InferSigma using (inferΣ)
+open import Reflection.InferSigma using (inferΣ)
 HGpdIsGpdHom : {@(tactic inferΣ WC.ob) a b : WC.ob}
   → isGroupoid (WC.Hom[ a , b ])
 HGpdIsGpdHom {b = (X , lift isGpdX)} = isGroupoidΠ λ _ → isGpdX

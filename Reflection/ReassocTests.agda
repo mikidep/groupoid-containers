@@ -1,14 +1,14 @@
-module CubicalCompat.Reflection.ReassocTests where
+module Reflection.ReassocTests where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Data.Sigma using (_×_)
 open import Prelude.ExtraGpdLaws
-open import CubicalCompat.Reflection.Reassoc
+open import Reflection.Reassoc
 open import Cubical.Data.Bool using (true; false)
 open import Cubical.Data.List.Base using ([]; [_])
 open import Cubical.Data.Unit.Base using (Unit; tt)
-open import CubicalCompat.Reflection.Base
+open import Reflection.Base
 import Agda.Builtin.Reflection as R
 
 private
@@ -116,7 +116,7 @@ module _ {A B C : Type} {f g h : A → B}
   repeated-path = reassoc!
 
 -- All 54 original call sites, as ordinary path equalities.
-import CubicalCompat.Reflection.ReassocTests.CurrentCases
+import Reflection.ReassocTests.CurrentCases
 
 -- Also check the actual container coherence goals: their reflexive factors
 -- are hidden behind inferred natural transformations, unlike the copied chains.

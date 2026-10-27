@@ -16,7 +16,7 @@
 
 -}
 {-# OPTIONS --no-exact-split #-}
-module CubicalCompat.Reflection.RecordPath where
+module Reflection.RecordPath where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Data.List as List
@@ -26,7 +26,7 @@ open import Cubical.Data.Sigma
 open import Agda.Builtin.String
 open import Agda.Builtin.Char using (Char; primCharEquality)
 import Agda.Builtin.Reflection as R
-open import CubicalCompat.Reflection.Base
+open import Reflection.Base
 
 private
   Binders = List (String × R.ArgInfo)

@@ -32,6 +32,7 @@ module _ (C : LU2C ℓ ℓ′) where
     g g' : C [ y , z ]
 
   ⋆IdL-nat : 
+    {f f' : C [ x , y ]}
     (p : f ≡ f')
     → ⋆IdL f ∙ p
     ≡ id ◃ p ∙ ⋆IdL f'
@@ -41,6 +42,7 @@ module _ (C : LU2C ℓ ℓ′) where
     d = sym (rUnit _) ∙ lUnit _
 
   ⋆IdR-nat :
+    {f f' : C [ x , y ]}
     (p : f ≡ f')
     → ⋆IdR f ∙ p
     ≡ p ▹ id ∙ ⋆IdR f'
@@ -62,6 +64,7 @@ module _ (C : LU2C ℓ ℓ′) where
       (λ i → p i , q i , r i)
 
   id◃ : 
+    {f f' : C [ x , y ]}
     (p q : f ≡ f')
     → id ◃ p ≡ id ◃ q 
     → p ≡ q
@@ -79,6 +82,7 @@ module _ (C : LU2C ℓ ℓ′) where
         ∎
 
   ▹id : 
+    {f f' : C [ x , y ]}
     (p q : f ≡ f')
     → p ▹ id ≡ q ▹ id 
     → p ≡ q

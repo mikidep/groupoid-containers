@@ -2,7 +2,7 @@
 -- The paths and residual witnesses retain their original structure, with
 -- quotation constructors replaced by ordinary path operations. Only the
 -- surrounding data is abstracted: coherence fields are not used here.
-module CubicalCompat.Reflection.ReassocTests.CurrentCases where
+module Reflection.ReassocTests.CurrentCases where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.GroupoidLaws
@@ -12,7 +12,7 @@ open import Cubical.LU2C.Base
 open import Cubical.WildCat.AsLU2C.Instances
 import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
 open import Prelude.ExtraGpdLaws
-open import CubicalCompat.Reflection.Reassoc
+open import Reflection.Reassoc
 
 module Functors {ℓC ℓC′ ℓD ℓD′ : Level}
   (C : WildCat ℓC ℓC′) (D : LU2C ℓD ℓD′)

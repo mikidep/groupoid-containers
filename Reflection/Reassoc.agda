@@ -11,7 +11,7 @@
   Supplied proofs use Prelude.Reassoc's normal forms: right-associated paths
   with a final refl. See ReassocTests.CurrentCases for the existing examples.
 -}
-module CubicalCompat.Reflection.Reassoc where
+module Reflection.Reassoc where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Function using (_$_; flip)
@@ -20,7 +20,7 @@ open import Cubical.Data.Nat.Base using (ℕ; zero; suc; _+_; _∸_)
 open import Cubical.Data.Unit.Base using (Unit; tt)
 open import Cubical.Data.Bool using (Bool; true; false; if_then_else_)
 open import Cubical.Data.Sigma using (_×_; _,_; fst; snd)
-open import CubicalCompat.Reflection.Base
+open import Reflection.Base
 import Agda.Builtin.Reflection as R
 import Prelude.Reassoc as Q
 

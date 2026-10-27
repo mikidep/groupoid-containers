@@ -131,9 +131,9 @@ module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} {E : WildCat ℓE ℓ
     private
       _⨾_ = comp-WildFunctor {C = C} {D} {E}
 
-    whiskerR-natTrans : WildNatTrans _ _ (F ⨾ H) (G ⨾ H)
-    whiskerR-natTrans .N-ob X = H.F-hom (α .N-ob X)
-    whiskerR-natTrans .N-hom f =
+    whiskR-natTrans : WildNatTrans _ _ (F ⨾ H) (G ⨾ H)
+    whiskR-natTrans .N-ob X = H.F-hom (α .N-ob X)
+    whiskR-natTrans .N-hom f =
       sym (H.F-seq _ _)
       ∙ cong H.F-hom (α .N-hom f)
       ∙ H.F-seq _ _

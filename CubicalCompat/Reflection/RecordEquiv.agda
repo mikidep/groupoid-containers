@@ -22,7 +22,7 @@ open import Cubical.Data.Sigma
 
 open import Agda.Builtin.String
 import Agda.Builtin.Reflection as R
-open import CubicalCompat.Reflection.Base
+open import Reflection.Base
 
 -- Intended to represent a (possibly nested) field of a record type. For example, the list
 -- "snd" ∷ fst" ∷ []` would represent the field `.fst .snd`.

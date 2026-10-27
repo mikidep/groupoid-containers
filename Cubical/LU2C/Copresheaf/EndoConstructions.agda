@@ -43,14 +43,14 @@ open import Cubical.Foundations.Function
 open import Cubical.Foundations.GroupoidLaws
 open import Prelude.Square
 open import Prelude.ExtraGpdLaws
-open import Prelude.Reassoc
+open import Reflection.Reassoc
 
 open LU2CSyntax {{...}}
 
 open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
-open LU2CSyn2C HGpd
+open LU2CSynBC HGpd
 
-open LU2CReassoc ⟨HGpd⟩
+-- open LU2CReassoc ⟨HGpd⟩
 
 compEndo : WildFunctor
   (ProdCat GpdEndoWildCat GpdEndoWildCat) GpdEndoWildCat
@@ -94,15 +94,16 @@ compEndo .F-id {F , G} = PseudonatTrans≡ $ WNatTrans≡
       ∙ G-id ▹ G₁ (F₁ f)
     goal' = sym (rUnit _)
       ∙ shuffleSymLD goal''
-      ∙ reassoc
-        ( ↑ sym (G-seq (F₁ f) id) 
-        ∙′ ↑ G-seq id (F₁ f) 
-        ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
-        ( ((↑ sym (G-seq (F₁ f) id) 
-            ∙′ refl′ ∙′ ↑ G-seq id (F₁ f)) 
-          ∙′ refl′) 
-        ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
-        refl
+      ∙ reassoc!
+      -- ∙ reassoc
+      --   ( ↑ sym (G-seq (F₁ f) id) 
+      --   ∙′ ↑ G-seq id (F₁ f) 
+      --   ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
+      --   ( ((↑ sym (G-seq (F₁ f) id) 
+      --       ∙′ refl′ ∙′ ↑ G-seq id (F₁ f)) 
+      --     ∙′ refl′) 
+      --   ∙′ ↑ G-id ▹′ G₁ (F₁ f) )
+      --   refl
 compEndo .F-seq {F , F'} {G , G'} {H , H'} (α , α') (β , β') = PseudonatTrans≡ $ WNatTrans≡ 
   (funExt λ X → 
     F'.F-seq (α₀ X) (β₀ X) ▹ α'₀ (H.F₀ X) ▹ β'₀ (H.F₀ X)

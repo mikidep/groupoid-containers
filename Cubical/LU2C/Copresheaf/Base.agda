@@ -90,3 +90,5 @@ module _ (C : LU2C ℓC ℓC') where
 
 module Not2P {C : LU2C ℓC ℓC'} (F : Copresheaf C) where
   open NotF (F .fst) public
+  open Is2Copresheaf (F .snd) public
+  open import Cubical.WildCat.AsLU2C.Functor.Properties {F = F .fst} public

@@ -6,3 +6,4 @@ flags:
   --guardedness
   --lossy-unification
   --hidden-argument-puns
+  --no-qualified-instances

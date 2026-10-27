@@ -28,7 +28,7 @@ open WildNatIso
 open wildIsIso
 
 open import Prelude
-open import CubicalCompat.Reflection.Reassoc
+open import Reflection.Reassoc
 
 private module iMC where
   _⊗_ : WildFunctor 

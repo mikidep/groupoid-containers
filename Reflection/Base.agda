@@ -4,7 +4,7 @@ Some basic utilities for reflection
 
 -}
 {-# OPTIONS --no-exact-split #-}
-module CubicalCompat.Reflection.Base where
+module Reflection.Base where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Data.List.Base

@@ -3,7 +3,7 @@ open import Cubical.Foundations.GroupoidLaws
 
 module Cubical.LU2C.Pseudofunctor where
 
-open import Cubical.LU2C.Base hiding (_[_,_])
+open import Cubical.LU2C.Base
 open import Cubical.WildCat.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor
 
@@ -14,91 +14,8 @@ private
   variable
     ℓC ℓC' ℓD ℓD' : Level
 
-module _ {C : WildCat ℓC ℓC'}
-  {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
-  (α : WildNatTrans _ _ F G) where
-
-  open import Cubical.WildCat.Base using (_[_,_])
-
-  open NotWC C
-  open NotWC D
-
-  open WildNatTrans α using ()
-    renaming (N-ob to α₀; N-hom to α□)
-  open NotF F using (F₁; F₂)
-  open NotF G using ()
-    renaming (
-      F₁ to G₁;
-      F₂ to G₂
-    )
-
-  N-hom-nat :
-    ∀ {X} {Y}
-      {f g : C [ X , Y ]}
-      (f≡g : f ≡ g)
-    →   α□ f ∙ α₀ X ◃ G₂ f≡g
-      ≡ F₂ f≡g ▹ α₀ Y ∙ α□ g
-  N-hom-nat {X} {Y} {f} {g = _} = J Q d
-    where
-    Q = λ f' f≡f' →
-      α□ f ∙ α₀ X ◃ G₂ f≡f'
-      ≡ F₂ f≡f' ▹ α₀ Y ∙ α□ f'
-    d = sym (rUnit _) ∙ lUnit _
-
-
-module _ {C : WildCat ℓC ℓC'}
-  {D : WildCat ℓD ℓD'} {F G : WildFunctor C D}
-  {α β : WildNatTrans _ _ F G} where
-
-  open import Cubical.WildCat.Base using (_[_,_])
-
-  open NotWC C
-  open NotWC D
-
-  open WildNatTrans α using ()
-    renaming (N-ob to α₀; N-hom to α□)
-  open WildNatTrans β using ()
-    renaming (N-ob to β₀; N-hom to β□)
-  open NotF F using (F₁; F₂)
-  open NotF G using ()
-    renaming (
-      F₁ to G₁;
-      F₂ to G₂
-    )
-
-  -- TODO: Surely an equivalence
-  natTransPath→mod :
-    (m : ∀ x → α₀ x ≡ β₀ x)
-    → ∀ {x y} (f : C [ x , y ])
-    → Square
-      (α□ f)      
-      (β□ f)
-      (F₁ f ◃ m y)
-      (m x ▹ G₁ f)
-    → α□ f ∙ m x ▹ G₁ f
-      ≡ F₁ f ◃ m y ∙ β□ f
-  natTransPath→mod _ _ sq = 
-    Square→compPath (flipSquare sq)
-    where open import Cubical.Foundations.Path
-
-  mod→natTransPath :
-    (m : ∀ x → α₀ x ≡ β₀ x)
-    → ∀ {x y} (f : C [ x , y ])
-    → α□ f ∙ m x ▹ G₁ f
-      ≡ F₁ f ◃ m y ∙ β□ f
-    → Square
-      (α□ f)      
-      (β□ f)
-      (F₁ f ◃ m y)
-      (m x ▹ G₁ f)
-  mod→natTransPath _ _ cmp = 
-    flipSquare (compPath→Square cmp)
-    where open import Cubical.Foundations.Path
-
 module _ (C : LU2C ℓC ℓC')
   (D : LU2C ℓD ℓD') where
-
-  open import Cubical.LU2C.Base using (_[_,_])
 
   private
     module C = LU2C C

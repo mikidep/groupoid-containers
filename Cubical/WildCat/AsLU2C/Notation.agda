@@ -45,3 +45,23 @@ module Cubical.WildCat.AsLU2C.Notation
     → f ⋆ g ≡ f′ ⋆ g
   f≡f′ ▹ g = f≡f′ ⋆₂ refl {x = g}
 
+  infixr 41 _◃′_
+  infixl 40 _▹′_
+
+  open import Prelude.Reassoc using (Term; cong′)
+
+  _◃′_ : 
+    {a b c : ob}
+    {g g′ : Hom[ b , c ]}
+    (f : Hom[ a , b ])
+    → Term g g′
+    → Term (f ⋆ g) (f ⋆ g′)
+  f ◃′ g≡g′ = cong′ (f ⋆_) g≡g′
+
+  _▹′_ : 
+    {a b c : ob}
+    {f f′ : Hom[ a , b ]}
+    → Term f f′
+    → (g : Hom[ b , c ])
+    → Term (f ⋆ g) (f′ ⋆ g)
+  f≡f′ ▹′ g = cong′ (_⋆ g) f≡f′

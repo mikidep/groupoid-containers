@@ -2,7 +2,6 @@ open import Cubical.Foundations.Prelude
 
 open import Cubical.LU2C.Base
 open import Cubical.WildCat.FullSub.Notation
-open import Cubical.WildCat.AsLU2C.Properties
 
 module Cubical.LU2C.Copresheaf.Pseudonat.Constructions
   {ℓ ℓC ℓC' : Level} 
@@ -16,9 +15,6 @@ open import Cubical.LU2C.Copresheaf.Base ℓ
 open import Cubical.LU2C.Copresheaf.Pseudonat.Base
 
 open import Prelude.Reassoc
-
-open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
-open LU2CReassoc ⟨HGpd⟩
 
 open Not2C HGpd
 open Not2C C
@@ -80,6 +76,7 @@ module _ {F G H : Copresheaf C}
 
   open import Cubical.Foundations.GroupoidLaws
   open import Prelude.ExtraGpdLaws
+  open import Reflection.Reassoc
 
   open WildNatTrans
 
@@ -93,35 +90,26 @@ module _ {F G H : Copresheaf C}
   compPseudonatTrans .fst = compWildNatTrans
   compPseudonatTrans .snd .N-hom-id {X} =
       (α□ id ▹ β₀ X ∙ α₀ X ◃ β□ id) ∙ α₀ X ◃ β₀ X ◃ H-id
-    ≡⟨ reass₁ ⟩
+    ≡⟨ reassoc! ⟩
       α□ id ▹ β₀ X ∙ α₀ X ◃ (β□ id ∙ β₀ X ◃ H-id)
     ≡⟨ ∙l cong (α₀ X ◃_) (β .snd .N-hom-id) ⟩
       α□ id ▹ β₀ X ∙ α₀ X ◃ G-id ▹ β₀ X
-    ≡⟨ reass₂ ⟩
+    ≡⟨ reassoc! ⟩
       (α□ id ∙ α₀ X ◃ G-id) ▹ β₀ X
     ≡⟨ cong (_▹ β₀ X) (α .snd .N-hom-id) ⟩
       F-id ▹ α₀ X ▹ β₀ X
     ∎
-    where
-    reass₁ = reassoc 
-      ((↑ α□ id ▹′ β₀ X ∙′ α₀ X ◃′ ↑ β□ id) ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-id)
-      (↑ α□ id ▹′ β₀ X ∙′ α₀ X ◃′ (↑ β□ id ∙′ β₀ X ◃′ ↑ H-id))
-      refl
-    reass₂ = reassoc 
-      (↑ α□ id ▹′ β₀ X ∙′ α₀ X ◃′ ↑ G-id ▹′ β₀ X)
-      ((↑ α□ id ∙′ α₀ X ◃′ ↑ G-id) ▹′ β₀ X)
-      refl
   compPseudonatTrans .snd .N-hom-seq {X} {Y} {Z} f g =
       (α□ (f ⋆ g) ▹ β₀ Z ∙ α₀ X ◃ β□ (f ⋆ g))
       ∙ α₀ X ◃ β₀ X ◃ H-seq f g
-    ≡⟨ reass₁ ⟩
+    ≡⟨ reassoc! ⟩
       α□ (f ⋆ g) ▹ β₀ Z
       ∙ α₀ X ◃ (β□ (f ⋆ g) ∙ β₀ X ◃ H-seq f g)
     ≡⟨ ∙l cong (α₀ X ◃_) (β .snd .N-hom-seq f g) ⟩
       α□ (f ⋆ g) ▹ β₀ Z
       ∙ α₀ X ◃ (G-seq f g ▹ β₀ Z
         ∙ G₁ f ◃ β□ g ∙ β□ f ▹ H₁ g)
-    ≡⟨ reass₂ ⟩
+    ≡⟨ reassoc! ⟩
       (α□ (f ⋆ g) ∙ α₀ X ◃ G-seq f g) ▹ β₀ Z
       ∙ α₀ X ◃ G₁ f ◃ β□ g
       ∙ α₀ X ◃ β□ f ▹ H₁ g
@@ -130,58 +118,19 @@ module _ {F G H : Copresheaf C}
         ∙ F₁ f ◃ α□ g ∙ α□ f ▹ G₁ g) ▹ β₀ Z
       ∙ α₀ X ◃ G₁ f ◃ β□ g
       ∙ α₀ X ◃ β□ f ▹ H₁ g
-    ≡⟨ reass₃ ⟩
+    ≡⟨ reassoc! ⟩
       F-seq f g ▹ α₀ Z ▹ β₀ Z
       ∙ F₁ f ◃ α□ g ▹ β₀ Z
       ∙ (α□ f ▹ G₁ g ▹ β₀ Z ∙ α₀ X ◃ G₁ f ◃ β□ g)
       ∙ α₀ X ◃ β□ f ▹ H₁ g
-    ≡⟨ ∙l ∙l ∙r sym (whisk-interchange 
-        {C = ⟨HGpd⟩}
-        {b = G₀ Y}
-        (α□ f) (β□ g)) ⟩
+    ≡⟨ ∙l ∙l ∙r sym (whisk-interchange (α□ f) (β□ g)) ⟩
       F-seq f g ▹ α₀ Z ▹ β₀ Z
       ∙ F₁ f ◃ α□ g ▹ β₀ Z
       ∙ (F₁ f ◃ α₀ Y ◃ β□ g
         ∙ α□ f ▹ β₀ Y ▹ H₁ g)
       ∙ α₀ X ◃ β□ f ▹ H₁ g
-    ≡⟨ reass₄ ⟩
+    ≡⟨ reassoc! ⟩
       F-seq f g ▹ α₀ Z ▹ β₀ Z
       ∙ F₁ f ◃ (α□ g ▹ β₀ Z ∙ α₀ Y ◃ β□ g)
       ∙ (α□ f ▹ β₀ Y ∙ α₀ X ◃ β□ f) ▹ H₁ g
     ∎
-    where
-    reass₁ = reassoc 
-      ((↑ α□ (f ⋆ g) ▹′ β₀ Z ∙′ α₀ X ◃′ ↑ β□ (f ⋆ g))
-        ∙′ α₀ X ◃′ β₀ X ◃′ ↑ H-seq f g)
-      (↑ α□ (f ⋆ g) ▹′ β₀ Z
-        ∙′ α₀ X ◃′ (↑ β□ (f ⋆ g) ∙′ β₀ X ◃′ ↑ H-seq f g))
-      refl
-    reass₂ = reassoc
-      ( ↑ α□ (f ⋆ g) ▹′ β₀ Z
-      ∙′ α₀ X ◃′ (↑ G-seq f g ▹′ β₀ Z
-        ∙′ G₁ f ◃′ ↑ β□ g ∙′ ↑ β□ f ▹′ H₁ g) )
-      ( (↑ α□ (f ⋆ g) ∙′ α₀ X ◃′ ↑ G-seq f g) ▹′ β₀ Z
-      ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g
-      ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
-      refl
-    reass₃ = reassoc
-      ( (↑ F-seq f g ▹′ α₀ Z 
-        ∙′ F₁ f ◃′ ↑ α□ g ∙′ ↑ α□ f ▹′ G₁ g) ▹′ β₀ Z
-      ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g
-      ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
-      ( ↑ F-seq f g ▹′ α₀ Z ▹′ β₀ Z
-      ∙′ F₁ f ◃′ ↑ α□ g ▹′ β₀ Z
-      ∙′ (↑ α□ f ▹′ G₁ g ▹′ β₀ Z 
-        ∙′ α₀ X ◃′ G₁ f ◃′ ↑ β□ g)
-      ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
-      refl
-    reass₄ = reassoc 
-      ( ↑ F-seq f g ▹′ α₀ Z ▹′ β₀ Z
-      ∙′ F₁ f ◃′ ↑ α□ g ▹′ β₀ Z
-      ∙′ (F₁ f ◃′ α₀ Y ◃′ ↑ β□ g
-        ∙′ ↑ α□ f ▹′ β₀ Y ▹′ H₁ g)
-      ∙′ α₀ X ◃′ ↑ β□ f ▹′ H₁ g )
-      ( ↑ F-seq f g ▹′ α₀ Z ▹′ β₀ Z
-      ∙′ F₁ f ◃′ (↑ α□ g ▹′ β₀ Z ∙′ α₀ Y ◃′ ↑ β□ g)
-      ∙′ (↑ α□ f ▹′ β₀ Y ∙′ α₀ X ◃′ ↑ β□ f) ▹′ H₁ g )
-      refl
