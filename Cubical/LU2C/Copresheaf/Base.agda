@@ -7,7 +7,7 @@ open import Cubical.LU2C.Instances.Groupoids ℓ
 import Cubical.LU2C.Pseudofunctor
 
 open import Cubical.WildCat.Base hiding (_[_,_])
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
 open import Cubical.WildCat.Functor
 
@@ -26,7 +26,7 @@ private module HGpd = LU2C HGpd
 open LU2C using ()
   renaming (str to ⟨_⟩)
 
-open Not2C HGpd
+open NotHGpd
 
 module _ (C : LU2C ℓC ℓC') where
   private module C = LU2C C

@@ -20,6 +20,7 @@ open import Cubical.WildCat.Monoidal.Instances.GpdEndo
 
 open IsStrongMonoidal
 open IsMonoidal
+open MonoidalFunctorStr
 open WildNatTrans
 open IsPseudonat
 open wildIsIso
@@ -33,11 +34,11 @@ Extent : StrongMonoidalFunctor
   (GpdContWildCat , isMonoidalGpdCont) 
   (GpdEndoWildCat , isMonoidalGpdEndo)
 Extent .fst = E.str 
-Extent .snd .isMonoidal .F-𝟙 .fst .N-ob (X , _) x = _ , λ _ → x
-Extent .snd .isMonoidal .F-𝟙 .fst .N-hom f = refl
-Extent .snd .isMonoidal .F-𝟙 .snd .N-hom-id = sym (lUnit _)
-Extent .snd .isMonoidal .F-𝟙 .snd .N-hom-seq f g = lUnit _
-Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .fst .N-ob X (s , v) = 
+Extent .snd .isMonoidal .mStr .F-𝟙 .fst .N-ob (X , _) x = _ , λ _ → x
+Extent .snd .isMonoidal .mStr .F-𝟙 .fst .N-hom f = refl
+Extent .snd .isMonoidal .mStr .F-𝟙 .snd .N-hom-id = sym (lUnit _)
+Extent .snd .isMonoidal .mStr .F-𝟙 .snd .N-hom-seq f g = lUnit _
+Extent .snd .isMonoidal .mStr .F-⊗ .N-ob (F , G) .fst .N-ob X (s , v) =
   -- s : S′
   --        v            fst
   -- P′ s -----> ⟦F⟧ X -------> S
@@ -50,13 +51,13 @@ Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .fst .N-ob X (s , v) =
   module F = Container F
   module ⟦F⟧ = Copresheaf (E.F₀ F)
   module ⟦G⟧ = Copresheaf (E.F₀ G)
-Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .fst .N-hom _ = refl
-Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .snd .N-hom-id {X} = 
+Extent .snd .isMonoidal .mStr .F-⊗ .N-ob (F , G) .fst .N-hom _ = refl
+Extent .snd .isMonoidal .mStr .F-⊗ .N-ob (F , G) .snd .N-hom-id {X} =
     sym (▹-∙ {k = F-⊗X} refl refl) 
   where
-  F-⊗X = Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .fst .N-ob X
-Extent .snd .isMonoidal .F-⊗ .N-ob (F , G) .snd .N-hom-seq = {! !}
-Extent .snd .isMonoidal .F-⊗ .N-hom {x = F , G} {y = H , K} (f , g) = 
+  F-⊗X = Extent .snd .isMonoidal .mStr .F-⊗ .N-ob (F , G) .fst .N-ob X
+Extent .snd .isMonoidal .mStr .F-⊗ .N-ob (F , G) .snd .N-hom-seq = {! !}
+Extent .snd .isMonoidal .mStr .F-⊗ .N-hom {x = F , G} {y = H , K} (f , g) =
     PseudonatTrans≡ (makeNatTransPath aux₁ {! !})
   where
   open import Cubical.Functions.FunExtEquiv

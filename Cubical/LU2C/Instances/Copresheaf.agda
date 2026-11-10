@@ -8,9 +8,9 @@ open import Cubical.LU2C.Copresheaf ℓ
 open import Cubical.Foundations.GroupoidLaws
 open import Prelude.ExtraGpdLaws
 
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 
-open Not2C HGpd
+open NotHGpd
 
 private
   variable

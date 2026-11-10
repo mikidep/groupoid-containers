@@ -19,9 +19,9 @@ open import Cubical.LU2C.Copresheaf.Base ℓ
 open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.WildCat.NaturalTransformation.Base
 
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 
-open Not2C HGpd
+open NotHGpd
 
 private ⟨_⟩ = fst
 

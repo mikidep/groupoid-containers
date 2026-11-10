@@ -87,7 +87,6 @@ M⁴ = M × (M × (M × M))
 --       P(a , b , c , d) = (a , b ⊗ c , d),
 -- and Q just regroups (a , b , c , d) as ((a , b , c) , d)
 -- on both objects and morphisms.
--- TODO: codex, rewrite in the style of the triangle ones
 ⊗pentagonₗ : WildNatTrans M⁴ M ⊗pentagon-source ⊗pentagon-target
 ⊗pentagonₗ .N-ob (a , b , c , d) =
   id ⊗₁ ⊗as₀ (b , c , d) ⋆
@@ -95,63 +94,32 @@ M⁴ = M × (M × (M × M))
       ⊗as₀ (a , b , c) ⊗₁ id)
 ⊗pentagonₗ .N-hom {(a , b , c , d)} {(a′ , b′ , c′ , d′)} (f , g , h , k) =
   sym (⋆Assoc _ _ _)
-  ∙ cong (λ q → q ⋆
-      (⊗as₀ (a′ , b′ ⊗₀ c′ , d′) ⋆
-        ⊗as₀ (a′ , b′ , c′) ⊗₁ id))
-    (sym (⊗.F-seq (f , (g ⊗₁ (h ⊗₁ k)))
-      (id , ⊗as₀ (b′ , c′ , d′))))
-  ∙ cong (λ q → uncurry _⊗₁_ q ⋆
-      (⊗as₀ (a′ , b′ ⊗₀ c′ , d′) ⋆
-        ⊗as₀ (a′ , b′ , c′) ⊗₁ id))
-    (≡-× (⋆IdR f) refl)
-  ∙ cong (λ q → uncurry _⊗₁_ q ⋆
-      (⊗as₀ (a′ , b′ ⊗₀ c′ , d′) ⋆
-        ⊗as₀ (a′ , b′ , c′) ⊗₁ id))
-    (≡-× (sym (⋆IdL f)) (⊗as□ (g , h , k)))
-  ∙ cong (λ q → q ⋆
-      (⊗as₀ (a′ , (b′ ⊗₀ c′) , d′) ⋆
-        ⊗as₀ (a′ , b′ , c′) ⊗₁ id))
-    (⊗.F-seq (id , ⊗as₀ (b , c , d))
-      (f , (g ⊗₁ h) ⊗₁ k))
+  ∙ (sym (⊗.F-seq (f , g ⊗₁ (h ⊗₁ k)) (id , ⊗as₀ (b′ , c′ , d′)))
+    ∙ ⋆IdR f ⊗₂ refl
+    ∙ sym (⋆IdL f) ⊗₂ ⊗as□ (g , h , k)
+    ∙ ⊗.F-seq (id , ⊗as₀ (b , c , d)) (f , (g ⊗₁ h) ⊗₁ k))
+    ▹ (⊗as₀ (a′ , b′ ⊗₀ c′ , d′) ⋆ ⊗as₀ (a′ , b′ , c′) ⊗₁ id)
   ∙ ⋆Assoc _ _ _
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆ q)
-    (sym (⋆Assoc _ _ _))
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆
-      (q ⋆ ⊗as₀ (a′ , b′ , c′) ⊗₁ id))
-    (⊗as□ (f , g ⊗₁ h , k))
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆ q)
-    (⋆Assoc _ _ _)
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆
-      (⊗as₀ (a , b ⊗₀ c , d) ⋆ q))
-    (sym (⊗.F-seq ((f ⊗₁ (g ⊗₁ h)) , k)
-      (⊗as₀ (a′ , b′ , c′) , id)))
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆
-      (⊗as₀ (a , b ⊗₀ c , d) ⋆ uncurry _⊗₁_ q))
-    (≡-× refl (⋆IdR k))
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆
-      (⊗as₀ (a , b ⊗₀ c , d) ⋆ uncurry _⊗₁_ q))
-    (≡-× (⊗as□ (f , g , h)) (sym (⋆IdL k)))
-  ∙ cong (λ q → id ⊗₁ ⊗as₀ (b , c , d) ⋆
-      (⊗as₀ (a , b ⊗₀ c , d) ⋆ q))
-    (⊗.F-seq (⊗as₀ (a , b , c) , id)
-      ((f ⊗₁ g) ⊗₁ h , k))
-  ∙ cong (λ q → (id ⊗₁ ⊗as₀ (b , c , d)) ⋆ q)
-    (sym (⋆Assoc _ _ _))
+  ∙ id ⊗₁ ⊗as₀ (b , c , d) ◃ (sym (⋆Assoc _ _ _)
+    ∙ ⊗as□ (f , g ⊗₁ h , k) ▹ ⊗as₀ (a′ , b′ , c′) ⊗₁ id
+    ∙ ⋆Assoc _ _ _
+    ∙ ⊗as₀ (a , b ⊗₀ c , d) ◃ (sym (⊗.F-seq (f ⊗₁ (g ⊗₁ h) , k) (⊗as₀ (a′ , b′ , c′) , id))
+      ∙ refl ⊗₂ ⋆IdR k
+      ∙ ⊗as□ (f , g , h) ⊗₂ sym (⋆IdL k)
+      ∙ ⊗.F-seq (⊗as₀ (a , b , c) , id) ((f ⊗₁ g) ⊗₁ h , k))
+    ∙ sym (⋆Assoc _ _ _))
   ∙ sym (⋆Assoc _ _ _)
 
 
 -- ((idF M ×₁ (idF M ×₁ _⊗_)) ◃ ⊗assoc)
 --   ⋆ ((ProdAssoc ⨾ (_⊗_ ×₁ idF (M × M))) ◃ ⊗assoc)
--- TODO: codex, rewrite in the style of the triangle ones
 ⊗pentagonᵣ : WildNatTrans M⁴ M ⊗pentagon-source ⊗pentagon-target
 ⊗pentagonᵣ .N-ob (a , b , c , d) =
   ⊗as₀ (a , b , c ⊗₀ d) ⋆ ⊗as₀ (a ⊗₀ b , c , d)
 ⊗pentagonᵣ .N-hom {(a , b , c , d)} {(a′ , b′ , c′ , d′)} (f , g , h , k) =
   sym (⋆Assoc _ _ _)
-  ∙ cong (λ q → q ⋆ ⊗as₀ (a′ ⊗₀ b′ , c′ , d′))
-    (⊗as□ (f , g , h ⊗₁ k))
+  ∙ ⊗as□ (f , g , h ⊗₁ k) ▹ ⊗as₀ (a′ ⊗₀ b′ , c′ , d′)
   ∙ ⋆Assoc _ _ _
-  ∙ cong (λ q → ⊗as₀ (a , b , c ⊗₀ d) ⋆ q)
-    (⊗as□ (f ⊗₁ g , h , k))
+  ∙ ⊗as₀ (a , b , c ⊗₀ d) ◃ ⊗as□ (f ⊗₁ g , h , k)
   ∙ sym (⋆Assoc _ _ _)
   

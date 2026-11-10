@@ -15,13 +15,14 @@ open import Cubical.LU2C.Copresheaf ℓ
 open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.LU2C.Copresheaf.EndoConstructions.Base ℓ
 
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 
 open WildFunctor
 open Is2Copresheaf
 
-open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
-open Not2C HGpd
+-- open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
+open import Cubical.WildCat.Instances.Types
+open NotHGpd
 
 module _ (F G : GpdEndo) where
   open import Prelude.Utils
@@ -84,9 +85,10 @@ module _ (F G : GpdEndo) where
       ∙ G₁ (F₁ f) ◃ G.F-id
     ≡⟨ ∙r ∙r cong G₂ (F.F-IdR f) ⟩
       (refl ∙ G.F-seq (F₁ f) id) ∙ G₁ (F₁ f) ◃ G.F-id
-    ≡⟨ sym assoc-inf ⟩
-      refl ∙ G.F-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G.F-id
-    ≡⟨ sym (lUnit _) ⟩
+    -- ≡⟨ sym assoc-inf ⟩
+    --   refl ∙ G.F-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G.F-id
+    -- ≡⟨ sym (lUnit _) ⟩
+    ≡⟨ reassoc! ⟩
       G.F-seq (F₁ f) id ∙ G₁ (F₁ f) ◃ G.F-id
     ≡⟨ G.F-IdR (F₁ f) ⟩
       refl

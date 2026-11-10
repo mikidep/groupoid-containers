@@ -17,13 +17,13 @@ open import Cubical.LU2C.Instances.Copresheaf ℓ
 open import Cubical.LU2C.Copresheaf.EndoConstructions.Base ℓ
 open import Cubical.LU2C.Copresheaf.EndoConstructions.Composite ℓ
 
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 open import Cubical.WildCat.AsLU2C.NaturalTransformation.Properties
 
 open WildFunctor
 open Is2Copresheaf
 
-open Not2C HGpd
+open NotHGpd
 open import Reflection.Reassoc
 
 module _ (F : GpdEndo) {G H : GpdEndo}

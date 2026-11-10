@@ -4,6 +4,7 @@ open import Prelude.ExtraGpdLaws
 
 open import Cubical.WildCat.Base
 open import Cubical.WildCat.Functor
+import Cubical.WildCat.AsLU2C.Functor.Notation as NotF
 
 open import Cubical.WildCat.AsLU2C.Instances
 
@@ -11,13 +12,23 @@ module Cubical.WildCat.AsLU2C.Functor.Properties
   {ℓC ℓC' ℓD ℓD' : Level}
   {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} 
+  -- {E : WildCat ℓE ℓE'} 
   {F : WildFunctor C D}
+  -- {G : WildFunctor C D}
   where
 
 open NotWC C
 open NotWC D
+-- open NotWC E
 
-open import Cubical.WildCat.AsLU2C.Functor.Notation F
+private module F = NotF F
+open F using (F₀; F₁; F₂)
+-- private module G = NotF G
+-- open G using () renaming 
+--   ( F₀ to G₀
+--   ; F₁ to G₁
+--   ; F₂ to G₂
+--   )
 
 F₂-funct : ∀ {x y}
   {f g h : C [ x , y ]}
@@ -34,74 +45,98 @@ F□ : ∀ {x y z w}
   → f ⋆ g ≡ h ⋆ k
   → F₁ f ⋆ F₁ g ≡ F₁ h ⋆ F₁ k
 F□ {f} {g} {h} {k} sq =
-  sym (F-seq f g)
+  sym (F.F-seq f g)
   ∙ F₂ sq
-  ∙ F-seq h k
+  ∙ F.F-seq h k
 
 F-seq-nat : ∀ {x y z}
     {f f′ : C [ x , y ]}
     {g g′ : C [ y , z ]}
     (p : f ≡ f′)
     (q : g ≡ g′)
-  → F-seq f g
+  → F.F-seq f g
     ∙ F₂ p ⋆₂ F₂ q
     ≡ F₂ (p ⋆₂ q)
-    ∙ F-seq f′ g′
-F-seq-nat {x} {y} {z} {f} {g} p q = J2 Q r p q
+    ∙ F.F-seq f′ g′
+F-seq-nat {f} {g} p q = J2 Q r p q
   where
-  Q :
-    (f' : C [ x , y ])
-    (p' : f ≡ f')
-    (g' : C [ y , z ])
-    (q' : g ≡ g')
-    → Type ℓD'
-  Q f' p' g' q' =
-    F-seq f g
-    ∙ F₂ p' ⋆₂ F₂ q'
-    ≡ F₂ (p' ⋆₂ q')
-    ∙ F-seq f' g'
+  Q = λ f′ p g′ q
+        → F.F-seq f g
+          ∙ F₂ p ⋆₂ F₂ q
+          ≡ F₂ (p ⋆₂ q)
+          ∙ F.F-seq f′ g′
   r = sym (rUnit _) ∙ lUnit _
 
-F□-◃ : ∀ {x y z}
-  {f : C [ x , y ]}
-  {g h : C [ y , z ]}
-  (g≡h : g ≡ h)
-  → F□ (f ◃ g≡h)
-    ≡ F₁ f ◃ F₂ g≡h
-F□-◃ g≡h =
-  shuffleSymL (sym (F-seq-nat refl g≡h))
+F-seq-nat-Square : ∀ {x y z}
+    {f f′ : C [ x , y ]}
+    {g g′ : C [ y , z ]}
+    (p : f ≡ f′)
+    (q : g ≡ g′)
+  → Square
+    (F.F-seq f g)
+    (F.F-seq f′ g′)
+    (F₂ (p ⋆₂ q))
+    (F₂ p ⋆₂ F₂ q)
+F-seq-nat-Square p q i j = F.F-seq (p i) (q i) j
 
-F□-▹ : ∀ {x y z}
-  {f g : C [ x , y ]}
-  {h : C [ y , z ]}
-  (f≡g : f ≡ g)
-  → F□ (f≡g ▹ h)
-    ≡ F₂ f≡g ▹ F₁ h
-F□-▹ f≡g =
-  shuffleSymL (sym (F-seq-nat f≡g refl))
+F-seq-nat-sym : ∀ {x y z}
+    {f f′ : C [ x , y ]}
+    {g g′ : C [ y , z ]}
+    (p : f ≡ f′)
+    (q : g ≡ g′)
+  → F₂ p ⋆₂ F₂ q
+    ∙ sym (F.F-seq f′ g′)
+    ≡ sym (F.F-seq f g)
+    ∙ F₂ (p ⋆₂ q)
+F-seq-nat-sym {f} {g} p q = J2 Q r p q
+  where
+  Q = λ f′ p g′ q
+        → F₂ p ⋆₂ F₂ q
+          ∙ sym (F.F-seq f′ g′)
+          ≡ sym (F.F-seq f g)
+          ∙ F₂ (p ⋆₂ q)
+  r = sym (lUnit _) ∙ rUnit _
 
--- In other words...
-F₂-◃ : ∀ {x y z}
-  {f : C [ x , y ]}
-  {g h : C [ y , z ]}
-  (g≡h : g ≡ h)
-  → F₂ (f ◃ g≡h)
-    ≡ F-seq f g
-    ∙ F₁ f ◃ F₂ g≡h
-    ∙ sym (F-seq f h)
-F₂-◃ g≡h =
-  shuffleSymR (sym (shuffleSymL (sym (F□-◃ g≡h))))
-  ∙ sym assoc-inf
+-- F□-◃ : ∀ {x y z}
+--   {f : C [ x , y ]}
+--   {g h : C [ y , z ]}
+--   (g≡h : g ≡ h)
+--   → F□ (f ◃ g≡h)
+--     ≡ F₁ f ◃ F₂ g≡h
+-- F□-◃ g≡h =
+--   shuffleSymL (sym (F-seq-nat refl g≡h))
 
-F₂-▹ : ∀ {x y z}
-  {f g : C [ x , y ]}
-  {h : C [ y , z ]}
-  (f≡g : f ≡ g)
-  → F₂ (f≡g ▹ h)
-    ≡ F-seq f h
-    ∙ F₂ f≡g ▹ F₁ h
-    ∙ sym (F-seq g h)
-F₂-▹ f≡g =
-  shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
-  ∙ sym assoc-inf
+-- F□-▹ : ∀ {x y z}
+--   {f g : C [ x , y ]}
+--   {h : C [ y , z ]}
+--   (f≡g : f ≡ g)
+--   → F□ (f≡g ▹ h)
+--     ≡ F₂ f≡g ▹ F₁ h
+-- F□-▹ f≡g =
+--   shuffleSymL (sym (F-seq-nat f≡g refl))
+
+-- -- In other words...
+-- F₂-◃ : ∀ {x y z}
+--   {f : C [ x , y ]}
+--   {g h : C [ y , z ]}
+--   (g≡h : g ≡ h)
+--   → F₂ (f ◃ g≡h)
+--     ≡ F.F-seq f g
+--     ∙ F₁ f ◃ F₂ g≡h
+--     ∙ sym (F.F-seq f h)
+-- F₂-◃ g≡h =
+--   shuffleSymR (sym (shuffleSymL (sym (F□-◃ g≡h))))
+--   ∙ sym assoc-inf
+
+-- F₂-▹ : ∀ {x y z}
+--   {f g : C [ x , y ]}
+--   {h : C [ y , z ]}
+--   (f≡g : f ≡ g)
+--   → F₂ (f≡g ▹ h)
+--     ≡ F.F-seq f h
+--     ∙ F₂ f≡g ▹ F₁ h
+--     ∙ sym (F.F-seq g h)
+-- F₂-▹ f≡g =
+--   shuffleSymR (sym (shuffleSymL (sym (F□-▹ f≡g))))
+--   ∙ sym assoc-inf
 

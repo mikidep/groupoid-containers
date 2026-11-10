@@ -30,20 +30,20 @@ module _ (C : LU2C ℓC ℓC')
     open NotF F
 
     field
-      F-IdL : ∀ {x y} {f : C [ x , y ]}
+      F-IdL : ∀ {x y} (f : C [ x , y ])
         → F-seq id f
           ∙ F-id ▹ F₁ f
           ∙ ⋆IdL (F₁ f)
           ≡ F₂ (⋆IdL f)
-      F-IdR : ∀ {x y} {f : C [ x , y ]}
+      F-IdR : ∀ {x y} (f : C [ x , y ])
         → F-seq f id
           ∙ F₁ f ◃ F-id
           ∙ ⋆IdR (F₁ f)
           ≡ F₂ (⋆IdR f)
       F-Assoc : ∀ {x y z w}
-        {f : C [ x , y ]}
-        {g : C [ y , z ]}
-        {h : C [ z , w ]}
+        (f : C [ x , y ])
+        (g : C [ y , z ])
+        (h : C [ z , w ])
         → F-seq (f ⋆ g) h
           ∙ F-seq f g ▹ F₁ h
           ∙ ⋆Assoc (F₁ f) (F₁ g) (F₁ h)

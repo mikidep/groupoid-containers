@@ -6,7 +6,7 @@ open import Cubical.WildCat.Monoidal.Base
 open import Cubical.WildCat.Product renaming (_×_ to ProdCat)
 open import Cubical.WildCat.NaturalTransformation.Base
 
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 
 open import Cubical.LU2C.Base 
 open import Cubical.LU2C.Copresheaf ℓ-zero

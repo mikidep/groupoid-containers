@@ -1,7 +1,7 @@
 open import Cubical.Foundations.Prelude
 
 open import Cubical.LU2C.Base
-open import Cubical.WildCat.FullSub.Notation
+open import Cubical.WildCat.AsLU2C.Instances
 
 module Cubical.LU2C.Copresheaf.Pseudonat.Constructions
   {ℓ ℓC ℓC' : Level} 
@@ -16,7 +16,7 @@ open import Cubical.LU2C.Copresheaf.Pseudonat.Base
 
 open import Prelude.Reassoc
 
-open Not2C HGpd
+open NotHGpd
 open Not2C C
 
 private ⟨_⟩ = fst

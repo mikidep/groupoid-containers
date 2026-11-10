@@ -82,19 +82,19 @@ whisk-interchange
   {a} {b} {c} {f} {f′} {g} {g′} = 
   LP.whisk-interchange {a = a} {b} {c} {f} {f′} {g} {g′} 
 
--- reassoc
-
-infixr 41 _◃′_
-infixl 40 _▹′_
-
-_◃′_ :
-  {@(tactic inferΣ ob) a b c : ob}
-  {g g′ : Hom[ b , c ]} 
-  → _
-_◃′_ {a} {b} {c} {g} {g′} = LN._◃′_ {a = a} {b} {c} {g} {g′} 
-
-_▹′_ :
-  {@(tactic inferΣ ob) a b c : ob}
-  {f f′ : Hom[ a , b ]}
-  → _
-_▹′_ {a} {b} {c} {f} {f′} = LN._▹′_ {a = a} {b} {c} {f} {f′} 
+-- -- reassoc
+--
+-- infixr 41 _◃′_
+-- infixl 40 _▹′_
+--
+-- _◃′_ :
+--   {@(tactic inferΣ ob) a b c : ob}
+--   {g g′ : Hom[ b , c ]} 
+--   → _
+-- _◃′_ {a} {b} {c} {g} {g′} = LN._◃′_ {a = a} {b} {c} {g} {g′} 
+--
+-- _▹′_ :
+--   {@(tactic inferΣ ob) a b c : ob}
+--   {f f′ : Hom[ a , b ]}
+--   → _
+-- _▹′_ {a} {b} {c} {f} {f′} = LN._▹′_ {a = a} {b} {c} {f} {f′} 
