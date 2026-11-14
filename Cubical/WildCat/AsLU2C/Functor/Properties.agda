@@ -12,23 +12,14 @@ module Cubical.WildCat.AsLU2C.Functor.Properties
   {ℓC ℓC' ℓD ℓD' : Level}
   {C : WildCat ℓC ℓC'}
   {D : WildCat ℓD ℓD'} 
-  -- {E : WildCat ℓE ℓE'} 
   {F : WildFunctor C D}
-  -- {G : WildFunctor C D}
   where
 
 open NotWC C
 open NotWC D
--- open NotWC E
 
 private module F = NotF F
 open F using (F₀; F₁; F₂)
--- private module G = NotF G
--- open G using () renaming 
---   ( F₀ to G₀
---   ; F₁ to G₁
---   ; F₂ to G₂
---   )
 
 F₂-funct : ∀ {x y}
   {f g h : C [ x , y ]}

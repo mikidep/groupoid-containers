@@ -13,12 +13,15 @@ open WildCat using (ob)
 ℙ : Type ℓC → Type (ℓ-suc ℓC)
 ℙ X = X → Type _
 
-module _ (C : WildCat ℓC ℓC') where
+module _ (C : WildCat ℓC ℓC')
+  (P₀ : ℙ (C .ob))
+  where
+
   private module C = WildCat C
 
-  FullSubWildCat : (P : ℙ (C .ob)) → WildCat ℓC ℓC'
-  FullSubWildCat P = record where
-    ob = Σ _ P
+  FullSubWildCat : WildCat ℓC ℓC'
+  FullSubWildCat = record where
+    ob = Σ _ P₀
     Hom[_,_] x y = C.Hom[ fst x , fst y ]
     id = C.id
     _⋆_ = C._⋆_
@@ -29,7 +32,7 @@ module _ (C : WildCat ℓC ℓC') where
 module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} 
   {P : ℙ (C .ob)} {Q : ℙ (D .ob)} where
   open WildFunctor
-  
+
   -- Functoriality on full subcategories defined by propositions
   FullSubWildFunct : (F : WildFunctor C D)
                → (∀ c → P c → Q (F .F-ob c))

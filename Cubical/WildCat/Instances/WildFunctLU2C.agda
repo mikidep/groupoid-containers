@@ -29,12 +29,11 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
   open WildNatTrans
   open import Cubical.Foundations.Path
   open import Prelude.Reassoc
-  open LU2CReassoc D.str
 
   open import Cubical.LU2C.Properties
     using (⋆IdL-nat; ⋆IdL-⋆; ⋆IdR-nat; ⋆IdR-⋆; ⋆Assoc-nat)
 
-  -- TODO: check vibe obligations
+  -- The laws are pointwise on components; naturality uses the LU2C coherences.
   WildFunctWC : WildCat _ _
   WildFunctWC .W.ob = WildFunctor C (D.str)
   WildFunctWC .W.Hom[_,_] F G = WildNatTrans _ _ F G
@@ -80,7 +79,10 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
       ∙ D.⋆Assoc D.id (F₁ f) (α₀ y)
       ∙ D.id ◃ α□ f
       ∙ (sym (D.⋆Assoc D.id (α₀ x) (G₁ f)) ∙ D.⋆IdL (α₀ x) ▹ G₁ f)
-        ≡⟨ reass₂ ⟩
+        ≡⟨ ∙l ∙l ∙l (assoc _ _ _)
+          ∙ ∙l ∙l (assoc _ _ _)
+          ∙ ∙l (assoc _ _ _)
+          ∙ assoc _ _ _ ⟩
       (sym (D.⋆Assoc (F₁ f) D.id (α₀ y))
         ∙ (D.⋆IdR (F₁ f)
           ∙ sym (D.⋆IdL (F₁ f))) ▹ α₀ y
@@ -97,20 +99,6 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           ∙′ (↑ (D.⋆IdR (F₁ f)) ∙′ ↑ (sym (D.⋆IdL (F₁ f)))) ▹′ α₀ y
           ∙′ ↑ (D.⋆IdL (F₁ f)) ▹′ α₀ y ∙′ ↑ (α□ f))
         (∙l ∙l (sym (shuffleSymL {q = D.⋆IdL (F₁ f) ▹ α₀ y} refl)))
-      reass₂ = reassoc
-        (↑ (sym (D.⋆Assoc (F₁ f) D.id (α₀ y)))
-          ∙′ (↑ (D.⋆IdR (F₁ f)) ∙′ ↑ (sym (D.⋆IdL (F₁ f)))) ▹′ α₀ y
-          ∙′ ↑ (D.⋆Assoc D.id (F₁ f) (α₀ y))
-          ∙′ D.id ◃′ ↑ (α□ f)
-          ∙′ (↑ (sym (D.⋆Assoc D.id (α₀ x) (G₁ f)))
-            ∙′ ↑ (D.⋆IdL (α₀ x)) ▹′ G₁ f))
-        ((↑ (sym (D.⋆Assoc (F₁ f) D.id (α₀ y)))
-          ∙′ (↑ (D.⋆IdR (F₁ f)) ∙′ ↑ (sym (D.⋆IdL (F₁ f)))) ▹′ α₀ y
-          ∙′ ↑ (D.⋆Assoc D.id (F₁ f) (α₀ y))
-          ∙′ D.id ◃′ ↑ (α□ f)
-          ∙′ ↑ (sym (D.⋆Assoc D.id (α₀ x) (G₁ f))))
-          ∙′ ↑ (D.⋆IdL (α₀ x)) ▹′ G₁ f)
-        refl
   WildFunctWC .W.⋆IdR {x = F} {y = G} α = makeNatTransPath
     (funExt λ x → D.⋆IdR (α₀ x))
     λ f → compPath→Square (aux f)
@@ -148,7 +136,10 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
       ∙ D.⋆Assoc (α₀ x) (G₁ f) D.id
       ∙ α₀ x ◃ (D.⋆IdR (G₁ f) ∙ sym (D.⋆IdL (G₁ f)))
       ∙ (sym (D.⋆Assoc (α₀ x) D.id (G₁ f)) ∙ D.⋆IdR (α₀ x) ▹ G₁ f)
-        ≡⟨ reass₂ ⟩
+        ≡⟨ ∙l ∙l ∙l (assoc _ _ _)
+          ∙ ∙l ∙l (assoc _ _ _)
+          ∙ ∙l (assoc _ _ _)
+          ∙ assoc _ _ _ ⟩
       (sym (D.⋆Assoc (F₁ f) (α₀ y) D.id)
         ∙ α□ f ▹ D.id
         ∙ D.⋆Assoc (α₀ x) (G₁ f) D.id
@@ -168,20 +159,6 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           ∙′ α₀ x ◃′ (↑ (D.⋆IdR (G₁ f)) ∙′ ↑ (sym (D.⋆IdL (G₁ f))))
           ∙′ α₀ x ◃′ ↑ (D.⋆IdL (G₁ f)))
         (∙l ∙l ∙l ∙l (sym (shuffleSymL {q = α₀ x ◃ D.⋆IdL (G₁ f)} refl)))
-      reass₂ = reassoc
-        (↑ (sym (D.⋆Assoc (F₁ f) (α₀ y) D.id))
-          ∙′ ↑ (α□ f) ▹′ D.id
-          ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) D.id)
-          ∙′ α₀ x ◃′ (↑ (D.⋆IdR (G₁ f)) ∙′ ↑ (sym (D.⋆IdL (G₁ f))))
-          ∙′ (↑ (sym (D.⋆Assoc (α₀ x) D.id (G₁ f)))
-            ∙′ ↑ (D.⋆IdR (α₀ x)) ▹′ G₁ f))
-        ((↑ (sym (D.⋆Assoc (F₁ f) (α₀ y) D.id))
-          ∙′ ↑ (α□ f) ▹′ D.id
-          ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) D.id)
-          ∙′ α₀ x ◃′ (↑ (D.⋆IdR (G₁ f)) ∙′ ↑ (sym (D.⋆IdL (G₁ f))))
-          ∙′ ↑ (sym (D.⋆Assoc (α₀ x) D.id (G₁ f))))
-          ∙′ ↑ (D.⋆IdR (α₀ x)) ▹′ G₁ f)
-        refl
   WildFunctWC .W.⋆Assoc {u = F} {v = G} {w = H} {x = K} α β γ = makeNatTransPath
     (funExt λ x → D.⋆Assoc (α₀ x) (β₀ x) (γ₀ x))
     λ f → compPath→Square (aux f)
@@ -237,7 +214,9 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           ∙ β₀ x ◃ γ□ f
           ∙ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₂ ⟩
+          ≡⟨ sym (assoc _ _ _)
+            ∙ ∙l (shuffleSymL {q = sym (D.⋆Assoc (F₁ f) (α₀ y) (β₀ y ⋆ γ₀ y))} refl)
+            ∙ assoc _ _ _ ⟩
         (D.⋆Assoc (F₁ f ⋆ α₀ y) (β₀ y) (γ₀ y)
           ∙ α□ f ▹ (β₀ y ⋆ γ₀ y))
         ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y)
@@ -257,7 +236,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           ∙ β₀ x ◃ γ□ f
           ∙ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₃ ⟩
+          ≡⟨ sym (assoc _ _ _) ∙ ∙l (assoc _ _ _) ⟩
         α□ f ▹ β₀ y ▹ γ₀ y
         ∙ (D.⋆Assoc (α₀ x ⋆ G₁ f) (β₀ y) (γ₀ y)
           ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y))
@@ -278,7 +257,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           ∙ β₀ x ◃ γ□ f
           ∙ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₄ ⟩
+          ≡⟨ reass₂ ⟩
         α□ f ▹ β₀ y ▹ γ₀ y
         ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y) ▹ γ₀ y
         ∙ (D.⋆Assoc (α₀ x) (G₁ f ⋆ β₀ y) (γ₀ y)
@@ -296,7 +275,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
         ∙ α₀ x ◃ β₀ x ◃ γ□ f
         ∙ α₀ x ◃ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₅ ⟩
+          ≡⟨ ∙l ∙l (sym (assoc _ _ _) ∙ ∙l (assoc _ _ _)) ⟩
         α□ f ▹ β₀ y ▹ γ₀ y
         ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y) ▹ γ₀ y
         ∙ (α₀ x ◃ β□ f) ▹ γ₀ y
@@ -315,7 +294,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
         ∙ α₀ x ◃ β₀ x ◃ γ□ f
         ∙ α₀ x ◃ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₆ ⟩
+          ≡⟨ reass₃ ⟩
         α□ f ▹ β₀ y ▹ γ₀ y
         ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y) ▹ γ₀ y
         ∙ (α₀ x ◃ β□ f) ▹ γ₀ y
@@ -348,7 +327,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
             ∙ α₀ x ◃ D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
         ∙ α₀ x ◃ sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))
         ∙ sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))
-          ≡⟨ reass₇ ⟩
+          ≡⟨ reass₄ ⟩
         α□ f ▹ β₀ y ▹ γ₀ y
         ∙ D.⋆Assoc (α₀ x) (G₁ f) (β₀ y) ▹ γ₀ y
         ∙ (α₀ x ◃ β□ f) ▹ γ₀ y
@@ -357,7 +336,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
         ∙ (α₀ x ⋆ β₀ x) ◃ γ□ f
         ∙ sym (D.⋆Assoc (α₀ x ⋆ β₀ x) (γ₀ x) (K₁ f))
         ∙ D.⋆Assoc (α₀ x) (β₀ x) (γ₀ x) ▹ K₁ f
-          ≡⟨ reass₈ ⟩
+          ≡⟨ reass₅ ⟩
         D.⋆Assoc (F₁ f) (α₀ y) (β₀ y) ▹ γ₀ y
         ∙ D.⋆Assoc (F₁ f) (α₀ y ⋆ β₀ y) (γ₀ y)
         ∙ ((sym (D.⋆Assoc (F₁ f) (α₀ y ⋆ β₀ y) (γ₀ y))
@@ -399,48 +378,6 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
             ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
           refl
         reass₂ = reassoc
-          ((↑ (D.⋆Assoc (F₁ f ⋆ α₀ y) (β₀ y) (γ₀ y))
-              ∙′ ↑ (D.⋆Assoc (F₁ f) (α₀ y) (β₀ y ⋆ γ₀ y)))
-            ∙′ ↑ (sym (D.⋆Assoc (F₁ f) (α₀ y) (β₀ y ⋆ γ₀ y)))
-            ∙′ ↑ (α□ f) ▹′ (β₀ y ⋆ γ₀ y)
-            ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y))
-            ∙′ α₀ x ◃′ (↑ (sym (D.⋆Assoc (G₁ f) (β₀ y) (γ₀ y)))
-              ∙′ ↑ (β□ f) ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y))
-              ∙′ β₀ x ◃′ ↑ (γ□ f)
-              ∙′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          ((↑ (D.⋆Assoc (F₁ f ⋆ α₀ y) (β₀ y) (γ₀ y))
-              ∙′ ↑ (α□ f) ▹′ (β₀ y ⋆ γ₀ y))
-            ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y))
-            ∙′ α₀ x ◃′ (↑ (sym (D.⋆Assoc (G₁ f) (β₀ y) (γ₀ y)))
-              ∙′ ↑ (β□ f) ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y))
-              ∙′ β₀ x ◃′ ↑ (γ□ f)
-              ∙′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          (∙l (shuffleSymL {q = sym (D.⋆Assoc (F₁ f) (α₀ y) (β₀ y ⋆ γ₀ y))} refl))
-        reass₃ = reassoc
-          ((↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (α₀ x ⋆ G₁ f) (β₀ y) (γ₀ y)))
-            ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y))
-            ∙′ α₀ x ◃′ (↑ (sym (D.⋆Assoc (G₁ f) (β₀ y) (γ₀ y)))
-              ∙′ ↑ (β□ f) ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y))
-              ∙′ β₀ x ◃′ ↑ (γ□ f)
-              ∙′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
-            ∙′ (↑ (D.⋆Assoc (α₀ x ⋆ G₁ f) (β₀ y) (γ₀ y))
-              ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y ⋆ γ₀ y)))
-            ∙′ α₀ x ◃′ (↑ (sym (D.⋆Assoc (G₁ f) (β₀ y) (γ₀ y)))
-              ∙′ ↑ (β□ f) ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y))
-              ∙′ β₀ x ◃′ ↑ (γ□ f)
-              ∙′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          refl
-        reass₄ = reassoc
           (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
             ∙′ (↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
               ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f ⋆ β₀ y) (γ₀ y))
@@ -460,25 +397,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
             ∙′ α₀ x ◃′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
             ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
           (∙l ∙l ∙l (shuffleSymL {q = sym (α₀ x ◃ D.⋆Assoc (G₁ f) (β₀ y) (γ₀ y))} refl))
-        reass₅ = reassoc
-          (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
-            ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
-            ∙′ ((α₀ x ◃′ ↑ (β□ f)) ▹′ γ₀ y
-              ∙′ ↑ (D.⋆Assoc (α₀ x) (β₀ x ⋆ H₁ f) (γ₀ y)))
-            ∙′ α₀ x ◃′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y))
-            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ (γ□ f)
-            ∙′ α₀ x ◃′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
-            ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
-            ∙′ (α₀ x ◃′ ↑ (β□ f)) ▹′ γ₀ y
-            ∙′ (↑ (D.⋆Assoc (α₀ x) (β₀ x ⋆ H₁ f) (γ₀ y))
-              ∙′ α₀ x ◃′ ↑ (D.⋆Assoc (β₀ x) (H₁ f) (γ₀ y)))
-            ∙′ α₀ x ◃′ β₀ x ◃′ ↑ (γ□ f)
-            ∙′ α₀ x ◃′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
-            ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
-          refl
-        reass₆ = reassoc
+        reass₃ = reassoc
           (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
             ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
             ∙′ (α₀ x ◃′ ↑ (β□ f)) ▹′ γ₀ y
@@ -498,7 +417,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
             ∙′ α₀ x ◃′ ↑ (sym (D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f)))
             ∙′ ↑ (sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))))
           refl
-        reass₇ = reassoc
+        reass₄ = reassoc
           (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
             ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
             ∙′ (α₀ x ◃′ ↑ (β□ f)) ▹′ γ₀ y
@@ -522,7 +441,7 @@ module _ (C : WildCat ℓC ℓC') (D : LU2C ℓD ℓD') where
           (∙l ∙l ∙l ∙l ∙l ∙l ∙l ∙l
             (∙l (shuffleSymL {q = sym (α₀ x ◃ D.⋆Assoc (β₀ x) (γ₀ x) (K₁ f))} refl)
             ∙ shuffleSymL {q = sym (D.⋆Assoc (α₀ x) (β₀ x ⋆ γ₀ x) (K₁ f))} refl))
-        reass₈ = reassoc
+        reass₅ = reassoc
           (↑ (α□ f) ▹′ β₀ y ▹′ γ₀ y
             ∙′ ↑ (D.⋆Assoc (α₀ x) (G₁ f) (β₀ y)) ▹′ γ₀ y
             ∙′ (α₀ x ◃′ ↑ (β□ f)) ▹′ γ₀ y

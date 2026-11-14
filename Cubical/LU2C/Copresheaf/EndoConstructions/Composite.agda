@@ -20,7 +20,6 @@ open import Cubical.WildCat.AsLU2C.Instances
 open WildFunctor
 open Is2Copresheaf
 
--- open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
 open import Cubical.WildCat.Instances.Types
 open NotHGpd
 

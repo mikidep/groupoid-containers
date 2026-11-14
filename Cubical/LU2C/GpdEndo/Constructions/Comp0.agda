@@ -12,37 +12,41 @@ open import Cubical.LU2C.Base
 open import Cubical.LU2C.Pseudofunctor
 open import Cubical.LU2C.GpdEndo.Base
 
-
-module Cubical.LU2C.GpdEndo.Constructions.Composite
-  {ℓ : Level} {F G : GpdEndo ℓ} where
+module Cubical.LU2C.GpdEndo.Constructions.Comp0
+  {ℓ : Level} (F G : GpdEndo {ℓ = ℓ}) where
 
 open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.WildCat.AsLU2C.Instances
 open import Cubical.WildCat.AsLU2C.Functor.Properties
 
-private module W = WildFunctor
+-- private module W = WildFunctor
 
 open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
 open NotHGpd
 
--- open import Prelude.Utils
+open GpdEndoConv
 
-open Pseudofunctor using (isPseudofunctor)
-  renaming (str to ⟨_⟩)
+-- private module F where
+--   open Pseudofunctor F using (str; isPseudofunctor) public
+--   open NotHGpdFunct str public
+--   open import Cubical.WildCat.AsLU2C.Functor.Properties {F = str} public
+--
+-- private module G where
+--   open Pseudofunctor G using (str; isPseudofunctor) public
+--   open NotHGpdFunct str public
+--   open import Cubical.WildCat.AsLU2C.Functor.Properties {F = str} public
 
-private module F = NotHGpdFunct ⟨ F ⟩
+private module F = GpdEndo F
+private module G = GpdEndo G
+
 open F using (F₀; F₁; F₂)
-private module G = NotHGpdFunct ⟨ G ⟩
 open G using () renaming 
   ( F₀ to G₀
   ; F₁ to G₁
   ; F₂ to G₂
   )
 
-module Goal where
-  module iF = IsPseudoGpdEndo (mkPseudoGpdEndo⁻ ℓ (F .isPseudofunctor))
-  module iG = IsPseudoGpdEndo (mkPseudoGpdEndo⁻ ℓ (G .isPseudofunctor))
-
+private module Goal where
   str : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩
   str = record where
     F-ob x = G₀ (F₀ x)
@@ -63,20 +67,20 @@ module Goal where
 
   open IsPseudoGpdEndo
 
-  isPseudoGpdEndo : IsPseudoGpdEndo ℓ str
+  isPseudoGpdEndo : IsPseudoGpdEndo str
 
   isPseudoGpdEndo .F-IdL {x} f = 
     (G₂ F.F-id ∙ G.F-id) ▹ G₁ (F₁ f)
         ≡⟨ ▹-∙ (G₂ F.F-id) G.F-id ⟩
     G₂ F.F-id ▹ G₁ (F₁ f) 
     ∙ G.F-id ▹ G₁ (F₁ f)
-        ≡⟨ ∙l iG.F-IdL (F₁ f) ⟩
+        ≡⟨ ∙l G.F-IdL (F₁ f) ⟩
     G₂ F.F-id ▹ G₁ (F₁ f) 
     ∙ sym (G.F-seq id (F₁ f))
-        ≡⟨ F-seq-nat-sym {F = ⟨ G ⟩} F.F-id refl ⟩
+        ≡⟨ G.F-seq-nat-sym F.F-id refl ⟩
     sym (G.F-seq (F₁ id) (F₁ f)) 
     ∙ G₂ (F.F-id ▹ F₁ f) 
-        ≡⟨ ∙l cong G₂ (iF.F-IdL f) ⟩ 
+        ≡⟨ ∙l cong G₂ (F.F-IdL f) ⟩ 
     sym (G.F-seq (F₁ id) (F₁ f)) 
     ∙ G₂ (sym (F.F-seq id f)) 
         ≡⟨ sym (symDistr _ _) ⟩ 
@@ -84,7 +88,30 @@ module Goal where
       ∙ G.F-seq (F₁ id) (F₁ f)) 
         ∎
 
-  isPseudoGpdEndo .F-IdR = {! !}
+  isPseudoGpdEndo .F-IdR {x} {y} f = goal
+    where
+    sq : Square
+      (sym (G.F-seq (F₁ f) (F₁ id)))
+      (sym (G.F-seq (F₁ f) id))
+      (G₁ (F₁ f) ◃ G₂ F.F-id)
+      (G₂ (F₁ f ◃ F.F-id))
+    sq = congP (λ i → sym) (G.F-seq-nat-Square (refl {x = F₁ f}) F.F-id)
+    goal : 
+      G₁ {isx = F₀ x .snd} (F₁ f) ◃ (G₂ F.F-id ∙ G.F-id)
+      ≡ sym (G₂ (F.F-seq f id) ∙ G.F-seq (F₁ f) (F₁ id))
+    goal = 
+      G₁ {isx = F₀ x .snd} (F₁ f) ◃ (G₂ F.F-id ∙ G.F-id)
+          ≡⟨ ◃-∙ (G₂ F.F-id) G.F-id ⟩ 
+      G₁ (F₁ f) ◃ G₂ F.F-id ∙ G₁ (F₁ f) ◃ G.F-id
+          ≡⟨ ∙l (G.F-IdR (F₁ f)) ⟩ 
+      G₁ (F₁ f) ◃ G₂ F.F-id ∙ sym (G.F-seq (F₁ f) id)
+          ≡⟨ Square→compPath sq ⟩
+      sym (G.F-seq (F₁ f) (F₁ id)) ∙ G₂ (F₁ f ◃ F.F-id)
+          ≡⟨ ∙l cong G₂ (F.F-IdR f) ⟩ 
+      sym (G.F-seq (F₁ f) (F₁ id)) ∙ sym (G₂ (F.F-seq f id))
+          ≡⟨ sym (symDistr _ _) ⟩ 
+      sym (G₂ (F.F-seq f id) ∙ G.F-seq (F₁ f) (F₁ id))
+          ∎
 
   isPseudoGpdEndo .F-Assoc {x} {y} {z} {w} f g h = goal
     where
@@ -101,25 +128,25 @@ module Goal where
         (G₂ (F.F-seq f g ▹ F₁ h)) 
         (G₂ (F.F-seq (f ⋆ g) h)) 
         (G₂ (F₁ f ◃ F.F-seq g h)) 
-      sqtl = congP (λ i → G₂) (iF.F-Assoc f g h)
+      sqtl = congP (λ i → G₂) (F.F-Assoc f g h)
       sqtr : Square 
         (G.F-seq (F₁ f) (F₁ (g ⋆ h))) 
         (G.F-seq (F₁ f) (F₁ g ⋆ F₁ h)) 
         (G₂ (F₁ f ◃ F.F-seq g h)) 
         (G₁ (F₁ f) ◃ G₂ (F.F-seq g h))
-      sqtr = F-seq-nat-Square {F = ⟨ G ⟩ } refl (F.F-seq g h)
+      sqtr = G.F-seq-nat-Square refl (F.F-seq g h)
       sqbl : Square 
         (G₂ (F.F-seq f g ▹ F₁ h)) 
         (G₂ (F.F-seq f g) ▹ G₁ (F₁ h)) 
         (G.F-seq (F₁ (f ⋆ g)) (F₁ h)) 
         (G.F-seq (F₁ f ⋆ F₁ g) (F₁ h)) 
-      sqbl = flipSquare (F-seq-nat-Square {F = ⟨ G ⟩ } (F.F-seq f g) refl)
+      sqbl = flipSquare (G.F-seq-nat-Square (F.F-seq f g) refl)
       sqbr : Square 
         (G.F-seq (F₁ f) (F₁ g ⋆ F₁ h)) 
         (G.F-seq (F₁ f) (F₁ g) ▹ G₁ (F₁ h)) 
         (G.F-seq (F₁ f ⋆ F₁ g) (F₁ h)) 
         (G₁ (F₁ f) ◃ G.F-seq (F₁ g) (F₁ h))
-      sqbr = iG.F-Assoc (F₁ f) (F₁ g) (F₁ h)
+      sqbr = G.F-Assoc (F₁ f) (F₁ g) (F₁ h)
       sql = sqtl ∙v sqbl
       sqr = sqtr ∙v sqbr
       sq = sql ∙₂ sqr
@@ -131,9 +158,9 @@ module Goal where
       (G₁ (F₁ f) ◃ (G₂ (F.F-seq g h) ∙ G.F-seq (F₁ g) (F₁ h)))
     goal = transport (λ i →
         Square
-          (G₂ {isx = F₀ x .snd} {isy = F₀ w .snd} (F.F-seq f (g ⋆ h)) 
-            ∙ G.F-seq {isy = F₀ y .snd} (F₁ f) (F₁ (g ⋆ h)))
-          (▹-∙ {g = G₁ {isx = F₀ z .snd} (F₁ h)} 
+          (G₂ (F.F-seq f (g ⋆ h)) 
+            ∙ G.F-seq (F₁ f) (F₁ (g ⋆ h)))
+          (▹-∙ {g = G₁ (F₁ h)} 
             (G₂ (F.F-seq f g)) (G.F-seq (F₁ f) (F₁ g)) (~ i))
           (G₂ (F.F-seq (f ⋆ g) h) 
             ∙ G.F-seq (F₁ (f ⋆ g)) (F₁ h))
@@ -141,9 +168,10 @@ module Goal where
             (G₂ (F.F-seq g h)) (G.F-seq (F₁ g) (F₁ h)) (~ i))
       ) goal'
 
---   isPseudofunctor : IsPseudofunctor HGpd HGpd str
---   isPseudofunctor = {! !}
---
--- compEndo₀ : GpdEndo ℓ
--- compEndo₀ = {! !}
---
+  isPseudofunctor : IsPseudofunctor str
+  isPseudofunctor = fromStrict isPseudoGpdEndo
+
+_⨾₀_ : GpdEndo
+_⨾₀_ .fst = Goal.str
+_⨾₀_ .snd = Goal.isPseudofunctor
+

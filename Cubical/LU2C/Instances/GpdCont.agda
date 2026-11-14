@@ -19,8 +19,8 @@ module _ where
   isLU2CGpdCont .pentagon _ _ _ _ = cong (refl ∙_) (sym (lUnit _))
   isLU2CGpdCont .isGpdHom {a = (F , isGpdF)} {b = (G , isGpdG)} = isGpd⇒ isGpdF isGpdG
 
-  GpContLU2C : LU2C _ _
-  GpContLU2C = record where
+  GpdContLU2C : LU2C _ _
+  GpdContLU2C = record where
     str = GpdContWildCat
     isLU2C = isLU2CGpdCont
 

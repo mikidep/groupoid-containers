@@ -11,6 +11,17 @@ private
     B : A → Type ℓ'
     C : (a : A) → B a → Type ℓ''
 
+
+module _ 
+  {x y z : A}  
+  (p : x ≡ y)
+  (q : x ≡ z)
+  (s : y ≡ z)
+  where
+
+  Triangle : Type _
+  Triangle = Square p q refl s
+
 module _ (A : I → I → Type ℓ)
   {x : A i0 i1} {y : A i0 i0} 
   {z : A i1 i0} {w : A i1 i1} 

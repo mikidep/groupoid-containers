@@ -4,7 +4,7 @@ open import Cubical.Foundations.Path
 
 open import Cubical.WildCat.Functor
 
-module Cubical.LU2C.GpdEndo.Base (ℓ : Level) where
+module Cubical.LU2C.GpdEndo.Base {ℓ : Level} where
 
 open import Cubical.LU2C.Base
 open import Cubical.LU2C.Pseudofunctor
@@ -50,9 +50,9 @@ module _ (F : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩) where
     F-Assoc-comp {x} {y} {z} {w} f g h = 
       Square→compPath (F-Assoc {x} {y} {z} {w} f g h)
 
-module _ {F : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩} where
-  mkPseudoGpdEndo : IsPseudoGpdEndo F → IsPseudofunctor HGpd HGpd F
-  mkPseudoGpdEndo iE = goal
+module GpdEndoConv {F : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩} where
+  fromStrict : IsPseudoGpdEndo F → IsPseudofunctor F
+  fromStrict iE = goal
     where
     module iE = IsPseudoGpdEndo iE
     open IsPseudofunctor
@@ -72,8 +72,8 @@ module _ {F : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩} where
       ∙ Square→compPath (iE.F-Assoc f g h) 
       ∙ lUnit _
 
-  mkPseudoGpdEndo⁻ : IsPseudofunctor HGpd HGpd F → IsPseudoGpdEndo F
-  mkPseudoGpdEndo⁻ iP = goal
+  toStrict : IsPseudofunctor F → IsPseudoGpdEndo F
+  toStrict iP = goal
     where
     module iP = IsPseudofunctor iP
     open IsPseudoGpdEndo
@@ -85,3 +85,11 @@ module _ {F : WildFunctor ⟨HGpd⟩ ⟨HGpd⟩} where
       ∙ iP.F-Assoc f g h 
       ∙ sym (lUnit _)
       )
+
+module GpdEndo (F : GpdEndo) where
+  open Pseudofunctor {C = HGpd} {HGpd} F using (str) public
+  open Pseudofunctor {C = HGpd} {HGpd} F using (isPseudofunctor)
+  open GpdEndoConv {F = str}
+  open NotHGpdFunct str public
+  open import Cubical.WildCat.AsLU2C.Functor.Properties {F = str} public
+  open IsPseudoGpdEndo (toStrict isPseudofunctor) public

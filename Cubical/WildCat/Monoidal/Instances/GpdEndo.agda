@@ -9,19 +9,16 @@ open import Cubical.WildCat.NaturalTransformation.Base
 open import Cubical.WildCat.AsLU2C.Instances
 
 open import Cubical.LU2C.Base 
-open import Cubical.LU2C.Copresheaf ℓ-zero
 open import Cubical.LU2C.Instances.Groupoids ℓ-zero
-open import Cubical.LU2C.Instances.Copresheaf ℓ-zero
-open import Cubical.LU2C.Copresheaf.EndoConstructions ℓ-zero
 
 module Cubical.WildCat.Monoidal.Instances.GpdEndo where
 
 private module HGpd = LU2C HGpd
-open LU2CSyn2C HGpd
+open NotHGpd
 
-open import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit ℓ-zero
-open import Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit ℓ-zero
-open import Cubical.WildCat.Monoidal.Instances.GpdEndo.Assoc ℓ-zero
+-- open import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit ℓ-zero
+-- open import Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit ℓ-zero
+-- open import Cubical.WildCat.Monoidal.Instances.GpdEndo.Assoc ℓ-zero
 
 module _ where
   open import Cubical.Foundations.GroupoidLaws

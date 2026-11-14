@@ -3,8 +3,8 @@ open import Cubical.Foundations.GroupoidLaws
 
 module Cubical.LU2C.Pseudofunctor where
 
-open import Cubical.LU2C.Base
-open import Cubical.WildCat.Base hiding (_[_,_])
+open import Cubical.WildCat.Base -- hiding (_[_,_])
+open import Cubical.LU2C.Base hiding (_[_,_])
 open import Cubical.WildCat.Functor
 
 open import Cubical.WildCat.AsLU2C.Instances
@@ -14,19 +14,13 @@ private
   variable
     ℓC ℓC' ℓD ℓD' : Level
 
-module _ (C : LU2C ℓC ℓC')
-  (D : LU2C ℓD ℓD') where
-
-  private
-    module C = LU2C C
-    module D = LU2C D
-
+module _ {C : WildCat ℓC ℓC'} {D : WildCat ℓD ℓD'} where
   record IsPseudofunctor
-    (F : WildFunctor C.str D.str)
+    (F : WildFunctor C D)
     : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
 
-    open NotWC C.str
-    open NotWC D.str
+    open NotWC C
+    open NotWC D
     open NotF F
 
     field
@@ -51,75 +45,14 @@ module _ (C : LU2C ℓC ℓC')
           ∙ F-seq f (g ⋆ h)
           ∙ F₁ f ◃ F-seq g h
 
-  record Pseudofunctor
-    : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
-    field
-      str : WildFunctor C.str D.str
-      isPseudofunctor : IsPseudofunctor str
-    open NotF str public
-    open IsPseudofunctor isPseudofunctor public
+module _ (C : LU2C ℓC ℓC') (D : LU2C ℓD ℓD') where
+  open LU2C using (str)
+  Pseudofunctor = Σ _ (IsPseudofunctor {C = C .str} {D .str})
 
 module _ {C : LU2C ℓC ℓC'} {D : LU2C ℓD ℓD'}
   where
 
-  open import Cubical.LU2C.Base using (_[_,_])
-
-  private
-    module C = LU2C C
-    module D = LU2C D
-
-  open Not2C C
-  open Not2C D
-
-  open Pseudofunctor using () renaming (str to ⟨_⟩)
-
-  module _ {F G : Pseudofunctor C D}
-    (α : WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) where
-
-    open import Cubical.Foundations.GroupoidLaws
-
-    open WildNatTrans α using ()
-      renaming (N-ob to α₀; N-hom to α□)
-    open Pseudofunctor F using (F-id; F-seq; F₁; F₂)
-    open Pseudofunctor G using ()
-      renaming (
-        F₁ to G₁;
-        F-id to G-id;
-        F-seq to G-seq;
-        F₂ to G₂
-      )
-
-    record IsPseudonat : Type (ℓ-max (ℓ-max ℓC ℓC') (ℓ-max ℓD ℓD')) where
-      field
-        N-hom-id :
-          ∀ {X : C.ob}
-          →   α□ (id {x = X})
-              ∙ α₀ X ◃ G-id
-              ∙ ⋆IdR (α₀ X)
-            ≡ F-id ▹ α₀ X
-              ∙ ⋆IdL (α₀ X)
-        N-hom-seq :
-          ∀ {X} {Y} {Z} (f : C [ X , Y ]) (g : C [ Y , Z ])
-          →   α□ (f ⋆ g)
-              ∙ α₀ X ◃ G-seq f g
-            ≡ F-seq f g ▹ α₀ Z
-              ∙ ⋆Assoc (F₁ f) (F₁ g) (α₀ Z)
-              ∙ F₁ f ◃ α□ g
-              ∙ sym (⋆Assoc (F₁ f) (α₀ Y) (G₁ g))
-              ∙ α□ f ▹ G₁ g
-              ∙ ⋆Assoc (α₀ X) (G₁ f) (G₁ g)
-
-    open import Cubical.Foundations.HLevels
-    open IsPseudonat
-    isPropIsPseudonat : isProp IsPseudonat
-    isPropIsPseudonat αis βis i .N-hom-id {X} = aux i
-      where
-      aux : αis .N-hom-id {X} ≡ βis .N-hom-id
-      aux = D.isGpdHom _ _ _ _ (αis .N-hom-id) (βis .N-hom-id)
-    isPropIsPseudonat αis βis i .N-hom-seq f g = aux i
-      where
-      aux : αis .N-hom-seq f g ≡ βis .N-hom-seq f g
-      aux = D.isGpdHom _ _ _ _ (αis .N-hom-seq f g) (βis .N-hom-seq f g)
-
-  module _ (F G : Pseudofunctor C D) where
-    PseudonatTrans = Σ (WildNatTrans _ _ ⟨ F ⟩ ⟨ G ⟩) (IsPseudonat {F} {G})
+  module Pseudofunctor (F : Pseudofunctor C D) where
+    open Σ F renaming (fst to str; snd to isPseudofunctor) public
+    open NotF str public
+    open IsPseudofunctor isPseudofunctor public

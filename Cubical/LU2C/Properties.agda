@@ -24,7 +24,6 @@ module _ (C : LU2C ℓ ℓ′) where
     renaming (ob to C₀)
 
   open Not2C C
-  open LU2CReassoc (LU2C.str C)
 
   private variable
     x y z : C₀
