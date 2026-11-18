@@ -2,16 +2,16 @@ open import Cubical.Foundations.Prelude
 
 open import Cubical.Container.Base
 import Cubical.Container.Constructions as CC
-import Cubical.WildCat.Instances.Container as WC
+open import Cubical.WildCat.Instances.Container using (ContainerWildCat)
 import Cubical.LU2C.Base as BB
+
+open import Cubical.WildCat.AsLU2C.Instances
 
 module Cubical.Container.Monoid.Definition (T : Container) where
 
--- open CC.Morphisms
 open CC.Monoidal
 
-open BB.LU2CSyntax {{...}}
-open BB.LU2CSynWC WC.ContainerWildCat
+open NotWC ContainerWildCat
 
 infixr 50 _⨾₂_
 _⨾₂_ : ∀ {F G H K : Container}

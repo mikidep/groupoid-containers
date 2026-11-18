@@ -24,17 +24,14 @@ private
   FS = FullSubWildCat (WildFunctWC ⟨HGpd⟩ HGpd) IsPseudofunctor
   module FS = WildCat FS
 
-open WildCat
+GpdEndoWildCat : WildCat (ℓ-suc ℓ-zero) (ℓ-suc ℓ-zero)
+GpdEndoWildCat = record where
+  ob = FS.ob
+  Hom[_,_] F G = GpdEndoTrans F G
+  id {x = F} = NC.idPseudonatTrans F
+  _⋆_ {x = F} {y = G} {z = H} α β = NC.compPseudonatTrans {F = F} {G} {H} α β
+  ⋆IdL {x = F} {y = G} α = GpdEndoTrans≡ {F = F} {G} refl λ _ → reassoc!
+  ⋆IdR {x = F} {y = G} α = GpdEndoTrans≡ {F = F} {G} refl λ _ → reassoc!
+  ⋆Assoc {u = F} {x = G} α β γ = GpdEndoTrans≡ {F = F} {G} refl λ _ → reassoc!
 
-GpdEndo : WildCat (ℓ-suc ℓ-zero) (ℓ-suc ℓ-zero)
-GpdEndo .ob = FS.ob
-GpdEndo .Hom[_,_] F G = GpdEndoTrans F G
-GpdEndo .id {x = F} = NC.idPseudonatTrans F
-GpdEndo ._⋆_ {x = F} {y = G} {z = H} α β = 
-  NC.compPseudonatTrans {F = F} {G} {H} α β
-GpdEndo .⋆IdL {x = F} {y = G} α = GpdEndoTrans≡ {F = F} {G}
-  refl λ _ → reassoc!
-GpdEndo .⋆IdR {x = F} {y = G} α = GpdEndoTrans≡ {F = F} {G}
-  refl λ _ → reassoc!
-GpdEndo .⋆Assoc {u = F} {x = G} α β γ = GpdEndoTrans≡ {F = F} {G} 
-  refl λ _ → reassoc!
+

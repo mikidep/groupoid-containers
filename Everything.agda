@@ -1,40 +1,60 @@
 module Everything where
 
-import Cubical.LU2C.Base
-import Cubical.LU2C.Copresheaf
-import Cubical.LU2C.Copresheaf.Base
-import Cubical.LU2C.Copresheaf.EndoConstructions
-import Cubical.LU2C.Copresheaf.EndoConstructions.Base
-import Cubical.LU2C.Copresheaf.EndoConstructions.Composite
-import Cubical.LU2C.Copresheaf.EndoConstructions.WhiskL
-import Cubical.LU2C.Copresheaf.EndoConstructions.WhiskR
-import Cubical.LU2C.Copresheaf.Pseudonat
-import Cubical.LU2C.Copresheaf.Pseudonat.Base
-import Cubical.LU2C.Copresheaf.Pseudonat.Constructions
--- import Cubical.LU2C.Copresheaf.Yoneda
-import Cubical.LU2C.Pseudofunctor
-import Cubical.LU2C.Instances.Walking
--- import Cubical.LU2C.Instances.GpdCont
-import Cubical.LU2C.Instances.Copresheaf
-import Cubical.LU2C.Instances.Groupoids
 import Cubical.Container.Base
 import Cubical.Container.Constructions
--- import Cubical.Container.GenOperad
--- import Cubical.Container.GenOperadT
--- import Cubical.Container.Monoid.Cartesian
+import Cubical.Container.GpdCont
 import Cubical.Container.Monoid.Definition
 import Cubical.Container.Monoid.Equivalence.Equiv
 import Cubical.Container.Monoid.Equivalence.From
 import Cubical.Container.Monoid.Equivalence.To
 -- import Cubical.Container.Monoid.Free
-import Cubical.Container.Monoid.Free_
 import Cubical.Container.Monoid.PsMndCont
 import Cubical.Container.Path
+import Cubical.LU2C.Base
+import Cubical.LU2C.GpdEndo.Base
+import Cubical.LU2C.GpdEndo.Constructions
+import Cubical.LU2C.GpdEndo.Constructions.Comp0
+import Cubical.LU2C.GpdEndo.Constructions.Comp1
+import Cubical.LU2C.GpdEndo.Constructions.Id
+import Cubical.LU2C.GpdEndo.NatTrans.Base
+import Cubical.LU2C.GpdEndo.NatTrans.Constructions
+import Cubical.LU2C.Instances.Copresheaf
+import Cubical.LU2C.Instances.FromSetCat
+import Cubical.LU2C.Instances.GpdCont
+import Cubical.LU2C.Instances.Groupoids
+import Cubical.LU2C.Instances.Walking
+import Cubical.LU2C.Instances.WildFunctor
+import Cubical.LU2C.Isomorphism
+import Cubical.LU2C.Product.Base
+import Cubical.LU2C.Product.Copresheaf
+import Cubical.LU2C.Properties
+import Cubical.LU2C.PropRestricts
+import Cubical.LU2C.Pseudofunctor
+import Cubical.LU2C.Pseudofunctor.NatTrans.Base
+import Cubical.LU2C.Pseudofunctor.NatTrans.Path
+import Cubical.WildCat.AsLU2C.Functor.Notation
+import Cubical.WildCat.AsLU2C.Functor.Properties
+import Cubical.WildCat.AsLU2C.Instances
+import Cubical.WildCat.AsLU2C.NaturalTransformation.Properties
+import Cubical.WildCat.AsLU2C.Notation
+import Cubical.WildCat.AsLU2C.Properties
+import Cubical.WildCat.FullSub
+import Cubical.WildCat.FullSub.Functor.Notation
+import Cubical.WildCat.Functor.Instances.GpdEndoComp
 import Cubical.WildCat.Instances.Container
+import Cubical.WildCat.Instances.GpdCont
+import Cubical.WildCat.Instances.GpdEndo
+import Cubical.WildCat.Instances.Pseudofunctors
 import Cubical.WildCat.Instances.WildCopresheaf
-import Cubical.WildCat.Instances.WildFunctor
+import Cubical.WildCat.Instances.WildFunctLU2C
 import Cubical.WildCat.Monoidal.Base
+import Cubical.WildCat.Monoidal.Definition.Endpoints
+import Cubical.WildCat.Monoidal.Definition.IsMonoidal
+import Cubical.WildCat.Monoidal.Definition.Structure
 import Cubical.WildCat.Monoidal.Functor
+import Cubical.WildCat.Monoidal.Functor.Definition.Endpoints
+import Cubical.WildCat.Monoidal.Functor.Definition.IsMonoidal
+import Cubical.WildCat.Monoidal.Functor.Definition.Structure
 import Cubical.WildCat.Monoidal.Instances.Container
 import Cubical.WildCat.Monoidal.Instances.Container.Extent
 import Cubical.WildCat.Monoidal.Instances.GpdCont
@@ -44,6 +64,6 @@ import Cubical.WildCat.Monoidal.Instances.GpdEndo.LUnit
 import Cubical.WildCat.Monoidal.Instances.GpdEndo.RUnit
 import Cubical.WildCat.Monoidal.Instances.Terminal
 import Cubical.WildCat.Monoidal.Monoid
+import Cubical.WildCat.Monoidal.WithPred
 import Cubical.WildCat.NaturalTransformation.Base
 import Cubical.WildCat.Product.Functor
-import Cubical.WildCat.FullSub

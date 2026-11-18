@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Cubical.Foundations.Prelude
 
 open import Cubical.WildCat.Functor
@@ -30,6 +28,8 @@ module _ {F F′ G G′ : GpdEndo}
   private module F′ = GpdEndo F′
   private module G = GpdEndo G
   private module G′ = GpdEndo G′
+  private module FG = GpdEndo (F ⨾₀ G)
+  private module F′G′ = GpdEndo (F′ ⨾₀ G′)
 
   open F using (F₀; F₁; F₂)
   open F′ using () renaming 
@@ -55,17 +55,30 @@ module _ {F F′ G G′ : GpdEndo}
   open β using () renaming (N-ob to β₀; N-hom to β□)
 
   private module Goal where
-    open WildNatTrans
     open import Prelude.ExtraGpdLaws
-    open import Reflection.Reassoc
+    open import Prelude.Reassoc
+    open import Cubical.LU2C.GpdEndo.Constructions.Comp1.Coherence {ℓ}
+    open import Cubical.WildCat.AsLU2C.NaturalTransformation.Properties
+      {F = G.str} {G = G′.str} using (N-hom-nat)
 
-    str : WildNatTrans _ _ ⟨ F ⨾₀ G ⟩ ⟨ F′ ⨾₀ G′ ⟩
-    str .N-ob x = G₁ (α₀ x) ⋆ β₀ (F′₀ x)
-    str .N-hom {x} {y} f = 
-          sym (G.F-seq (F₁ f) (α₀ y)) ▹ β₀ (F′₀ y)
-          ∙ G₂ (α□ f) ▹ β₀ (F′₀ y)
-          ∙ G.F-seq (α₀ x) (F′₁ f) ▹ β₀ (F′₀ y)
-          ∙ G₁ (α₀ x) ◃ β□ (F′₁ f)
+    N-ob : ∀ x → HGpd [ G₀ (F₀ x) , G′₀ (F′₀ x) ]
+    N-ob x = G₁ (α₀ x) ⋆ β₀ (F′₀ x)
+
+    αβ₀ = N-ob
+
+    N-hom
+      : ∀ {x y} (f : HGpd [ x , y ])
+      → G₁ (F₁ f) ⋆ G₁ (α₀ y) ⋆ β₀ (F′₀ y)
+        ≡ G₁ (α₀ x) ⋆ β₀ (F′₀ x) ⋆ G′₁ (F′₁ f)
+    N-hom {x} {y} f =
+      -- sym (G.F-seq (F₁ f) (α₀ y)) ▹ β₀ (F′₀ y)
+      -- ∙ G₂ (α□ f) ▹ β₀ (F′₀ y)
+      -- ∙ G.F-seq (α₀ x) (F′₁ f) ▹ β₀ (F′₀ y)
+      G.F□ (α□ f) ▹ β₀ (F′₀ y)
+      ∙ G₁ (α₀ x) ◃ β□ (F′₁ f)
+
+    αβ□ = N-hom
+
       -- G₁ (F₁ f) ⋆ G₁ (α₀ y) ⋆ β₀ (F′₀ y)
       --     ≡⟨ sym (G.F-seq (F₁ f) (α₀ y)) ▹ β₀ (F′₀ y) ⟩
       -- G₁ (F₁ f ⋆ α₀ y) ⋆ β₀ (F′₀ y)
@@ -77,100 +90,186 @@ module _ {F F′ G G′ : GpdEndo}
       -- G₁ (α₀ x) ⋆ β₀ (F′₀ x) ⋆ G′₁ (F′₁ f)
       --     ∎
 
-    isPseudo-id : ∀ {x} → _
-    isPseudo-id {x} = 
-      (sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-        ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-        ∙ G.F-seq (α₀ x) (F′₁ id) ▹ β₀ (F′₀ x)
-        ∙ G₁ (α₀ x) ◃ β□ (F′₁ id))
-      ∙ G₁ (α₀ x) ◃ β₀ (F′₀ x) ◃ (G′₂ F′.F-id ∙ G′.F-id)
-      ∙ refl
-          -- ≡⟨ reassoc! ⟩
-          ≡⟨ {! !} ⟩
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-      ∙ G.F-seq (α₀ x) (F′₁ id) ▹ β₀ (F′₀ x)
-      ∙ G₁ (α₀ x) ◃ β□ (F′₁ id)
-      ∙ G₁ (α₀ x) ◃ β₀ (F′₀ x) ◃ G′₂ F′.F-id
-      ∙ G₁ (α₀ x) ◃ β₀ (F′₀ x) ◃ G′.F-id
-          ≡⟨ {! !} ⟩ -- β nat
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-      ∙ G.F-seq (α₀ x) (F′₁ id) ▹ β₀ (F′₀ x)
-      ∙ G₁ (α₀ x) ◃ G₂ F′.F-id ▹ β₀ (F′₀ x) 
-      ∙ G₁ (α₀ x) ◃ β□ id
-      ∙ G₁ (α₀ x) ◃ β₀ (F′₀ x) ◃ G′.F-id
-          ≡⟨ {! !} ⟩ -- β.N-hom-id
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-      ∙ G.F-seq (α₀ x) (F′₁ id) ▹ β₀ (F′₀ x)
-      ∙ G₁ (α₀ x) ◃ G₂ F′.F-id ▹ β₀ (F′₀ x) 
-      ∙ G₁ (α₀ x) ◃ G.F-id ▹ β₀ (F′₀ x)
-          ≡⟨ {! !} ⟩ -- G seq nat
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α₀ x ◃ F′.F-id) ▹ β₀ (F′₀ x) 
-      ∙ G.F-seq (α₀ x) id ▹ β₀ (F′₀ x)
-      ∙ G₁ (α₀ x) ◃ G.F-id ▹ β₀ (F′₀ x)
-          ≡⟨ {! !} ⟩ -- G IdL
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α₀ x ◃ F′.F-id) ▹ β₀ (F′₀ x) 
-      ∙ refl
-          ≡⟨ {! !} ⟩
-          -- ≡⟨ reassoc! ⟩
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (α□ id
-        ∙ α₀ x ◃ F′.F-id) ▹ β₀ (F′₀ x) 
-          ≡⟨ {! !} ⟩ -- α id
-      sym (G.F-seq (F₁ id) (α₀ x)) ▹ β₀ (F′₀ x)
-      ∙ G₂ (F.F-id ▹ α₀ x) ▹ β₀ (F′₀ x) 
-          ≡⟨ {! !} ⟩ -- some G₂ nat
-      G₂ F.F-id ▹ G₁ (α₀ x) ▹ β₀ (F′₀ x) 
-      ∙ sym (G.F-seq id (α₀ x)) ▹ β₀ (F′₀ x)
-          ≡⟨ {! !} ⟩ -- G IdL
-      G₂ F.F-id ▹ G₁ (α₀ x) ▹ β₀ (F′₀ x) 
-      ∙ G.F-id ▹ G₁ (α₀ x) ▹ β₀ (F′₀ x) 
-          -- ≡⟨ reassoc! ⟩
-          ≡⟨ {! !} ⟩
-      ((G₂ F.F-id ∙ G.F-id) ▹ G₁ (α₀ x) ▹ β₀ (F′₀ x)) 
-      ∙ refl
-          ∎
+    str : WildNatTrans _ _ ⟨ F ⨾₀ G ⟩ ⟨ F′ ⨾₀ G′ ⟩
+    str = record where
+      N-ob = N-ob
+      N-hom = N-hom
 
-    isPseudo-seq : ∀ {x y z} 
+    isPseudo-id : ∀ {x}
+      → αβ□ (id {x = x .fst}) ∙ αβ₀ x ◃ F′G′.F-id
+        ≡ FG.F-id ▹ αβ₀ x
+    isPseudo-id {x} =
+      αβ□ (id {x = x .fst})
+      ∙ αβ₀ x ◃ F′G′.F-id
+          ≡⟨ reass₁ ⟩
+      G.F□ (α□ id) ▹ β₀ (F′₀ x)
+      ∙ G₁ (α₀ x) ◃ ((β□ (F′₁ id) ∙ β₀ (F′₀ x) ◃ G′₂ F′.F-id)
+        ∙ β₀ (F′₀ x) ◃ G′.F-id)
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (∙r N-hom-nat β.str F′.F-id) ⟩
+      G.F□ (α□ id) ▹ β₀ (F′₀ x)
+      ∙ G₁ (α₀ x) ◃ ((G₂ F′.F-id ▹ β₀ (F′₀ x) ∙ β□ id)
+        ∙ β₀ (F′₀ x) ◃ G′.F-id)
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (sym assoc-inf) ⟩
+      G.F□ (α□ id) ▹ β₀ (F′₀ x)
+      ∙ G₁ (α₀ x) ◃ (G₂ F′.F-id ▹ β₀ (F′₀ x)
+        ∙ β□ id ∙ β₀ (F′₀ x) ◃ G′.F-id)
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (∙l β.N-hom-id) ⟩
+      G.F□ (α□ id) ▹ β₀ (F′₀ x)
+      ∙ G₁ (α₀ x) ◃ (G₂ F′.F-id ▹ β₀ (F′₀ x)
+        ∙ G.F-id ▹ β₀ (F′₀ x))
+          ≡⟨ reass₂ ⟩
+      (G.F□ (α□ id) ∙ G₁ (α₀ x) ◃ (G₂ F′.F-id ∙ G.F-id))
+      ▹ β₀ (F′₀ x)
+          ≡⟨ cong (_▹ β₀ (F′₀ x)) (map-id {F = F} {F′} α G {x}) ⟩
+      FG.F-id ▹ αβ₀ x
+          ∎
+      where
+      reass₁ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          (↑ G.F□ (α□ id) ▹′ β₀ (F′₀ x)
+            ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ id))
+          ∙′ G₁ (α₀ x) ◃′ β₀ (F′₀ x) ◃′ (↑ G′₂ F′.F-id
+            ∙′ ↑ G′.F-id)
+        target =
+          ↑ G.F□ (α□ id) ▹′ β₀ (F′₀ x)
+          ∙′ G₁ (α₀ x) ◃′ ((↑ β□ (F′₁ id)
+              ∙′ β₀ (F′₀ x) ◃′ ↑ G′₂ F′.F-id)
+            ∙′ β₀ (F′₀ x) ◃′ ↑ G′.F-id)
+
+      reass₂ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          ↑ G.F□ (α□ id) ▹′ β₀ (F′₀ x)
+          ∙′ G₁ (α₀ x) ◃′ (↑ G₂ F′.F-id ▹′ β₀ (F′₀ x)
+            ∙′ ↑ G.F-id ▹′ β₀ (F′₀ x))
+        target =
+          (↑ G.F□ (α□ id)
+            ∙′ G₁ (α₀ x) ◃′ (↑ G₂ F′.F-id
+              ∙′ ↑ G.F-id)) ▹′ β₀ (F′₀ x)
+
+    isPseudo-seq : ∀ {x y z}
       (f : HGpd [ x , y ])
       (g : HGpd [ y , z ])
-      → _
-    isPseudo-seq {x} {y} {z} f g = 
-      (sym (G.F-seq (F₁ (f ⋆ g)) (α₀ z)) ▹ β₀ (F′₀ z)
-        ∙ G₂ (α□ (f ⋆ g)) ▹ β₀ (F′₀ z)
-        ∙ G.F-seq (α₀ x) (F′₁ (f ⋆ g)) ▹ β₀ (F′₀ z)
-        ∙ G₁ (α₀ x) ◃ β□ (F′₁ (f ⋆ g)))
-      ∙ G₁ (α₀ x) ◃ β₀ (F′₀ x) ◃ (
-        G′₂ (F′.F-seq f g) 
-        ∙ G′.F-seq (F′₁ f) (F′₁ g))
-          ≡⟨ ? ⟩
-      (G₂ (F.F-seq f g) 
-        ∙ G.F-seq (F₁ f) (F₁ g)
-      ) ▹ G₁ (α₀ z) ▹ β₀ (F′₀ z)
-      ∙ refl
-      ∙ G₁ (F₁ f) ◃ (
-        sym (G.F-seq (F₁ g) (α₀ z)) ▹ β₀ (F′₀ z)
-        ∙ G₂ (α□ g) ▹ β₀ (F′₀ z)
-        ∙ G.F-seq (α₀ y) (F′₁ g) ▹ β₀ (F′₀ z)
-        ∙ G₁ (α₀ y) ◃ β□ (F′₁ g)
-      )
-      ∙ refl
-      ∙ (sym (G.F-seq (F₁ f) (α₀ y)) ▹ β₀ (F′₀ y)
-        ∙ G₂ (α□ f) ▹ β₀ (F′₀ y)
-        ∙ G.F-seq (α₀ x) (F′₁ f) ▹ β₀ (F′₀ y)
-        ∙ G₁ (α₀ x) ◃ β□ (F′₁ f)
-      ) ▹ G′₁ (F′₁ g)
-      ∙ refl
+      → αβ□ (f ⋆ g) ∙ αβ₀ x ◃ F′G′.F-seq f g
+        ≡ FG.F-seq f g ▹ αβ₀ z
+        ∙ FG.F₁ f ◃ αβ□ g
+        ∙ αβ□ f ▹ F′G′.F₁ g
+    isPseudo-seq {x} {y} {z} f g =
+      αβ□ (f ⋆ g) ∙ αβ₀ x ◃ F′G′.F-seq f g
+          ≡⟨ reass₁ ⟩
+      G.F□ (α□ (f ⋆ g)) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ ((β□ (F′₁ (f ⋆ g)) ∙ β₀ (F′₀ x) ◃ G′₂ (F′.F-seq f g))
+        ∙ β₀ (F′₀ x) ◃ G′.F-seq (F′₁ f) (F′₁ g))
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (∙r N-hom-nat β.str (F′.F-seq f g)) ⟩
+      G.F□ (α□ (f ⋆ g)) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ ((G₂ (F′.F-seq f g) ▹ β₀ (F′₀ z) ∙ β□ (F′₁ f ⋆ F′₁ g))
+        ∙ β₀ (F′₀ x) ◃ G′.F-seq (F′₁ f) (F′₁ g))
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (sym assoc-inf) ⟩
+      G.F□ (α□ (f ⋆ g)) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ (G₂ (F′.F-seq f g) ▹ β₀ (F′₀ z)
+        ∙ β□ (F′₁ f ⋆ F′₁ g) ∙ β₀ (F′₀ x) ◃ G′.F-seq (F′₁ f) (F′₁ g))
+          ≡⟨ ∙l cong (G₁ (α₀ x) ◃_) (∙l β.N-hom-seq (F′₁ f) (F′₁ g)) ⟩
+      G.F□ (α□ (f ⋆ g)) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ (G₂ (F′.F-seq f g) ▹ β₀ (F′₀ z)
+        ∙ G.F-seq (F′₁ f) (F′₁ g) ▹ β₀ (F′₀ z)
+        ∙ G₁ (F′₁ f) ◃ β□ (F′₁ g) ∙ β□ (F′₁ f) ▹ G′₁ (F′₁ g))
+          ≡⟨ reass₂ ⟩
+      (G.F□ (α□ (f ⋆ g))
+        ∙ G₁ (α₀ x) ◃ (G₂ (F′.F-seq f g) ∙ G.F-seq (F′₁ f) (F′₁ g))) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ G₁ (F′₁ f) ◃ β□ (F′₁ g)
+      ∙ G₁ (α₀ x) ◃ β□ (F′₁ f) ▹ G′₁ (F′₁ g)
+          ≡⟨ ∙r cong (_▹ β₀ (F′₀ z)) (map-seq {F = F} {F′} α G f g) ⟩
+      (FG.F-seq f g ▹ G₁ (α₀ z)
+        ∙ G₁ (F₁ f) ◃ G.F□ (α□ g) ∙ G.F□ (α□ f) ▹ G₁ (F′₁ g)) ▹ β₀ (F′₀ z)
+      ∙ G₁ (α₀ x) ◃ G₁ (F′₁ f) ◃ β□ (F′₁ g)
+      ∙ G₁ (α₀ x) ◃ β□ (F′₁ f) ▹ G′₁ (F′₁ g)
+          ≡⟨ reass₃ ⟩
+      FG.F-seq f g ▹ G₁ (α₀ z) ▹ β₀ (F′₀ z)
+      ∙ G₁ (F₁ f) ◃ G.F□ (α□ g) ▹ β₀ (F′₀ z)
+      ∙ (G.F□ (α□ f) ▹ G₁ (F′₁ g) ▹ β₀ (F′₀ z)
+        ∙ G₁ (α₀ x) ◃ G₁ (F′₁ f) ◃ β□ (F′₁ g))
+      ∙ G₁ (α₀ x) ◃ β□ (F′₁ f) ▹ G′₁ (F′₁ g)
+          ≡⟨ ∙l ∙l ∙r sym (whisk-interchange (G.F□ (α□ f)) (β□ (F′₁ g))) ⟩
+      FG.F-seq f g ▹ G₁ (α₀ z) ▹ β₀ (F′₀ z)
+      ∙ G₁ (F₁ f) ◃ G.F□ (α□ g) ▹ β₀ (F′₀ z)
+      ∙ (G₁ (F₁ f) ◃ G₁ (α₀ y) ◃ β□ (F′₁ g)
+        ∙ G.F□ (α□ f) ▹ β₀ (F′₀ y) ▹ G′₁ (F′₁ g))
+      ∙ G₁ (α₀ x) ◃ β□ (F′₁ f) ▹ G′₁ (F′₁ g)
+          ≡⟨ reass₄ ⟩
+      FG.F-seq f g ▹ αβ₀ z
+      ∙ FG.F₁ f ◃ αβ□ g
+      ∙ αβ□ f ▹ F′G′.F₁ g
           ∎
+      where
+      reass₁ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          (↑ G.F□ (α□ (f ⋆ g)) ▹′ β₀ (F′₀ z)
+            ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ (f ⋆ g)))
+          ∙′ G₁ (α₀ x) ◃′ β₀ (F′₀ x) ◃′ (↑ G′₂ (F′.F-seq f g)
+            ∙′ ↑ G′.F-seq (F′₁ f) (F′₁ g))
+        target =
+          ↑ G.F□ (α□ (f ⋆ g)) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (α₀ x) ◃′ ((↑ β□ (F′₁ (f ⋆ g))
+              ∙′ β₀ (F′₀ x) ◃′ ↑ G′₂ (F′.F-seq f g))
+            ∙′ β₀ (F′₀ x) ◃′ ↑ G′.F-seq (F′₁ f) (F′₁ g))
+
+      reass₂ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          ↑ G.F□ (α□ (f ⋆ g)) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (α₀ x) ◃′ (↑ G₂ (F′.F-seq f g) ▹′ β₀ (F′₀ z)
+            ∙′ ↑ G.F-seq (F′₁ f) (F′₁ g) ▹′ β₀ (F′₀ z)
+            ∙′ G₁ (F′₁ f) ◃′ ↑ β□ (F′₁ g)
+            ∙′ ↑ β□ (F′₁ f) ▹′ G′₁ (F′₁ g))
+        target =
+          (↑ G.F□ (α□ (f ⋆ g))
+            ∙′ G₁ (α₀ x) ◃′ (↑ G₂ (F′.F-seq f g)
+              ∙′ ↑ G.F-seq (F′₁ f) (F′₁ g))) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (α₀ x) ◃′ G₁ (F′₁ f) ◃′ ↑ β□ (F′₁ g)
+          ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ f) ▹′ G′₁ (F′₁ g)
+
+      reass₃ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          (↑ FG.F-seq f g ▹′ G₁ (α₀ z)
+            ∙′ G₁ (F₁ f) ◃′ ↑ G.F□ (α□ g)
+            ∙′ ↑ G.F□ (α□ f) ▹′ G₁ (F′₁ g)) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (α₀ x) ◃′ G₁ (F′₁ f) ◃′ ↑ β□ (F′₁ g)
+          ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ f) ▹′ G′₁ (F′₁ g)
+        target =
+          ↑ FG.F-seq f g ▹′ G₁ (α₀ z) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (F₁ f) ◃′ ↑ G.F□ (α□ g) ▹′ β₀ (F′₀ z)
+          ∙′ (↑ G.F□ (α□ f) ▹′ G₁ (F′₁ g) ▹′ β₀ (F′₀ z)
+            ∙′ G₁ (α₀ x) ◃′ G₁ (F′₁ f) ◃′ ↑ β□ (F′₁ g))
+          ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ f) ▹′ G′₁ (F′₁ g)
+
+      reass₄ = reassoc source target refl
+        where
+        source target : Term _ _
+        source =
+          ↑ FG.F-seq f g ▹′ G₁ (α₀ z) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (F₁ f) ◃′ ↑ G.F□ (α□ g) ▹′ β₀ (F′₀ z)
+          ∙′ (G₁ (F₁ f) ◃′ G₁ (α₀ y) ◃′ ↑ β□ (F′₁ g)
+            ∙′ ↑ G.F□ (α□ f) ▹′ β₀ (F′₀ y) ▹′ G′₁ (F′₁ g))
+          ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ f) ▹′ G′₁ (F′₁ g)
+        target =
+          ↑ FG.F-seq f g ▹′ G₁ (α₀ z) ▹′ β₀ (F′₀ z)
+          ∙′ G₁ (F₁ f) ◃′ (↑ G.F□ (α□ g) ▹′ β₀ (F′₀ z)
+            ∙′ G₁ (α₀ y) ◃′ ↑ β□ (F′₁ g))
+          ∙′ (↑ G.F□ (α□ f) ▹′ β₀ (F′₀ y)
+            ∙′ G₁ (α₀ x) ◃′ ↑ β□ (F′₁ f)) ▹′ G′₁ (F′₁ g)
+
+  open GpdEndoTransConv {F = F ⨾₀ G} {F′ ⨾₀ G′}
 
   _⨾₁_ : GpdEndoTrans (F ⨾₀ G) (F′ ⨾₀ G′)
   _⨾₁_ .fst = Goal.str
-  _⨾₁_ .snd = record where
+  _⨾₁_ .snd = fromStrict record where
     N-hom-id {x} = Goal.isPseudo-id {x}
     N-hom-seq f g = Goal.isPseudo-seq f g

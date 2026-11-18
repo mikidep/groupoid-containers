@@ -61,4 +61,28 @@ module _
     (λ _ → isPropIsPseudonat {isGpdHomD = D.isGpdHom})
     (makeNatTransPath N-ob≡ N-hom≡) 
 
+  PseudonatTrans□ : 
+    {α β γ δ : PseudonatTrans {C = C} {D} F G}
+    {p : α ≡ β}
+    {q : γ ≡ δ}
+    {r : α ≡ γ}
+    {s : β ≡ δ}
+    → (ob□ : Square 
+      (cong N-ob (cong fst p)) 
+      (cong N-ob (cong fst q)) 
+      (cong N-ob (cong fst r)) 
+      (cong N-ob (cong fst s)))
+    → Square p q r s
+  PseudonatTrans□ ob□ = ΣSquareProp 
+    (λ _ → isPropIsPseudonat {isGpdHomD = D.isGpdHom})
+    (natTransSquareGpdHom D.isGpdHom ob□)
+    where
+    open import Prelude.Square
+
+  isGroupoidPseudonatTrans : isGroupoid (PseudonatTrans {C = C} {D} F G)
+  isGroupoidPseudonatTrans = isGroupoidΣ 
+    (isGroupoidWildNatTransGpdHom D.isGpdHom) 
+    λ _ → isProp→isOfHLevelSuc 2 (isPropIsPseudonat {isGpdHomD = D.isGpdHom})
+    where
+    open import Cubical.Foundations.HLevels
 

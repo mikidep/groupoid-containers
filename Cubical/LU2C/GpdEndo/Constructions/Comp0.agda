@@ -19,22 +19,10 @@ open import Cubical.LU2C.Instances.Groupoids ℓ
 open import Cubical.WildCat.AsLU2C.Instances
 open import Cubical.WildCat.AsLU2C.Functor.Properties
 
--- private module W = WildFunctor
-
 open LU2C HGpd using () renaming (str to ⟨HGpd⟩)
 open NotHGpd
 
 open GpdEndoConv
-
--- private module F where
---   open Pseudofunctor F using (str; isPseudofunctor) public
---   open NotHGpdFunct str public
---   open import Cubical.WildCat.AsLU2C.Functor.Properties {F = str} public
---
--- private module G where
---   open Pseudofunctor G using (str; isPseudofunctor) public
---   open NotHGpdFunct str public
---   open import Cubical.WildCat.AsLU2C.Functor.Properties {F = str} public
 
 private module F = GpdEndo F
 private module G = GpdEndo G
@@ -58,12 +46,6 @@ private module Goal where
   -- F-id' {X} = J (λ f _ → G₁ {x = F₀ X} f ≡ id) 
   --   G.F-id 
   --   (sym (F.F-id {x = X}))
-
-  -- F-id' {X} = J (λ f _ → G₁ {x = F₀ X} f ≡ id) 
-  --   G.F-id 
-  --   (sym (F.F-id {x = X}))
-  --
-  -- _ = {! F-id' !}
 
   open IsPseudoGpdEndo
 

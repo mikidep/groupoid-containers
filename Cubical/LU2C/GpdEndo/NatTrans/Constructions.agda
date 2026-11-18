@@ -4,17 +4,15 @@ open import Cubical.Foundations.Prelude
 open import Cubical.LU2C.Base
 open import Cubical.WildCat.AsLU2C.Instances
 
-module Cubical.LU2C.GpdEndo.NatTrans.Constructions where
+module Cubical.LU2C.GpdEndo.NatTrans.Constructions {ℓ : Level} where
 
 open import Cubical.WildCat.Functor hiding (compWildNatTrans)
 
 open import Cubical.LU2C.Pseudofunctor.NatTrans.Base
 
-open import Cubical.LU2C.Instances.Groupoids ℓ-zero
-open import Cubical.LU2C.GpdEndo.Base {ℓ = ℓ-zero}
-open import Cubical.LU2C.GpdEndo.NatTrans.Base
-
-
+open import Cubical.LU2C.Instances.Groupoids ℓ
+open import Cubical.LU2C.GpdEndo.Base {ℓ}
+open import Cubical.LU2C.GpdEndo.NatTrans.Base {ℓ}
 
 open import Cubical.Foundations.Function
 open import Cubical.Foundations.GroupoidLaws

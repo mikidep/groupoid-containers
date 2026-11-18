@@ -7,4 +7,4 @@ module Cubical.WildCat.Monoidal.Base where
 
 MonoidalWildCat : (ℓ ℓ' : Level) → Type (ℓ-suc (ℓ-max ℓ ℓ'))
 MonoidalWildCat ℓ ℓ' =
-  Σ[ C ∈ WildCat ℓ ℓ' ] isMonoidalWildCat C
+  Σ[ C ∈ WildCat ℓ ℓ' ] IsMonoidalWildCat C

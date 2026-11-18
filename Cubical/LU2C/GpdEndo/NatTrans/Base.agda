@@ -69,6 +69,21 @@ module _ {F G : GpdEndo} where
           (α□ f ▹ G₁ g)
     
   module GpdEndoTransConv {α : WildNatTrans _ _ F.str G.str} where
+    open WildNatTrans α using ()
+      renaming (N-ob to α₀; N-hom to α□)
+    open import Prelude.Square
+
+    Square→N-hom-id : ∀ {x} 
+      → Square 
+        (α□ (id {x = x .fst}))  
+        (F.F-id ▹ α₀ x)
+        refl 
+        (α₀ x ◃ G.F-id) 
+      → α□ (id {x = x .fst}) 
+        ∙ α₀ x ◃ G.F-id 
+        ≡ F.F-id ▹ α₀ x 
+    Square→N-hom-id {x} = PathP→compPathL∙∙
+
     fromStrict : IsGpdEndoTrans α → IsPseudonat {F = F.str} {G = G.str} α
     fromStrict = ?
 
@@ -82,6 +97,8 @@ module _ {F G : GpdEndo} where
     open IsGpdEndoTrans (toStrict (α .snd)) public
 
   GpdEndoTrans≡ = PseudonatTrans≡ {C = HGpd} {HGpd} {F = F} {G}
+  GpdEndoTrans□ = PseudonatTrans□ {C = HGpd} {HGpd} {F = F} {G}
+  isGroupoidGpdEndoTrans = isGroupoidPseudonatTrans {C = HGpd} {HGpd} {F = F} {G}
 
 module _ (F G : GpdEndo) where
   GpdEndoTrans = PseudonatTrans {C = HGpd} {HGpd} F G
